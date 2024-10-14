@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Default">
+      <UniqueIdentifier>{72b9f3aa-d15c-4b6c-a792-8a4b5775f916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{5b2d854f-5641-4365-b07a-a93e84a01ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{4f377921-a526-46d8-9aad-2690ef026be8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\01. PlayerScript">
+      <UniqueIdentifier>{48304f43-ef73-4569-b2b1-e526439abd54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\00. CameraScript">
+      <UniqueIdentifier>{1f6c615f-356c-4360-a290-9feebae13b69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts\00. CameraScript\01. MainCamera">
+      <UniqueIdentifier>{cf4790c6-c94f-464b-9b42-7520b5402141}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Default</Filter>
+    </ClInclude>
+    <ClInclude Include="CScriptMgr.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="CCameraMoveScript.h">
+      <Filter>Scripts\00. CameraScript\01. MainCamera</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts.cpp">
+      <Filter>Default</Filter>
+    </ClCompile>
+    <ClCompile Include="CScriptMgr.cpp">
+      <Filter>Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="CCameraMoveScript.cpp">
+      <Filter>Scripts\00. CameraScript\01. MainCamera</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

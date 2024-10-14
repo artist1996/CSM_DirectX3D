@@ -1,0 +1,1 @@
+xcopy /s /y /exclude:exclude_list.txt ".\Project\States\*.h" ".\External\Include\States"
