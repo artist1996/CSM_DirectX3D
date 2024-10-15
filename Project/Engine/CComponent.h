@@ -35,6 +35,7 @@ public:
     GET_OTHER_COMPONENT(Rigidbody);
     GET_OTHER_COMPONENT(ParticleSystem);
     GET_OTHER_COMPONENT(FSM);
+    GET_OTHER_COMPONENT(SkyBox);
 
 private:
     void SetOwner(CGameObject* _Object) { m_Owner = _Object; }

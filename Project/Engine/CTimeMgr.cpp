@@ -67,6 +67,7 @@ void CTimeMgr::Tick()
 		swprintf_s(m_szBuff, L"DT : %f, FPS : %d ", m_E_DeltaTime, m_FPS);
 		//SetWindowText(CEngine::GetInst()->GetMainWnd(), szBuff);
 		AccTime = 0.f;
+		m_EditFPS = m_FPS;
 		m_FPS = 0;
 	}
 

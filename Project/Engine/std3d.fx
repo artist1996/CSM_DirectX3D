@@ -102,6 +102,7 @@ float4 PS_Std3D(VS_OUT _in) : SV_Target
         CalculateLight3D(i, vViewNormal, _in.vViewPos, Light);
     }
     
+    
 
     vOutColor.xyz = vOutColor.xyz * Light.Color.rgb
                   + vOutColor.xyz * Light.Ambient.rgb

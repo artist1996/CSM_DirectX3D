@@ -116,11 +116,12 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
         float3 vLightDir = mul(float4(LightInfo.WorldDir, 0.f), matView).xyz;
         //float3 vLightViewPos = LightInfo.WorldPos;
         //float3 vLightDir = LightInfo.WorldDir;
-        //vLightDir = normalize(vLightDir);
         
         // Pixel 의 View Position 과 Pixel 의 방향 벡터를 구해준다.
         //float3 vPixelViewPos = LightInfo.WorldPos - _ViewPos;
+        //float3 vPixelViewPos = _ViewPos - vLightViewPos;
         float3 vPixelViewPos = vLightViewPos - _ViewPos;
+
         float3 vPixelDir     = normalize(vPixelViewPos);
         
         // Light 의 방향 벡터와 Pixel 의 방향벡터를 내적 해 cos 세타값을 구해준다.
@@ -143,7 +144,7 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
             
             // 카메라에서 물체를 향하는 방향 계산      
             float3 vEye = normalize(vLightViewPos - vPixelViewPos);
-           
+          
             // 반사 방향과 시선 벡터의 내적 계산
             SpecularPow = saturate(dot(vReflect, -vEye));
             SpecularPow = pow(SpecularPow, 20);

@@ -26,6 +26,7 @@
 #include "ComputeShaderUI.h"
 #include "RigidbodyUI.h"
 #include "Light3DUI.h"
+#include "SkyBoxUI.h"
 
 #include "ScriptUI.h"
 
@@ -102,6 +103,11 @@ void Inspector::CreateComponentUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::LIGHT3D]->SetName("Light3DUI");
 	m_arrComUI[(UINT)COMPONENT_TYPE::LIGHT3D]->SetChildBorder(true);
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::LIGHT3D]);
+
+	m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX] = new SkyBoxUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX]->SetName("SkyBoxUI");
+	m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX]->SetChildBorder(true);
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX]);
 }
 
 void Inspector::CreateAssetUI()

@@ -301,6 +301,20 @@ void MenuUI::AddComponent()
 			pObject->AddComponent(new CLight2D);
 		}
 
+		if (ImGui::MenuItem("Light3D"))
+		{
+			Inspector* pInspector = (Inspector*)CEditorMgr::GetInst()->FindEditorUI("Inspector");
+			CGameObject* pObject = pInspector->GetTargetObject();
+
+			if (nullptr == pObject)
+			{
+				ImGui::EndMenu();
+				return;
+			}
+
+			pObject->AddComponent(new CLight3D);
+		}
+
 		if (ImGui::MenuItem("MeshRender"))
 		{
 			Inspector* pInspector = (Inspector*)CEditorMgr::GetInst()->FindEditorUI("Inspector");
@@ -365,6 +379,20 @@ void MenuUI::AddComponent()
 			pObject->AddComponent(new CParticleSystem);
 		}
 
+		if (ImGui::MenuItem("SkyBox"))
+		{
+			Inspector* pInspector = (Inspector*)CEditorMgr::GetInst()->FindEditorUI("Inspector");
+			CGameObject* pObject = pInspector->GetTargetObject();
+
+			if (nullptr == pObject)
+			{
+				ImGui::EndMenu();
+				return;
+			}
+
+			pObject->AddComponent(new CSkyBox);
+		}
+
 		ImGui::EndMenu();
 	}
 }
@@ -399,7 +427,7 @@ void MenuUI::AddScript()
 		vector<wstring> vecScriptsName;
 		CScriptMgr::GetScriptInfo(vecScriptsName);
 
-		ImGui::BeginChild("ScrollableScripts", ImVec2(300, 200), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+		ImGui::BeginChild("ScrollableScripts", ImVec2(150, 200), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
 		for (size_t i = 0; i < vecScriptsName.size(); ++i)
 		{

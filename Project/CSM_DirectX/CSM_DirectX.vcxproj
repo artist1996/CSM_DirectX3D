@@ -202,6 +202,7 @@
     <ClInclude Include="SE_Info.h" />
     <ClInclude Include="SE_Sub.h" />
     <ClInclude Include="SE_TextureView.h" />
+    <ClInclude Include="SkyBoxUI.h" />
     <ClInclude Include="SoundUI.h" />
     <ClInclude Include="SpriteEditor.h" />
     <ClInclude Include="SpriteUI.h" />
@@ -279,6 +280,7 @@
     <ClCompile Include="SE_Info.cpp" />
     <ClCompile Include="SE_Sub.cpp" />
     <ClCompile Include="SE_TextureView.cpp" />
+    <ClCompile Include="SkyBoxUI.cpp" />
     <ClCompile Include="SoundUI.cpp" />
     <ClCompile Include="SpriteEditor.cpp" />
     <ClCompile Include="SpriteUI.cpp" />

@@ -146,9 +146,7 @@ void CS_ParticleTick(int3 _ID : SV_DispatchThreadID)
              // 가속도에 따른 속도의 변화
              PARTICLE.vVelocity += vAccel * g_EngineDT;
         }
-        
-        //PARTICLE.vVelocity += vAccel * g_EngineDT;
-        
+
         // Velocity 에 따른 이동 구현
         if(0 == Module[0].SpaceType)
         {

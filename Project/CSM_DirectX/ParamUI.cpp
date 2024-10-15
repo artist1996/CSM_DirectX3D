@@ -176,7 +176,7 @@ bool ParamUI::InputTexture(Ptr<CTexture>& _CurTex, const string& _Desc, EditorUI
 	Ptr<CTexture> CurTex = _CurTex;
 
 	ImGui::Text(_Desc.c_str());
-	ImGui::SameLine(120);
+	ImGui::SameLine(100);
 
 	// ¿ÃπÃ¡ˆ
 	ImVec2 uv_min = ImVec2(0.0f, 0.0f);

@@ -8,8 +8,9 @@
 
 FileBrowser::FileBrowser()
 	: m_CurrentDirectory{}
+	, m_strContentPath{}
 {
-	SetMove(true);
+	SetMove(false);
 }
 
 FileBrowser::~FileBrowser()
@@ -25,12 +26,14 @@ void FileBrowser::Init()
 }
 
 void FileBrowser::Update()
-{
+{	
 	if (m_CurrentDirectory != std::filesystem::path(m_strContentPath))
 	{
 		if (ImGui::Button(".."))
-		{
+		{		
 			m_CurrentDirectory = m_CurrentDirectory.parent_path();
+			if(m_CurrentDirectory == L"C:\\Users\\ilycs\\OneDrive\\Desktop\\CSM_DirectX3D\\OutputFile\\content")
+				m_CurrentDirectory += L"\\";
 		}
 	}
 	
@@ -49,17 +52,15 @@ void FileBrowser::Update()
 	{
 		const auto& path = iter.path();
 		auto RelativePath = std::filesystem::relative(path, m_strContentPath);
-		//string strRelativePath = RelativePath.string();
 		string strFileName = RelativePath.filename().string();
 	
-		//Ptr<CTexture> Icon = iter.is_directory() ? m_BrowserTex : m_IconTex;
-
 		if(iter.is_directory())
 			ImGui::ImageButton((void*)m_BrowserTex->GetSRV().Get(), { thumbnailSize ,thumbnailSize }, { 0,0 }, { 1,1 });
 		else
 		{
 			if (L".png" == RelativePath.extension() || L".bmp" == RelativePath.extension()
-				|| L".jpg" == RelativePath.extension() || L".TGA" == RelativePath.extension())
+				|| L".jpg" == RelativePath.extension() || L".TGA" == RelativePath.extension()
+				|| L".dds" == RelativePath.extension() || L".jpeg" == RelativePath.extension())
 			{
 				Ptr<CTexture> pTex = CAssetMgr::GetInst()->FindAsset<CTexture>(RelativePath.wstring());
 				ImGui::ImageButton((void*)pTex->GetSRV().Get(), { thumbnailSize ,thumbnailSize }, { 0,0 }, { 1,1 });

@@ -445,6 +445,49 @@ void CAssetMgr::CreateEngineMesh()
 	AddAsset(L"SphereMesh", pMesh);
 	vecVtx.clear();
 	vecIdx.clear();
+
+	// Cone Mesh
+	fRadius = 0.5f;
+	float fHeight = 1.f;
+
+	v.vPos      = Vec3(0.f, 0.f, 0.f);
+	v.vUV       = Vec2(0.5f, 0.f);
+	v.vColor    = Vec4(1.f, 1.f, 1.f, 1.f);
+	v.vNormal   = Vec3(0.f, 0.f, -1.f);
+	v.vTangent  = Vec3(1.f, 0.f, 0.f);
+	v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	vecVtx.push_back(v);
+
+	iSliceCount = 40;
+	fSliceAngle = XM_2PI / iSliceCount;
+	fUVXStep = 1.f / float(iSliceCount);
+	fUVYStep = 1.f;
+
+	for (UINT i = 0; i < iSliceCount + 1; ++i)
+	{
+		float Theta = i * fSliceAngle;
+
+		v.vPos   = Vec3(fRadius * cosf(Theta), fRadius * sinf(Theta), fHeight);
+		v.vUV	 = Vec2(fUVXStep * i, fUVYStep);
+		v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+		v.vNormal = Vec3(0.f, 0.f, 1.f);
+		v.vTangent = Vec3(1.f, 0.f, 0.f);
+		v.vBinormal = Vec3(0.f, 1.f, 0.f);
+		vecVtx.push_back(v);
+
+		if (i < iSliceCount)
+		{
+			vecIdx.push_back(0);
+			vecIdx.push_back(i + 2);
+			vecIdx.push_back(i + 1);
+		}
+	}
+
+	pMesh = new CMesh(true);
+	pMesh->Create(vecVtx.data(), (UINT)vecVtx.size(), vecIdx.data(), (UINT)vecIdx.size());
+	AddAsset(L"ConeMesh", pMesh);
+	vecVtx.clear();
+	vecIdx.clear();
 }
 
 void CAssetMgr::CreateEngineMaterial()
@@ -512,8 +555,12 @@ void CAssetMgr::CreateEngineMaterial()
 	// Std3DMtrl
 	pMtrl = new CMaterial(true);
 	pMtrl->SetShader(FindAsset<CGraphicShader>(L"Std3DShader"));
-	//pMtrl->AddTexParam(TEX_0, 0);
 	AddAsset(L"Std3DMtrl", pMtrl);
+
+	// SkyBoxMtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(FindAsset<CGraphicShader>(L"SkyBoxShader"));
+	AddAsset(L"SkyBoxMtrl", pMtrl);
 }
 
 void CAssetMgr::CreateEngineTexture()
@@ -764,6 +811,19 @@ void CAssetMgr::CreateEngineGraphicShader()
 	pShader->AddTexParam(TEX_0, "Albedo Texture");
 	pShader->AddTexParam(TEX_1, "Normal Texture");
 	AddAsset(L"Std3DShader", pShader);
+
+	// SkyBoxShader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\skybox.fx", "VS_SkyBox");
+	pShader->CreatePixelShader(L"shader\\skybox.fx", "PS_SkyBox");
+	pShader->SetRSType(RS_TYPE::CULL_FRONT);
+	pShader->SetDSType(DS_TYPE::LESS_EQUAL);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
+
+	pShader->AddTexParam(TEX_0, "Albedo Texture");
+
+	AddAsset(L"SkyBoxShader", pShader);
 }
 
 #include "CParticleTickCS.h"

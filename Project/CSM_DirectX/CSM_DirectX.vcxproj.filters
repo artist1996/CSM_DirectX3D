@@ -184,6 +184,9 @@
     <Filter Include="02. EditorUI\14. Log">
       <UniqueIdentifier>{b67b3d5b-270a-4e91-82c8-28a12fbf8026}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. EditorUI\01. Inspector\ComponentUI\12. SkyBoxUI">
+      <UniqueIdentifier>{64db1b82-1421-413b-bbfb-8100c6e32b50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CGameObjectEx.h">
@@ -239,9 +242,6 @@
     </ClInclude>
     <ClInclude Include="Content.h">
       <Filter>02. EditorUI\02. Content</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentUI.h">
-      <Filter>02. EditorUI\01. Inspector\ComponentUI</Filter>
     </ClInclude>
     <ClInclude Include="TransformUI.h">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\01. TransformUI</Filter>
@@ -396,6 +396,12 @@
     <ClInclude Include="Log.h">
       <Filter>02. EditorUI\14. Log</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBoxUI.h">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\12. SkyBoxUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentUI.h">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -437,9 +443,6 @@
     </ClCompile>
     <ClCompile Include="Content.cpp">
       <Filter>02. EditorUI\02. Content</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentUI.cpp">
-      <Filter>02. EditorUI\01. Inspector\ComponentUI</Filter>
     </ClCompile>
     <ClCompile Include="TransformUI.cpp">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\01. TransformUI</Filter>
@@ -602,6 +605,12 @@
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>02. EditorUI\14. Log</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBoxUI.cpp">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\12. SkyBoxUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentUI.cpp">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

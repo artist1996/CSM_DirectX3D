@@ -95,6 +95,7 @@ public:
     GET_COMPONENT(Rigidbody, RIGIDBODY);
     GET_COMPONENT(ParticleSystem, PARTICLESYSTEM);
     GET_COMPONENT(FSM, STATEMACHINE);
+    GET_COMPONENT(SkyBox, SKYBOX);
 
 public:
     void Begin();

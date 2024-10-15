@@ -12,6 +12,7 @@ private:
 	LARGE_INTEGER	m_llFrequency;
 
 	UINT			m_FPS;
+	UINT		    m_EditFPS;
 
 	float			m_DeltaTime;	// 프레임 간격 시간( 1 프레임 실행하는데 걸리는 시간 )
 	float			m_Time;			// 프로그램이 켜진 이후로 진행된 시간
@@ -34,4 +35,5 @@ public:
 	float GetEngineTime()	   { return m_E_Time; }
 
 	UINT GetFPS()			   { return m_FPS; }
+	UINT GetEditFPS()		   { return m_EditFPS; }
 };

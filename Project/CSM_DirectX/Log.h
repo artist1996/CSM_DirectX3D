@@ -5,6 +5,9 @@ class Log :
     public EditorUI
 {
 private:
+    UINT  m_FPS;
+    UINT  m_PrevFPS;
+    float m_FPSTime;
 
 public:
     virtual void Init() override;

@@ -88,22 +88,41 @@ void CTestLevel::CreateTestLevel()
 	pLevel->AddObject(0, pObject);
 
 	// 3D 광원 추가
-	pObject = new CGameObject;
-	pObject->SetName(L"Spot Light");
-	pObject->AddComponent(new CTransform);
-	pObject->AddComponent(new CLight3D);
-	
-	//pObject->Transform()->SetRelativePos(Vec3(-300.f, 0.f, 0.f));
-	//pObject->Transform()->SetRelativeRotation(0.f, 0.f, 0.f);
-	
-	pObject->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
-	pObject->Light3D()->SetLightColor(Vec3(0.f, 0.5f, 0.5f));
-	//pObject->Light3D()->SetLightAmbient(Vec3(0.3f, 0.3f, 0.3f));
-	pObject->Light3D()->SetSpecularCoefficient(0.3f);
-	pObject->Light3D()->SetAngle(XM_PI / 4.f);
-	pObject->Light3D()->SetRadius(800.f);
-	
-	pLevel->AddObject(0, pObject);
+	//pObject = new CGameObject;
+	//pObject->SetName(L"Spot Light");
+	//pObject->AddComponent(new CTransform);
+	//pObject->AddComponent(new CLight3D);
+	//
+	//pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, -800.f));
+	//
+	//pObject->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
+	//pObject->Light3D()->SetLightColor(Vec3(0.f, 0.5f, 0.5f));
+	////pObject->Light3D()->SetLightAmbient(Vec3(0.f, 0.1f, 0.1f));
+	//pObject->Light3D()->SetSpecularCoefficient(0.3f);
+	//pObject->Light3D()->SetAngle(XM_PI / 4.f);
+	//pObject->Light3D()->SetRadius(800.f);
+	//
+	//pLevel->AddObject(0, pObject);
+
+	// SkyBox 추가
+	CGameObject* pSkyBox = new CGameObject;
+	pSkyBox->SetName(L"SkyBox");
+
+	pSkyBox->AddComponent(new CTransform);
+	pSkyBox->AddComponent(new CSkyBox);
+
+	pSkyBox->Transform()->SetRelativePos(0.f, 0.f, 0.f);
+	pSkyBox->Transform()->SetRelativeScale(1000.f, 1000.f, 1000.f);
+
+	//Ptr<CTexture> pSkyBoxTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\skybox\\SkyWater.dds");
+	//pSkyBox->SkyBox()->SetSkyBoxTexture(pSkyBoxTex);
+	//pSkyBox->SkyBox()->SetSkyBoxType(CUBE);		
+
+	Ptr<CTexture> pSkyBoxTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\skybox\\Sky01.png");
+	pSkyBox->SkyBox()->SetSkyBoxTexture(pSkyBoxTex);
+	//pSkyBox->SkyBox()->SetSkyBoxType(SKYBOX_TYPE::SPHERE);
+
+	pLevel->AddObject(0, pSkyBox);
 
 	// 플레이어 오브젝트
 	CGameObject* pPlayer = new CGameObject;
@@ -120,7 +139,7 @@ void CTestLevel::CreateTestLevel()
 
 	pLevel->AddObject(3, pPlayer);
 
-	CreateTestObject(pLevel, pMtrl);
+	//CreateTestObject(pLevel, pMtrl);
 
 	ChangeLevel(pLevel, LEVEL_STATE::STOP);
 
