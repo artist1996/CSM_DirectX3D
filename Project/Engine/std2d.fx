@@ -252,4 +252,35 @@ float4 PS_Std2D_Additive(VTX_OUT _in) : SV_Target
     return vColor;
 }
 
+// ==============
+// Effect Shader
+// ==============
+VTX_OUT VS_Effect(VTX_IN _in)
+{
+    VTX_OUT output = (VTX_OUT) 0.f;
+  
+    // LocalSpace -> WorldSpace
+    // float3 x float4x4(matrix)
+    // float3 를 float4 로 차수를 맞추어준다.
+    // 동차좌표를 1 로 설정, 상태행렬 4행에 들어있는 이동을 적용받겠다는 뜻
+    output.vPosition = mul(float4(_in.vPos, 1.f), matWVP);
+    output.vUV = _in.vUV;
+    
+    return output;
+}
+
+float4 PS_Effect(VTX_OUT _in) : SV_Target
+{
+    if (!g_btex_0)
+        discard;
+    
+    float4 vColor = g_tex_0.Sample(g_sam_0, _in.vUV);
+    if (0.f == vColor.a)
+        discard;
+    
+    vColor.rgb = g_vec4_0.xyz;
+    
+    return vColor;
+}
+
 #endif

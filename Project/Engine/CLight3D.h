@@ -5,9 +5,13 @@ class CLight3D :
 {
 private:
     tLightInfo      m_Info;
+    int             m_LightIdx;
+
+    Ptr<CMesh>      m_VolumeMesh;
+    Ptr<CMaterial>  m_LightMtrl;
 
 public:
-    void SetLightType(LIGHT_TYPE _Type)      { m_Info.Type = _Type; }
+    void SetLightType(LIGHT_TYPE _Type);
     void SetRadius(float _Radius)            { m_Info.Radius = _Radius; }
     void SetAngle(float _Angle)              { m_Info.Angle = _Angle; }
     void SetLightColor(Vec3 _Color)          { m_Info.light.Color = _Color; }
@@ -25,6 +29,7 @@ public:
 
 public:
     virtual void FinalTick() override;
+    void Render();
 
 public:
     virtual void SaveToFile(FILE* _File) override;

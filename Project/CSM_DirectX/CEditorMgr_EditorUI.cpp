@@ -39,6 +39,7 @@
 
 #include "FileBrowser.h"
 #include "Log.h"
+#include "ViewportUI.h"
 
 void CEditorMgr::InitImGui()
 {
@@ -90,7 +91,7 @@ void CEditorMgr::InitImGui()
 	// - Read 'docs/FONTS.md' for more instructions and details.
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
 	//io.Fonts->AddFontDefault();
-	//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+	io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 20.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
@@ -260,87 +261,135 @@ void CEditorMgr::CreateEditorUI()
 	pLog->SetName("LOG");
 	pLog->Init();
 	m_mapUI.insert(make_pair(pLog->GetName(), pLog));
+
+	EditorUI* pViewport = new ViewportUI;
+	pViewport->SetName("Viewport");
+	pViewport->Init();
+	m_mapUI.insert(make_pair(pViewport->GetName(), pViewport));
 }
 
 void CEditorMgr::Docking()
 {
-	// 메뉴바 플래그 설정
-	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar; //| ImGuiWindowFlags_NoDocking;
+	//// 메뉴바 플래그 설정
+	//ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar; //| ImGuiWindowFlags_NoDocking;
+	//
+	//// 메인 뷰포트 크기 가져오기
+	//ImGuiViewport* viewport = ImGui::GetMainViewport();
+	//ImGui::SetNextWindowPos(viewport->Pos);
+	//ImGui::SetNextWindowSize(viewport->Size);
+	//ImGui::SetNextWindowViewport(viewport->ID);
+	//
+	//// 도킹 윈도우 설정
+	//window_flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;// | ImGuiWindowFlags_NoResize;
+	//window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	//
+	//// 도킹 공간 윈도우 생성
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	//ImGui::Begin("MainWindow", nullptr, window_flags);
+	//ImGui::PopStyleVar(2);
+	//
+	//// 도킹 공간 생성
+	//ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
+	//ImGui::DockSpace(dockspace_id, ImVec2(0.f, 0.f), ImGuiDockNodeFlags_None);
+	////ImGui::DockSpaceOverViewport(viewport);
+	//
+	//// 도킹 빌더로 레이아웃 설정 (한 번만 실행)
+	//static bool dockspace_initialized = false;
+	//if (!dockspace_initialized)
+	//{
+	//	dockspace_initialized = true;
+	//
+	//	ImGui::DockBuilderRemoveNode(dockspace_id); // 기존 레이아웃 제거
+	//	ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_None); // 새 노드 추가
+	//
+	//	// 메인 도킹 공간을 분할
+	//	ImGuiID dock_main_id = dockspace_id;
+	//	ImGuiID dock_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
+	//	ImGuiID dock_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, nullptr, &dock_main_id);
+	//	ImGuiID dock_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
+	//
+	//	// 각 윈도우 도킹
+	//	ImGui::DockBuilderDockWindow("Hierarchy##Dock", dock_left);
+	//	ImGui::DockBuilderDockWindow("Inspector##Dock", dock_right);
+	//	ImGui::DockBuilderDockWindow("Content##Dock", dock_bottom);
+	//	ImGui::DockBuilderDockWindow("Scene##Dock", dock_main_id);
+	//
+	//	ImGui::DockBuilderFinish(dockspace_id); // 도킹 빌더 완료
+	//}
+	
+	//ImGui::End();
 
-	// 메인 뷰포트 크기 가져오기
-	ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(viewport->Pos);
-	ImGui::SetNextWindowSize(viewport->Size);
-	ImGui::SetNextWindowViewport(viewport->ID);
-
-	// 도킹 윈도우 설정
-	window_flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;// | ImGuiWindowFlags_NoResize;
-	window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-	// 도킹 공간 윈도우 생성
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::Begin("MainWindow", nullptr, window_flags);
-	ImGui::PopStyleVar(2);
-
-	// 도킹 공간 생성
-	ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
-	ImGui::DockSpace(dockspace_id, ImVec2(0.f, 0.f), ImGuiDockNodeFlags_None);
-
-	// 도킹 빌더로 레이아웃 설정 (한 번만 실행)
-	static bool dockspace_initialized = false;
-	if (!dockspace_initialized)
+	// Note: Switch this to true to enable dockspace
+	static bool dockspaceOpen = true;
+	static bool opt_fullscreen_persistant = true;
+	bool opt_fullscreen = opt_fullscreen_persistant;
+	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+	
+	// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+	// because it would be confusing to have two docking targets within each others.
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+	if (opt_fullscreen)
 	{
-		dockspace_initialized = true;
-
-		ImGui::DockBuilderRemoveNode(dockspace_id); // 기존 레이아웃 제거
-		ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_None); // 새 노드 추가
-
-		// 메인 도킹 공간을 분할
-		ImGuiID dock_main_id = dockspace_id;
-		ImGuiID dock_left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.2f, nullptr, &dock_main_id);
-		ImGuiID dock_right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, nullptr, &dock_main_id);
-		ImGuiID dock_bottom = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.25f, nullptr, &dock_main_id);
-
-		// 각 윈도우 도킹
-		ImGui::DockBuilderDockWindow("Hierarchy##Dock", dock_left);
-		ImGui::DockBuilderDockWindow("Inspector##Dock", dock_right);
-		ImGui::DockBuilderDockWindow("Content##Dock", dock_bottom);
-		ImGui::DockBuilderDockWindow("Scene##Dock", dock_main_id);
-
-		ImGui::DockBuilderFinish(dockspace_id); // 도킹 빌더 완료
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 	}
-
-	RenderGameScreen();
-
-	// 도킹 윈도우 종료
+	
+	// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
+	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+		window_flags |= ImGuiWindowFlags_NoBackground;
+	
+	// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+	// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive, 
+	// all active windows docked into it will lose their parent and become undocked.
+	// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
+	// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+	ImGui::PopStyleVar();
+	
+	if (opt_fullscreen)
+		ImGui::PopStyleVar(2);
+	
+	// DockSpace
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuiStyle& style = ImGui::GetStyle();
+	float minWinSizeX = style.WindowMinSize.x;
+	style.WindowMinSize.x = 370.0f;
+	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+	{
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	}
+	
+	style.WindowMinSize.x = minWinSizeX;
 	ImGui::End();
 }
 
 void CEditorMgr::RenderGameScreen()
 {
-	float BorderX = 235.f;
-	float BorderY = 50.f;
-	float BorderWidth = 1280.f;
-	float BorderHeight = 768.f;
-	
-	// 렌더 타겟 크기 및 비율 유지
-	float renderTargetWidth = BorderWidth;
-	float renderTargetHeight = BorderHeight;
-	float aspectRatio = renderTargetWidth / renderTargetHeight;
-	
-	float aspectRatioX = renderTargetWidth / 1280.f;
-	float aspectRatioY = renderTargetHeight / 768.f;
+	Vec2 vResolution = CDevice::GetInst()->GetResolution();
 
-	// Scene 창 설정
-	ImGui::SetNextWindowSize(ImVec2(1290.f, 808.f));
-	ImGui::SetNextWindowPos(ImVec2(8.f, 50.f));
+	ImVec2 ViewportOffset = ImGui::GetWindowPos();
+
+	// Viewport 창 설정
+	ImGui::SetNextWindowSize(ImVec2(800.f, 480.f));
+	//ImGui::SetNextWindowSize(ImVec2(vResolution.x, vResolution.y));
+	//ImGui::SetNextWindowPos(ImVec2(ViewportOffset.x, ViewportOffset.y));
+	//ImGui::SetNextWindowPos(ImVec2(ViewportOffset.x, ViewportOffset.y));
 	
 	ImGui::Begin(" Viewport", nullptr,  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDocking);
 
 	// 렌더 타겟 이미지 표시
-	ImGui::Image((void*)CRenderMgr::GetInst()->GetCopyTex()->GetSRV().Get(), ImVec2(1280.f, 768.f));
+	ImGui::Image((void*)CRenderMgr::GetInst()->GetCopyTex()->GetSRV().Get(), ImVec2(800.f, 480.f));
 	//ImGui::Image((void*)CRenderMgr::GetInst()->GetCopyTex()->GetSRV().Get(), ImVec2(640.f, 576.f));
+
 	ImGui::End();
 }
 

@@ -6,6 +6,7 @@
 
 TransformUI::TransformUI()
 	: ComponentUI(COMPONENT_TYPE::TRANSFORM)
+	, m_Height(0.f)
 {
 }
 
@@ -16,6 +17,8 @@ TransformUI::~TransformUI()
 void TransformUI::Update()
 {
 	Title();
+	m_Height = 0.f;
+	m_Height += ImGui::GetItemRectSize().y;
 
 	CTransform* pTrans = GetTargetObject()->Transform();
 
@@ -31,14 +34,17 @@ void TransformUI::Update()
 	ImGui::Text("Position");
 	ImGui::SameLine(100);
 	ImGui::DragFloat3("##Pos", vPos);
+	m_Height += ImGui::GetItemRectSize().y;
 
 	ImGui::Text("Scale");
 	ImGui::SameLine(100);
 	ImGui::DragFloat3("##Scale", vScale);
+	m_Height += ImGui::GetItemRectSize().y;
 
 	ImGui::Text("Rotation");
 	ImGui::SameLine(100);
 	ImGui::DragFloat3("##Rot", vRot, 0.1f);
+	m_Height += ImGui::GetItemRectSize().y;
 
 	pTrans->SetRelativePos(vPos);
 	pTrans->SetRelativeScale(vScale);
@@ -53,4 +59,6 @@ void TransformUI::Update()
 	{
 		pTrans->SetIndependentScale(IS);
 	}
+	m_Height += ImGui::GetItemRectSize().y;
+	SetChildSize({ 0.f, m_Height + 30.f });
 }

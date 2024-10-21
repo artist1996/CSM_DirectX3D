@@ -77,7 +77,7 @@ void Inspector::Update()
 		m_TargetObject->ChangeLayer(m_TargetObject, Idx);
 	}
 
-	if (ImGui::Button("Convert to Prefab", ImVec2(150.f, 18.f)))
+	if (ImGui::Button("Convert to Prefab", ImVec2(150.f, 32.f)))
 	{
 		Ptr<CPrefab> pPrefab = new CPrefab;
 		
@@ -90,7 +90,7 @@ void Inspector::Update()
 
 	ImGui::SameLine();
 
-	if (ImGui::Button("DELETE OBJECT", ImVec2(150.f, 18.f)))
+	if (ImGui::Button("DELETE OBJECT", ImVec2(150.f, 32.f)))
 	{
 		DeleteObject(m_TargetObject);
 		SetTargetObject(nullptr);

@@ -36,6 +36,7 @@ void EditorUI::Tick()
 	if (!m_Move)
 		Flag |= ImGuiWindowFlags_NoMove;
 
+
 	// 최상위 부모 UI 인 경우
 	if (nullptr == m_Parent)
 	{

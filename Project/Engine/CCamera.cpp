@@ -2,6 +2,7 @@
 #include "CCamera.h"
 
 #include "CDevice.h"
+#include "CAssetMgr.h"
 #include "CRenderMgr.h"
 
 #include "CLevelMgr.h"
@@ -16,6 +17,8 @@
 
 #include "CKeyMgr.h"
 #include "CTimeMgr.h"
+
+#include "CMRT.h"
 
 CCamera::CCamera()
 	: CComponent(COMPONENT_TYPE::CAMERA)
@@ -35,10 +38,10 @@ CCamera::CCamera()
 	, m_UI(false)
 {
 	Vec2 vResolution = CDevice::GetInst()->GetResolution();
-	//m_Width = vResolution.x;
-	//m_Height = vResolution.y;
-	m_Width  = 1280.f;
-	m_Height = 768.f;
+	m_Width = vResolution.x;
+	m_Height = vResolution.y;
+	//m_Width  = 1280.f;
+	//m_Height = 768.f;
 	m_AspectRatio = m_Width / m_Height;
 }
 
@@ -127,12 +130,14 @@ void CCamera::SortGameObject()
 			
 			switch (Domain)
 			{
+			case DOMAIN_DEFERRED:
+				m_vecDeferred.push_back(vecObjects[j]);
+				break;
 			case DOMAIN_OPAQUE:
 				m_vecOpaque.push_back(vecObjects[j]);
 				break;
 			case DOMAIN_MASKED:
 				m_vecMasked.push_back(vecObjects[j]);
-				//YSorting();
 				break;
 			case DOMAIN_TRANSPARENT:
 				m_vecTransparent.push_back(vecObjects[j]);
@@ -151,53 +156,109 @@ void CCamera::SortGameObject()
 	}
 }
 
-void CCamera::Render()
+void CCamera::render_deferred()
 {
-	SortGameObject();
+	for (size_t i = 0; i < m_vecDeferred.size(); ++i)
+	{
+		m_vecDeferred[i]->Render();
+	}
+}
 
-	g_Trans.matView = m_matView;
-	g_Trans.matProj = m_matProj;
-
+void CCamera::render_opaque()
+{
 	// Opaque
 	for (size_t i = 0; i < m_vecOpaque.size(); ++i)
 	{
 		m_vecOpaque[i]->Render();
 	}
+}
 
+void CCamera::render_masked()
+{
 	// Masked
 	for (size_t i = 0; i < m_vecMasked.size(); ++i)
 	{
 		m_vecMasked[i]->Render();
 	}
+}
 
+void CCamera::render_effect()
+{
+	// EffectMRT 로 변경
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT)->Clear();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT)->OMSet();
+
+	// Effect
+	for (size_t i = 0; i < m_vecEffect.size(); ++i)
+	{
+		m_vecEffect[i]->Render();
+	}
+
+	// EffectBlurMRT 로 변경
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT_BLUR)->ClearRT();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT_BLUR)->OMSet();
+
+	Ptr<CMaterial> pBlurMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"BlurMtrl");
+	Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
+
+	pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT)->GetRT(0));
+	pBlurMtrl->Binding();
+	pRectMesh->Render_Particle(2);
+
+	// 원래 렌더타겟(SwapChainMRT) 로 변경	
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SWAPCHAIN)->OMSet();
+	Ptr<CMaterial> pEffectMergeMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"EffectMergeMtrl");
+
+	pEffectMergeMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT)->GetRT(0));
+	pEffectMergeMtrl->SetTexParam(TEX_1, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT_BLUR)->GetRT(0));
+	pEffectMergeMtrl->Binding();
+	pRectMesh->Render();
+}
+
+void CCamera::render_transparent()
+{
 	// Transparent
 	for (size_t i = 0; i < m_vecTransparent.size(); ++i)
 	{
 		m_vecTransparent[i]->Render();
 	}
+}
 
+void CCamera::render_particle()
+{
 	// Particles
 	for (size_t i = 0; i < m_vecParticles.size(); ++i)
 	{
 		m_vecParticles[i]->Render();
 	}
+}
 
+void CCamera::render_postprocess()
+{
 	for (size_t i = 0; i < m_vecPostProcess.size(); ++i)
 	{
 		CRenderMgr::GetInst()->PostProcessCopy();
 		m_vecPostProcess[i]->Render();
 	}
+}
 
+void CCamera::render_ui()
+{
 	for (size_t i = 0; i < m_vecUI.size(); ++i)
 	{
 		m_vecUI[i]->Render();
 	}
+}
 
+void CCamera::clear()
+{
 	// Runtime 중 Domain Type이 변경 될 수 있기 때문에 Render 호출 하고 clear 시켜줌
+	m_vecDeferred.clear();
 	m_vecOpaque.clear();
 	m_vecMasked.clear();
 	m_vecTransparent.clear();
 	m_vecParticles.clear();
+	m_vecEffect.clear();
 	m_vecPostProcess.clear();
 	m_vecUI.clear();
 }

@@ -15,13 +15,15 @@
 #include <Engine/CStructuredBuffer.h>
 
 #include <Scripts/CCameraMoveScript.h>
+#include <Scripts/CPlayerScript.h>
 
 #include "CLevelSaveLoad.h"
 
 void CTestLevel::CreateTestLevel()
 {
 	// Material
-	Ptr<CMaterial> pMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"Std3DMtrl");
+	Ptr<CMaterial> pStd3DMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"Std3DMtrl");
+	Ptr<CMaterial> pStd3D_DefferedMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"Std3D_DeferredMtrl");
 
 	// Level »ý¼º
 	CLevel* pLevel = new CLevel;
@@ -129,17 +131,16 @@ void CTestLevel::CreateTestLevel()
 	pPlayer->SetName(L"Player");
 	pPlayer->AddComponent(new CTransform);
 	pPlayer->AddComponent(new CMeshRender);
+	pPlayer->AddComponent(new CPlayerScript);
 
 	pPlayer->Transform()->SetRelativePos(0.f, -500.f, 0.f);
 	pPlayer->Transform()->SetRelativeScale(1000.f, 1000.f, 1.f);
 	pPlayer->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
 
 	pPlayer->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
-	pPlayer->MeshRender()->SetMaterial(pMtrl);
+	pPlayer->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
 
 	pLevel->AddObject(3, pPlayer);
-
-	//CreateTestObject(pLevel, pMtrl);
 
 	ChangeLevel(pLevel, LEVEL_STATE::STOP);
 

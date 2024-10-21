@@ -72,7 +72,8 @@ void CollisionMatrix::Update()
 			ImGui::SameLine(posX);				
 		}
 	
-		posX += 27.f;
+		//posX += 27.f;
+		posX += 34.5f;
 		posY = ImGui::GetCursorPosY();
 		
 		ImGui::SameLine(posX);
@@ -91,7 +92,7 @@ void CollisionMatrix::Update()
 		else
 			ImGui::Text(strLayerName.c_str());
 
-		for(UINT Col = MAX_LAYER / 2 - Row - 1; Col < MAX_LAYER / 2; --Col)
+		for (UINT Col = MAX_LAYER / 2 - Row - 1; Col < MAX_LAYER / 2; --Col)
 		{		
 			char szBuff[255] = {};
 			bool bCheck = false;

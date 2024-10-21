@@ -216,6 +216,7 @@
     <ClInclude Include="TileMapUI.h" />
     <ClInclude Include="TransformUI.h" />
     <ClInclude Include="TreeUI.h" />
+    <ClInclude Include="ViewportUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AE_Create.cpp" />
@@ -293,6 +294,7 @@
     <ClCompile Include="TileMapUI.cpp" />
     <ClCompile Include="TransformUI.cpp" />
     <ClCompile Include="TreeUI.cpp" />
+    <ClCompile Include="ViewportUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ImGui\LICENSE.txt" />

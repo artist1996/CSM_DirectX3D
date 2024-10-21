@@ -10,6 +10,7 @@
 CameraUI::CameraUI()
 	: ComponentUI(COMPONENT_TYPE::CAMERA)
     , m_ShowLayerCheck(false)
+    , m_fHeight(0.f)
 {
 }
 
@@ -21,8 +22,10 @@ void CameraUI::Update()
 {
     Title();
     // Priority (보류)
-    
     CCamera* pCam = GetTargetObject()->Camera();
+    m_fHeight = 0.f;
+    
+    m_fHeight += ImGui::GetItemRectSize().y;
 
     // LayerCheck;
     LayerCheck();
@@ -36,24 +39,24 @@ void CameraUI::Update()
     ImGui::SameLine(100);
     ImGui::InputFloat("##Width", &Width);
     pCam->SetWidth(Width);
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     float Height = pCam->GetHeight();
     ImGui::Text("Height");
     ImGui::SameLine(100);
     ImGui::InputFloat("##Height", &Height);
     pCam->SetHeight(Height);
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     float AR = pCam->GetAspectRatio();
     ImGui::Text("AspectRatio");
     ImGui::SameLine(100);
     ImGui::InputFloat("##AspectRatio", &AR, ImGuiInputTextFlags_::ImGuiInputTextFlags_ReadOnly);
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     float Far = pCam->GetFar();
     ImGui::Text("Far");
     ImGui::SameLine(100);
     ImGui::InputFloat("##Far", &Far);
     pCam->SetFar(Far);
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     // Perspective 전용
     float FOV = pCam->GetFOV();
     FOV = (FOV / XM_PI) * 180.f;
@@ -65,7 +68,7 @@ void CameraUI::Update()
     ImGui::SameLine(100);
     ImGui::InputFloat("##FOV", &FOV);
     ImGui::EndDisabled();
-  
+    m_fHeight += ImGui::GetItemRectSize().y;
 
     FOV = (FOV / 180.f) * XM_PI;
     pCam->SetFOV(FOV);
@@ -76,20 +79,21 @@ void CameraUI::Update()
     ImGui::SameLine(100);
     ImGui::InputFloat("##Scale", &Scale);
     pCam->SetProjScale(Scale);
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     ImGui::EndDisabled();
    
+    SetChildSize(ImVec2(0.f, m_fHeight + 25.f));
 }
 
 void CameraUI::LayerCheck()
 {
     ImGui::Text("Layer Check");
     ImGui::SameLine(100);
-    if (ImGui::Button("Show##LayerCheckBtn", ImVec2(50.f, 18.f)))
+    if (ImGui::Button("Show##LayerCheckBtn", ImVec2(50.f, 32.f)))
     {
         m_ShowLayerCheck ? m_ShowLayerCheck = false : m_ShowLayerCheck = true;
     }
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     if (!m_ShowLayerCheck)
         return;
 
@@ -124,7 +128,7 @@ void CameraUI::LayerCheck()
         }
         ImGui::EndTable();
     }
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     if (ChangedIdx != -1)
     {
         pCam->SetLayer(ChangedIdx, bLayer[ChangedIdx]);
@@ -143,7 +147,7 @@ void CameraUI::Projection()
     ImGui::Text("Projection");
     ImGui::SameLine(100);
     ImGui::SetNextItemWidth(180);
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     if (ImGui::BeginCombo("##ProjectionCombo", combo_preview_value))
     {
         for (int i = 0; i < 2; i++)
@@ -161,6 +165,6 @@ void CameraUI::Projection()
         }
         ImGui::EndCombo();
     }
-
+    m_fHeight += ImGui::GetItemRectSize().y;
     pCam->SetProjType(Type);
 }

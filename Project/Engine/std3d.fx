@@ -102,6 +102,26 @@ float4 PS_Std3D(VS_OUT _in) : SV_Target
         CalculateLight3D(i, vViewNormal, _in.vViewPos, Light);
     }
     
+    if(g_int_3)
+    {
+        uint width, height;
+        
+        g_tex_0.GetDimensions(width, height);
+        float2 offset = float2(1.f / float(width), 1.f / float(height));
+        
+        float4 leftcolor = g_AtlasTex.Sample(g_sam_1, float2(_in.vUV.x - offset.x, _in.vUV.y));
+        float4 rightcolor = g_AtlasTex.Sample(g_sam_1, float2(_in.vUV.x + offset.x, _in.vUV.y));
+        float4 upcolor = g_AtlasTex.Sample(g_sam_1, float2(_in.vUV.x, _in.vUV.y - offset.y));
+        float4 downcolor = g_AtlasTex.Sample(g_sam_1, float2(_in.vUV.x, _in.vUV.y + offset.y));
+    
+        if (vOutColor.a != 0.f
+                && 0.f == leftcolor.a
+                || 0.f == rightcolor.a
+                || 0.f == upcolor.a
+                || 0.f == downcolor.a)
+            vOutColor += g_vec4_1;
+    }
+    
     
 
     vOutColor.xyz = vOutColor.xyz * Light.Color.rgb

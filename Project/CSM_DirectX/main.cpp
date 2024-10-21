@@ -31,7 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-    HWND hWnd = CreateWindowW(L"MyWindowClass", L"Engine", WS_OVERLAPPEDWINDOW,
+    HWND hWnd = CreateWindowW(L"MyWindowClass", L"Game Engine", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd)
@@ -42,16 +42,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
-    RECT rectWorkArea;
-    MONITORINFO mi;
-    mi.cbSize = sizeof(mi);
-    ::GetMonitorInfo(::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &mi);
-    rectWorkArea = mi.rcWork;
-    int cx = rectWorkArea.right - rectWorkArea.left;
-    int cy = rectWorkArea.bottom - rectWorkArea.top;
+    //RECT rectWorkArea;
+    //MONITORINFO mi;
+    //mi.cbSize = sizeof(mi);
+    //::GetMonitorInfo(::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+    //rectWorkArea = mi.rcWork;
+    //int cx = rectWorkArea.right - rectWorkArea.left;
+    //int cy = rectWorkArea.bottom - rectWorkArea.top;
 
     // CEngine 객체 초기화
-    if (FAILED(CEngine::GetInst()->Init( hWnd, POINT{ cx, cy }
+    if (FAILED(CEngine::GetInst()->Init( hWnd, POINT{ 1600, 960 }
                                        , (OBJECT_SAVE)&CLevelSaveLoad::SaveGameObject
                                        , (OBJECT_LOAD)&CLevelSaveLoad::LoadGameObject)))
     {

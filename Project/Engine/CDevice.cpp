@@ -7,6 +7,7 @@
 
 CDevice::CDevice()
 	: m_hWnd(nullptr)
+	, m_arrCB{}
 	, m_Sampler{}
 {}
 
@@ -165,11 +166,14 @@ int CDevice::CreateView()
 												, (UINT)m_vResolution.y
 												, DXGI_FORMAT_D24_UNORM_S8_UINT
 												, D3D11_BIND_DEPTH_STENCIL);
+
 	// View 종류
 	// RenderTargetView
 	// DepthStencilView
 	// ShaderResourceView
 	// UnorderedAccessView
+
+	m_Context->OMSetRenderTargets(1, m_RTTex->GetRTV().GetAddressOf(), m_DSTex->GetDSV().Get());
 
 	return S_OK;
 }
@@ -404,11 +408,11 @@ int CDevice::CreateBlendState()
 int CDevice::CreateSamplerState()
 {
 	D3D11_SAMPLER_DESC Desc = {};
-	
+
 	Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	Desc.Filter   = D3D11_FILTER_ANISOTROPIC; // 이방성 필터링
+	Desc.Filter = D3D11_FILTER_ANISOTROPIC; // 이방성 필터링
 
 	if (FAILED(DEVICE->CreateSamplerState(&Desc, m_Sampler[0].GetAddressOf())))
 	{
@@ -418,9 +422,19 @@ int CDevice::CreateSamplerState()
 	Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	Desc.Filter   = D3D11_FILTER_MIN_MAG_MIP_POINT; // 포인트 필터링
+	Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT; // 포인트 필터링
 
 	if (FAILED(DEVICE->CreateSamplerState(&Desc, m_Sampler[1].GetAddressOf())))
+	{
+		return E_FAIL;
+	}
+
+	Desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	Desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	Desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // 포인트 필터링
+
+	if (FAILED(DEVICE->CreateSamplerState(&Desc, m_Sampler[2].GetAddressOf())))
 	{
 		return E_FAIL;
 	}
@@ -438,6 +452,13 @@ int CDevice::CreateSamplerState()
 	CONTEXT->GSSetSamplers(1, 1, m_Sampler[1].GetAddressOf());
 	CONTEXT->PSSetSamplers(1, 1, m_Sampler[1].GetAddressOf());
 	CONTEXT->CSSetSamplers(1, 1, m_Sampler[1].GetAddressOf());
+
+	CONTEXT->VSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
+	CONTEXT->HSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
+	CONTEXT->DSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
+	CONTEXT->GSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
+	CONTEXT->PSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
+	CONTEXT->CSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
 
 	return S_OK;
 }

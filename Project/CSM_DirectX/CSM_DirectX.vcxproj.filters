@@ -178,14 +178,17 @@
     <Filter Include="02. EditorUI\13. File Browser">
       <UniqueIdentifier>{de8a9a10-5845-4ffb-850e-7c68ab4e229f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. EditorUI\15. Module">
-      <UniqueIdentifier>{9b52670b-82ac-4e28-85b1-9cd5629b7ef3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. EditorUI\14. Log">
       <UniqueIdentifier>{b67b3d5b-270a-4e91-82c8-28a12fbf8026}</UniqueIdentifier>
     </Filter>
     <Filter Include="02. EditorUI\01. Inspector\ComponentUI\12. SkyBoxUI">
       <UniqueIdentifier>{64db1b82-1421-413b-bbfb-8100c6e32b50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. EditorUI\16. Module">
+      <UniqueIdentifier>{9b52670b-82ac-4e28-85b1-9cd5629b7ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. EditorUI\15. Viewport">
+      <UniqueIdentifier>{d8f342fc-77bf-4613-8911-5f2d7f16620d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -319,7 +322,7 @@
       <Filter>01. Manager\02. TestLevel</Filter>
     </ClInclude>
     <ClInclude Include="ParamUI.h">
-      <Filter>02. EditorUI\15. Module</Filter>
+      <Filter>02. EditorUI\16. Module</Filter>
     </ClInclude>
     <ClInclude Include="ScriptUI.h">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\09. ScriptUI</Filter>
@@ -401,6 +404,9 @@
     </ClInclude>
     <ClInclude Include="ComponentUI.h">
       <Filter>02. EditorUI\01. Inspector\ComponentUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewportUI.h">
+      <Filter>02. EditorUI\15. Viewport</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -529,7 +535,7 @@
       <Filter>01. Manager\02. TestLevel</Filter>
     </ClCompile>
     <ClCompile Include="ParamUI.cpp">
-      <Filter>02. EditorUI\15. Module</Filter>
+      <Filter>02. EditorUI\16. Module</Filter>
     </ClCompile>
     <ClCompile Include="ScriptUI.cpp">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\09. ScriptUI</Filter>
@@ -611,6 +617,9 @@
     </ClCompile>
     <ClCompile Include="ComponentUI.cpp">
       <Filter>02. EditorUI\01. Inspector\ComponentUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewportUI.cpp">
+      <Filter>02. EditorUI\15. Viewport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

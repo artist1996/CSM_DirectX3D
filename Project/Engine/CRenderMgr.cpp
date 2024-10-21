@@ -21,11 +21,14 @@
 
 #include "CFontMgr.h"
 
+#include "CMRT.h"
+
 CRenderMgr::CRenderMgr()
 	: m_DebugObject(nullptr)
 	, m_EditorCamera(nullptr)
 	, m_Light2DBuffer(nullptr)
 	, m_Light3DBuffer(nullptr)
+	, m_arrMRT{}
 {
 	m_Light2DBuffer = new CStructuredBuffer;
 	m_Light3DBuffer = new CStructuredBuffer;
@@ -33,59 +36,50 @@ CRenderMgr::CRenderMgr()
 
 CRenderMgr::~CRenderMgr()
 {
-	if (nullptr != m_DebugObject)
-		delete m_DebugObject;
-
+	SAFE_DELETE(m_DebugObject);
 	SAFE_DELETE(m_Light2DBuffer);
 	SAFE_DELETE(m_Light3DBuffer);
-}
 
-void CRenderMgr::Init()
-{
-	m_PostProcessTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"PostProcessTex");
-	m_CopyTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"CopyTexture");
-
-	m_DebugObject = new CGameObject;
-	m_DebugObject->AddComponent(new CTransform);
-	m_DebugObject->AddComponent(new CMeshRender);
-	m_DebugObject->MeshRender()->SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"DebugShapeMtrl"));
+	Delete_Array(m_arrMRT);
 }
 
 void CRenderMgr::Tick()
 {
 	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurrentLevel();
-
 	if (nullptr == pCurLevel)
 		return;
 
 	RenderStart();
 
+	// Level 이 Player 상태인 경우, Level 내에 있는 카메라 시점으로 렌더링하기
 	if (PLAY == pCurLevel->GetState())
 	{
-		for (size_t i = 0; i < m_vecCam.size(); ++i)
+		if (nullptr != m_vecCam[0])
+			Render(m_vecCam[0]);
+
+		for (size_t i = 1; i < m_vecCam.size(); ++i)
 		{
 			if (nullptr == m_vecCam[i])
 				continue;
 
-			m_vecCam[i]->Render();
-
-			if(i == 0)
-				RenderDebugShape();
+			Render_Sub(m_vecCam[i]);
 		}
 	}
 
+	// Level 이 Stop 이나 Pause 인 경우, Editor 용 카메라 시점으로 렌더링 하기
 	else
 	{
 		if (nullptr != m_EditorCamera)
 		{
-			m_EditorCamera->Render();
-			RenderDebugShape();
+			Render(m_EditorCamera);
 		}
 	}
-	//CTimeMgr::GetInst()->Render();
-	//CKeyMgr::GetInst()->Render();
-	CopyTexture();
 
+	// Debug Render
+	RenderDebugShape();
+
+	CopyTexture();
+	// Clear
 	Clear();
 }
 
@@ -107,8 +101,8 @@ void CRenderMgr::PostProcessCopy()
 
 void CRenderMgr::CopyTexture()
 {
-	Ptr<CTexture> pRTTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"RenderTargetTex");
-	CONTEXT->CopyResource(m_CopyTex->GetTex2D().Get(), pRTTex->GetTex2D().Get());
+	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->GetRT(0)->GetTex2D().Get();
+	CONTEXT->CopyResource(m_CopyTex->GetTex2D().Get(), m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->GetRT(0)->GetTex2D().Get());
 }
 
 void CRenderMgr::RenderDebugShape()
@@ -165,15 +159,12 @@ void CRenderMgr::RenderDebugShape()
 void CRenderMgr::RenderStart()
 {
 	// Output Merge State (출력 병합 단계)
-	Ptr<CTexture> RTTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"RenderTargetTex");
-	Ptr<CTexture> DSTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"DepthStencilTex");
-	CONTEXT->OMSetRenderTargets(1, RTTex->GetRTV().GetAddressOf(), DSTex->GetDSV().Get());
+	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->ClearRT();
+	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->ClearDS();
+	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->OMSet();
 
-	float color[4] = { 0.7f, 0.7f, 0.7f, 1.f };
-	CONTEXT->ClearRenderTargetView(RTTex->GetRTV().Get(), color);
-	CONTEXT->ClearDepthStencilView(DSTex->GetDSV().Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-
-	g_GlobalData.g_Resolution = Vec2((float)RTTex->Width(), (float)RTTex->Height());
+	// GlobalData 설정
+	g_GlobalData.g_Resolution   = CDevice::GetInst()->GetResolution();
 	g_GlobalData.g_Light2DCount = (int)m_vecLight2D.size();
 	g_GlobalData.g_Light3DCount = (int)m_vecLight3D.size();
 	
@@ -231,8 +222,73 @@ void CRenderMgr::RenderStart()
 	pGlobalCB->Binding();
 }
 
+void CRenderMgr::Render(CCamera* _Cam)
+{
+	// 오브젝트 분류
+	_Cam->SortGameObject();
+
+	// 카메라 변환행렬 설정
+	// 물체가 렌더링될 때 사용할 View, Proj 행렬
+	g_Trans.matView = _Cam->GetViewMatrix();
+	g_Trans.matProj = _Cam->GetProjMatrix();
+
+	// MRT 모두 클리어
+	ClearMRT();
+
+	// ==================
+	// DEFERRED RENDERING
+	// ==================
+	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->OMSet();
+	_Cam->render_deferred();
+
+	// ===============
+	// LIGHT RENDERING
+	// ===============
+	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->OMSet();
+
+	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
+	{
+		m_vecLight3D[i]->Render();
+	}
+
+	// ===================================
+	// MERGE ALBEDO + LIGHTS ==> SwapChain
+	// ===================================
+	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->OMSet();
+	m_MergeMtrl->Binding();
+	m_RectMesh->Render();
+
+
+	// =================
+	// FORWARD RENDERING
+	// =================
+	// 분류된 물체들 렌더링
+	_Cam->render_opaque();
+	_Cam->render_masked();
+	_Cam->render_effect();
+	_Cam->render_transparent();
+	_Cam->render_particle();
+	_Cam->render_postprocess();
+	_Cam->render_ui();
+
+	// 정리
+	_Cam->clear();
+}
+
+void CRenderMgr::Render_Sub(CCamera* _Cam)
+{
+
+}
+
 void CRenderMgr::Clear()
 {
 	m_vecLight2D.clear();
 	m_vecLight3D.clear();
+}
+
+void CRenderMgr::ClearMRT()
+{
+	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->Clear();
+	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->ClearRT();
+	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->ClearRT();
 }

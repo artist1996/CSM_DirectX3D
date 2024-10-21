@@ -28,10 +28,12 @@ private:
     Matrix    m_matView;
     Matrix    m_matProj;
 
+    vector<CGameObject*> m_vecDeferred;     // Deferred
     vector<CGameObject*> m_vecOpaque;       // 불투명
     vector<CGameObject*> m_vecMasked;       // 투명, 불투명
     vector<CGameObject*> m_vecTransparent;  // 투명, 반투명
     vector<CGameObject*> m_vecParticles;    // 투명, 반투명, 입자
+    vector<CGameObject*> m_vecEffect;       // 2D Effect
     vector<CGameObject*> m_vecPostProcess;  // 후처리
     vector<CGameObject*> m_vecUI;           // UI
 
@@ -87,12 +89,23 @@ public:
 private:
     void SortGameObject();
 
-public:
-    void Render();
+    void render_deferred();
+
+    void render_opaque();
+    void render_masked();
+    void render_effect();
+    void render_transparent();
+    void render_particle();
+    void render_postprocess();
+    void render_ui();
+
+    void clear();
 
 public:
     CLONE(CCamera);
     CCamera();
     virtual ~CCamera();
+
+    friend class CRenderMgr;
 };
 

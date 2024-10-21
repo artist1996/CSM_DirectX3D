@@ -33,6 +33,9 @@
     <ClInclude Include="CCameraMoveScript.h">
       <Filter>Scripts\00. CameraScript\01. MainCamera</Filter>
     </ClInclude>
+    <ClInclude Include="CPlayerScript.h">
+      <Filter>Scripts\01. PlayerScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -46,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="CCameraMoveScript.cpp">
       <Filter>Scripts\00. CameraScript\01. MainCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerScript.cpp">
+      <Filter>Scripts\01. PlayerScript</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

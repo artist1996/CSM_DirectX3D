@@ -4,7 +4,8 @@ class CameraUI :
     public ComponentUI
 {
 private:
-    bool m_ShowLayerCheck;
+    float m_fHeight;
+    bool  m_ShowLayerCheck;
 
 public:
     virtual void Update() override;

@@ -4,6 +4,7 @@ class TransformUI :
     public ComponentUI
 {
 private:
+    float m_Height;
 
 public:
     virtual void Update() override;
