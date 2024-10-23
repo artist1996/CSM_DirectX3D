@@ -49,7 +49,7 @@ void CameraUI::Update()
     float AR = pCam->GetAspectRatio();
     ImGui::Text("AspectRatio");
     ImGui::SameLine(100);
-    ImGui::InputFloat("##AspectRatio", &AR, ImGuiInputTextFlags_::ImGuiInputTextFlags_ReadOnly);
+    ImGui::InputFloat("##AspectRatio", &AR, ImGuiInputTextFlags_::ImGuiInputTextFlags_ReadOnly | ~ImGuiInputTextFlags_CharsDecimal);
     m_fHeight += ImGui::GetItemRectSize().y;
     float Far = pCam->GetFar();
     ImGui::Text("Far");
@@ -157,6 +157,7 @@ void CameraUI::Projection()
             if (ImGui::Selectable(items[i], is_selected))
             {
                 Type = (PROJ_TYPE)i;
+                pCam->SetProjType(Type);
             }
 
             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -166,5 +167,4 @@ void CameraUI::Projection()
         ImGui::EndCombo();
     }
     m_fHeight += ImGui::GetItemRectSize().y;
-    pCam->SetProjType(Type);
 }

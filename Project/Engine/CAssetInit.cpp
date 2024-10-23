@@ -449,7 +449,7 @@ void CAssetMgr::CreateEngineMesh()
 	// Cone Mesh
 	fRadius = 0.5f;
 	float fHeight = 1.f;
-
+	
 	v.vPos      = Vec3(0.f, 0.f, 0.f);
 	v.vUV       = Vec2(0.5f, 0.f);
 	v.vColor    = Vec4(1.f, 1.f, 1.f, 1.f);
@@ -457,24 +457,24 @@ void CAssetMgr::CreateEngineMesh()
 	v.vTangent  = Vec3(1.f, 0.f, 0.f);
 	v.vBinormal = Vec3(0.f, 1.f, 0.f);
 	vecVtx.push_back(v);
-
+	
 	iSliceCount = 40;
 	fSliceAngle = XM_2PI / iSliceCount;
 	fUVXStep = 1.f / float(iSliceCount);
 	fUVYStep = 1.f;
-
+	
 	for (UINT i = 0; i < iSliceCount + 1; ++i)
 	{
 		float Theta = i * fSliceAngle;
-
-		v.vPos   = Vec3(fRadius * cosf(Theta), fRadius * sinf(Theta), fHeight);
-		v.vUV	 = Vec2(fUVXStep * i, fUVYStep);
-		v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
-		v.vNormal = Vec3(0.f, 0.f, 1.f);
-		v.vTangent = Vec3(1.f, 0.f, 0.f);
+	
+		v.vPos      = Vec3(fRadius * cosf(Theta), fRadius * sinf(Theta), fHeight);
+		v.vUV	    = Vec2(fUVXStep * i, fUVYStep);
+		v.vColor    = Vec4(1.f, 1.f, 1.f, 1.f);
+		v.vNormal   = Vec3(0.f, 0.f, 1.f);
+		v.vTangent  = Vec3(1.f, 0.f, 0.f);
 		v.vBinormal = Vec3(0.f, 1.f, 0.f);
 		vecVtx.push_back(v);
-
+	
 		if (i < iSliceCount)
 		{
 			vecIdx.push_back(0);
@@ -482,12 +482,85 @@ void CAssetMgr::CreateEngineMesh()
 			vecIdx.push_back(i + 1);
 		}
 	}
-
+	
 	pMesh = new CMesh(true);
 	pMesh->Create(vecVtx.data(), (UINT)vecVtx.size(), vecIdx.data(), (UINT)vecIdx.size());
 	AddAsset(L"ConeMesh", pMesh);
 	vecVtx.clear();
 	vecIdx.clear();
+	
+	// 원뿔의 반지름과 높이 설정
+	//fRadius = 0.5f;
+	//float fHeight = 1.f;
+	
+	// 꼭대기 정점 (Top Vertex)
+	//v.vPos = Vec3(0.f, 0.f, 0.f);	 // 원뿔의 꼭대기
+	//v.vUV = Vec2(0.5f, 0.f);
+	//v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	//v.vNormal = Vec3(0.f, 0.f, 1.f);     // z축 기준으로 법선 설정
+	//v.vTangent = Vec3(1.f, 0.f, 0.f);
+	//v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	//vecVtx.push_back(v);
+	//
+	//// 슬라이스 개수 설정
+	//iSliceCount = 40;
+	//fSliceAngle = XM_2PI / iSliceCount;
+	//fUVXStep = 1.f / float(iSliceCount);
+	//fUVYStep = 1.f;
+	//
+	//// 밑면 정점 및 UV 좌표 생성
+	//for (UINT i = 0; i <= iSliceCount; ++i)
+	//{
+	//	float Theta = i * fSliceAngle;
+	//
+	//	// 밑면 정점 계산
+	//	v.vPos = Vec3(fRadius * cosf(Theta), fRadius * sinf(Theta), fHeight);
+	//	v.vUV = Vec2(fUVXStep * i, fUVYStep);
+	//	v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	//
+	//	// 법선 벡터 계산
+	//	Vec3 normal = Vec3(cosf(Theta), sinf(Theta), 0.0f);  // 원뿔 측면 법선
+	//	v.vNormal = normal;
+	//	v.vTangent = Vec3(-sinf(Theta), cosf(Theta), 0.0f);  // 법선에 수직인 접선 벡터
+	//	v.vBinormal = Vec3(0.f, 0.f, 1.f);					 // Binormal은 z축을 가리킴
+	//
+	//	vecVtx.push_back(v);
+	//
+	//	// 인덱스 버퍼 구성
+	//	if (i < iSliceCount)
+	//	{
+	//		// 꼭지점(Top)과 밑면을 연결하는 인덱스
+	//		vecIdx.push_back(0);         // 꼭지점
+	//		vecIdx.push_back(i + 1);     // 현재 슬라이스 정점
+	//		vecIdx.push_back(i + 2);     // 다음 슬라이스 정점 (마지막 슬라이스는 wrap-around 처리)
+	//	}
+	//}
+	//
+	//// 밑면 중심점 추가
+	//v.vPos = Vec3(0.f, 0.f, 0.f);   // 밑면 중심
+	//v.vUV = Vec2(0.5f, 0.5f);
+	//v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+	//v.vNormal = Vec3(0.f, 0.f, -1.f); // 밑면은 -z 방향으로 법선
+	//v.vTangent = Vec3(1.f, 0.f, 0.f);
+	//v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	//vecVtx.push_back(v);
+	//
+	//// 밑면 인덱스 추가 (마지막 정점이 밑면 중심이므로 그와 연결)
+	//UINT centerIndex = (UINT)vecVtx.size() - 1;
+	//for (UINT i = 1; i <= iSliceCount; ++i)
+	//{
+	//	vecIdx.push_back(centerIndex); // 밑면 중심
+	//	vecIdx.push_back(i + 1);       // 다음 슬라이스 정점
+	//	vecIdx.push_back(i);           // 현재 슬라이스 정점
+	//}
+	//
+	//// 메쉬 생성
+	//pMesh = new CMesh(true);
+	//pMesh->Create(vecVtx.data(), (UINT)vecVtx.size(), vecIdx.data(), (UINT)vecIdx.size());
+	//AddAsset(L"ConeMesh", pMesh);
+	//
+	//vecVtx.clear();
+	//vecIdx.clear();
 }
 
 void CAssetMgr::CreateEngineMaterial()

@@ -83,6 +83,11 @@ enum class DS_TYPE
 	NO_WRITE,
 	NO_TEST_NO_WRITE,
 
+	INNER,
+	OUTER,
+
+	VOLUME,
+
 	END,
 };
 

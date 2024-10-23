@@ -26,7 +26,9 @@ private:
     float     m_FOV;             // Field Of View (시야 범위, 시야 각) 원근 투영 시
 
     Matrix    m_matView;
+    Matrix    m_matViewInv;
     Matrix    m_matProj;
+    Matrix    m_matProjInv;
 
     vector<CGameObject*> m_vecDeferred;     // Deferred
     vector<CGameObject*> m_vecOpaque;       // 불투명
@@ -75,8 +77,10 @@ public:
     
     bool GetLayerCheck(int _LayerIdx) { return m_LayerCheck & (1 << _LayerIdx); }
 
-    const Matrix& GetViewMatrix() { return m_matView; }
-    const Matrix& GetProjMatrix() { return m_matProj; }
+    const Matrix& GetViewMat()    { return m_matView; }
+    const Matrix& GetViewMatInv() { return m_matViewInv; }
+    const Matrix& GetProjMat()    { return m_matProj; }
+    const Matrix& GetProjMatInv() { return m_matProjInv; }
 
 public:
     virtual void SaveToFile(FILE* _pFile) override;

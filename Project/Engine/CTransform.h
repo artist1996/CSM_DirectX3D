@@ -14,6 +14,7 @@ private:
 
 
     Matrix m_matWorld;         // 이동, 크기, 회전
+    Matrix m_matWorldInv;      // World Matrix 역행렬
     bool   m_IndependentScale; // 부모의 크기에 영향 받지 않음
     
 public:

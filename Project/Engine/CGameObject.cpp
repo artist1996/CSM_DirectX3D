@@ -340,8 +340,8 @@ Vec3 CGameObject::CarculatePosition()
 
 	CGameObject* pCam = CLevelMgr::GetInst()->FindObjectByName(L"MainCamera");
 
-	const Matrix& matView = pCam->Camera()->GetViewMatrix();
-	const Matrix& matProj = pCam->Camera()->GetProjMatrix();
+	const Matrix& matView = pCam->Camera()->GetViewMat();
+	const Matrix& matProj = pCam->Camera()->GetProjMat();
 
 
 	Vec4 vClipPos = Vec4(vPos, 1.f);

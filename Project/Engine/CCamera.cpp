@@ -97,6 +97,9 @@ void CCamera::FinalTick()
 		// Á¾È¾ºñ(Ratio)
 		m_matProj = XMMatrixPerspectiveFovLH(m_FOV, m_AspectRatio, 1.f, m_Far);
 	}
+
+	m_matViewInv = XMMatrixInverse(nullptr, m_matView);
+	m_matProjInv = XMMatrixInverse(nullptr, m_matProj);
 }
 
 void CCamera::SortGameObject()

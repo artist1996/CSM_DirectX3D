@@ -5,10 +5,10 @@
       <Filter>02. Engine</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>Default</Filter>
+      <Filter>08. Component\Default</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Default</Filter>
+      <Filter>08. Component\Default</Filter>
     </ClInclude>
     <ClInclude Include="global.h">
       <Filter>01. Header</Filter>
@@ -187,10 +187,10 @@
       <Filter>02. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp">
-      <Filter>Default</Filter>
+      <Filter>08. Component\Default</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Default</Filter>
+      <Filter>08. Component\Default</Filter>
     </ClCompile>
     <ClCompile Include="CDevice.cpp">
       <Filter>03. Device</Filter>
@@ -347,9 +347,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Default">
-      <UniqueIdentifier>{9b14e32a-f293-4d9e-8e90-eebff9700de1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01. Header">
       <UniqueIdentifier>{712912ae-7c83-4bdf-b430-3b182f403f84}</UniqueIdentifier>
     </Filter>
@@ -529,6 +526,9 @@
     </Filter>
     <Filter Include="04. Manager\06. RenderMgr\01. MRT">
       <UniqueIdentifier>{89916445-3bb4-4f3d-bd02-ad3fed787a6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\Default">
+      <UniqueIdentifier>{9b14e32a-f293-4d9e-8e90-eebff9700de1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

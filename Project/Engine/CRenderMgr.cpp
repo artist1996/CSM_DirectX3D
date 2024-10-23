@@ -229,8 +229,10 @@ void CRenderMgr::Render(CCamera* _Cam)
 
 	// 카메라 변환행렬 설정
 	// 물체가 렌더링될 때 사용할 View, Proj 행렬
-	g_Trans.matView = _Cam->GetViewMatrix();
-	g_Trans.matProj = _Cam->GetProjMatrix();
+	g_Trans.matView		= _Cam->GetViewMat();
+	g_Trans.matViewInv	= _Cam->GetViewMatInv();
+	g_Trans.matProj		= _Cam->GetProjMat();
+	g_Trans.matProjInv	= _Cam->GetProjMatInv();
 
 	// MRT 모두 클리어
 	ClearMRT();

@@ -72,9 +72,6 @@ void CTransform::FinalTick()
 		{
 			m_WorldDir[i] = XMVector3TransformNormal(vDefaultAxis[i], m_matWorld);
 			m_WorldDir[i].Normalize();
-
-			if (L"Player" == GetOwner()->GetName())
-				int a = 0;
 		}
 	}
 
@@ -86,6 +83,8 @@ void CTransform::FinalTick()
 			m_WorldDir[i] = m_RelativeDir[i];
 		}
 	}
+
+	m_matWorldInv = XMMatrixInverse(nullptr, m_matWorld);
 }
 
 Vec3 CTransform::GetWorldScale()
@@ -110,9 +109,10 @@ Vec3 CTransform::GetWorldScale()
 
 void CTransform::Binding()
 {
-	g_Trans.matWorld = m_matWorld;
-	g_Trans.matWV = g_Trans.matWorld * g_Trans.matView;
-	g_Trans.matWVP = g_Trans.matWV * g_Trans.matProj;
+	g_Trans.matWorld	= m_matWorld;
+	g_Trans.matWorldInv = m_matWorldInv;
+	g_Trans.matWV		= g_Trans.matWorld * g_Trans.matView;
+	g_Trans.matWVP		= g_Trans.matWV * g_Trans.matProj;
 
 	CConstBuffer* pTransformCB = CDevice::GetInst()->GetConstBuffer(CB_TYPE::TRANSFORM);
 	pTransformCB->SetData(&g_Trans);

@@ -38,6 +38,7 @@ public:
 public:
     CLONE(CLight3D);
     CLight3D();
+    CLight3D(const CLight3D& _Origin);
     ~CLight3D();
 };
 

@@ -13,6 +13,7 @@ CAsset::CAsset(const CAsset& _Other)
 	, m_Key(_Other.m_Key)
 	, m_RelativePath(_Other.m_RelativePath)
 	, m_Type(_Other.m_Type)
+	, m_Engine(_Other.m_Engine)
 	, m_RefCount(0)
 {
 }
