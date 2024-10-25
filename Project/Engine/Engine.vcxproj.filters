@@ -181,6 +181,9 @@
     <ClInclude Include="CMRT.h">
       <Filter>04. Manager\06. RenderMgr\01. MRT</Filter>
     </ClInclude>
+    <ClInclude Include="CDecal.h">
+      <Filter>08. Component\RenderComponent\04. Decal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CEngine.cpp">
@@ -344,6 +347,9 @@
     </ClCompile>
     <ClCompile Include="CMRT.cpp">
       <Filter>04. Manager\06. RenderMgr\01. MRT</Filter>
+    </ClCompile>
+    <ClCompile Include="CDecal.cpp">
+      <Filter>08. Component\RenderComponent\04. Decal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -583,6 +589,9 @@
       <Filter>HLSL\02. Render\02. 3D</Filter>
     </FxCompile>
     <FxCompile Include="merge.fx">
+      <Filter>HLSL\02. Render\02. 3D</Filter>
+    </FxCompile>
+    <FxCompile Include="decal.fx">
       <Filter>HLSL\02. Render\02. 3D</Filter>
     </FxCompile>
   </ItemGroup>

@@ -68,7 +68,7 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
         // vR = vL + 2 * dot(-vL, vN) * vN;
         float3 vReflect = vLightDir + 2 * dot(-vLightDir, _ViewNormal) * _ViewNormal;
         vReflect = normalize(vReflect);
-            
+        
         // 카메라에서 물체를 향하는 vEye 를 구한다. 카메라는 원점에 있다.
         // 픽셀의 뷰스페이스 위치가 곧 카메라에서 물체를 향하는 Eye 방향이다.
         float3 vEye = normalize(_ViewPos);
@@ -112,51 +112,49 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
     
     else if(2 == LightInfo.Type)
     {
+        // 표면 위치에서 광원의 위치를 빼줘, 광원에서 표면을 향하는 방향 벡터를 구한다.
         float3 vLightViewPos = mul(float4(LightInfo.WorldPos, 1.f), matView).xyz;
-        //float3 vLightDir = mul(float4(LightInfo.WorldDir, 0.f), matView).xyz;
-        //float3 vLightViewPos = LightInfo.WorldPos;
-        float3 vLightDir = LightInfo.WorldDir;
+        float3 vLightDir = normalize(_ViewPos - vLightViewPos);
         
         // Pixel 의 View Position 과 Pixel 의 방향 벡터를 구해준다.
-        //float3 vPixelViewPos = LightInfo.WorldPos - _ViewPos;
-        //float3 vPixelViewPos = _ViewPos - vLightViewPos;
-        float3 vPixelViewPos = vLightViewPos - _ViewPos;
-
+        float3 vPixelViewPos = _ViewPos - vLightViewPos;
         float3 vPixelDir     = normalize(vPixelViewPos);
-        
+
         // Light 의 방향 벡터와 Pixel 의 방향벡터를 내적 해 cos 세타값을 구해준다.
-        float Dot = saturate(dot(-vLightDir, vPixelDir));
-        //float Dot = saturate(dot(vPixelDir, vLightDir));
+        float Dot = saturate(dot(vLightDir, vPixelDir));
         
         // Light의 ViewPos과 Pixel 의 View Postion 의 차를 구해 Distance 를 구해준다.
-        float Distance = length(vPixelViewPos);
+        float Distance = length(vLightViewPos - _ViewPos);
         
         // 내적한 cos 세타값이 Light의 Angle 안에 들어오고 Distance 가 Radius 내에 있다면
         // 빛의 세기를 구해준다.
         if (Dot > cos(LightInfo.Angle) && Distance < LightInfo.Radius)
-        {          
+        {
             // 빛의 세기 계산
             LightPow = saturate(dot(-vLightDir, _ViewNormal));
             
             // 반사광 계산
             float3 vReflect = vLightDir + 2.f * dot(-vLightDir, _ViewNormal) * _ViewNormal;
-            vReflect        = normalize(vReflect);
+            vReflect = normalize(vReflect);
             
             // 카메라에서 물체를 향하는 방향 계산      
-            float3 vEye = normalize(vLightViewPos - vPixelViewPos);
+            float3 vEye = normalize(_ViewPos);
           
             // 반사 방향과 시선 벡터의 내적 계산
             SpecularPow = saturate(dot(vReflect, -vEye));
             SpecularPow = pow(SpecularPow, 20);
             
+            float fDist = length(vLightViewPos - _ViewPos);
+            float fCamDist = length(_ViewPos);
+            
             // 거리 비율 계산
-            Ratio     = saturate(cos((PI / 2.f) * saturate(Distance / LightInfo.Radius)));
-            SpecRatio = saturate(cos((PI / 2.f) * saturate(Distance / LightInfo.Radius)));
+            Ratio = saturate(cos((PI / 2.f) * saturate(fDist / LightInfo.Radius)));
+            SpecRatio = saturate(cos((PI / 2.f) * saturate(fCamDist / LightInfo.Radius)));
         }
     }
     
-    _Light.Color    += LightInfo.light.Color * LightPow * Ratio;
-    _Light.Ambient  += LightInfo.light.Ambient * Ratio;
+    _Light.Color += LightInfo.light.Color * LightPow * Ratio;
+    _Light.Ambient += LightInfo.light.Ambient * Ratio;
     _Light.SpecCoef += LightInfo.light.SpecCoef * SpecularPow * SpecRatio;
 }
 

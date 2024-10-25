@@ -112,14 +112,14 @@ void CTestLevel::CreateTestLevel()
 	pObject->AddComponent(new CTransform);
 	pObject->AddComponent(new CLight3D);
 	
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 1500.f));
 	
 	pObject->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
 	pObject->Light3D()->SetLightColor(Vec3(0.9f, 0.9f, 0.9f));
 	//pObject->Light3D()->SetLightAmbient(Vec3(0.f, 0.1f, 0.1f));
 	pObject->Light3D()->SetSpecularCoefficient(0.3f);
 	pObject->Light3D()->SetAngle(XM_PI / 2.f);
-	pObject->Light3D()->SetRadius(3000.f);
+	pObject->Light3D()->SetRadius(500.f);
 	
 	pLevel->AddObject(0, pObject);
 
@@ -203,6 +203,20 @@ void CTestLevel::CreateTestLevel()
 	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
 
 	pLevel->AddObject(3, pPlane);
+
+	// Decal Object Ãß°¡
+	CGameObject* pDecal = new CGameObject;
+	pDecal->SetName(L"Decal");
+	pDecal->AddComponent(new CTransform);
+	pDecal->AddComponent(new CDecal);
+
+	pDecal->Transform()->SetRelativePos(0.f, 0.f, 1000.f);
+	pDecal->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
+
+	pDecal->Decal()->SetDecalTexture(CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\MagicCircle.png"));
+
+	pLevel->AddObject(3, pDecal);
+
 
 	ChangeLevel(pLevel, LEVEL_STATE::STOP);
 

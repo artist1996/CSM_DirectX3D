@@ -14,6 +14,7 @@
 #define ALBEDO_TARGET   g_tex_0
 #define DIFFUSE_TARGET  g_tex_1
 #define SPECULAR_TARGET g_tex_2
+#define EMISSIVE_TARGET g_tex_3
 // ================================
 // 기존 색상과 광원을 합쳐줘야한다.
 
@@ -40,13 +41,14 @@ VS_OUT VS_Merge(VS_IN _in)
 
 float4 PS_Merge(VS_OUT _in) : SV_Target
 {
-    float4 vOutColor = float4(0.f, 0.f, 0.f, 0.f);
-    
-    float4 vColor    = ALBEDO_TARGET.Sample(g_sam_0, _in.vUV);
-    float4 vDiffuse  = DIFFUSE_TARGET.Sample(g_sam_0, _in.vUV);
+    float4 vOutColor = (float4) 0.f;
+
+    float4 vColor = ALBEDO_TARGET.Sample(g_sam_0, _in.vUV);
+    float4 vDiffuse = DIFFUSE_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vSpecular = SPECULAR_TARGET.Sample(g_sam_0, _in.vUV);
+    float4 vEmissive = EMISSIVE_TARGET.Sample(g_sam_0, _in.vUV);
     
-    vOutColor = vColor * vDiffuse + vSpecular;
+    vOutColor = vColor * vDiffuse + vSpecular + vEmissive;
     
     return vOutColor;
 };

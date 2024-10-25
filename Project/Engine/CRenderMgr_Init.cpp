@@ -130,6 +130,27 @@ void CRenderMgr::CreateMRT()
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(2, arrRT, pDSTex);
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetClearColor(arrClearColor, false);
 	}
+
+	// =====
+	// DECAL
+	// =====
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+
+		Ptr<CTexture> arrRT[8] =
+		{
+			CAssetMgr::GetInst()->FindAsset<CTexture>(L"AlbedoTargetTex"),
+			CAssetMgr::GetInst()->FindAsset<CTexture>(L"EmissiveTargetTex"),
+		};
+
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+
+		m_arrMRT[(UINT)MRT_TYPE::DECAL] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::DECAL]->SetName(L"Decal");
+		m_arrMRT[(UINT)MRT_TYPE::DECAL]->Create(2, arrRT, pDSTex);
+		m_arrMRT[(UINT)MRT_TYPE::DECAL]->SetClearColor(arrClearColor, false);
+	}
 }
 
 void CRenderMgr::CreateMaterial()
@@ -201,7 +222,12 @@ void CRenderMgr::CreateMaterial()
 	m_MergeMtrl->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"AlbedoTargetTex"));
 	m_MergeMtrl->SetTexParam(TEX_1, CAssetMgr::GetInst()->FindAsset<CTexture>(L"DiffuseTargetTex"));
 	m_MergeMtrl->SetTexParam(TEX_2, CAssetMgr::GetInst()->FindAsset<CTexture>(L"SpecularTargetTex"));
+	m_MergeMtrl->SetTexParam(TEX_3, CAssetMgr::GetInst()->FindAsset<CTexture>(L"EmissiveTargetTex"));
 
 	// RectMesh
 	m_RectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
+
+	// DecalMtrl
+	Ptr<CMaterial> pDeaclMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"DecalMtrl");
+	pDeaclMtrl->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"PositionTargetTex"));
 }

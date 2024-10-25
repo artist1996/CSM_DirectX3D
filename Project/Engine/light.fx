@@ -100,34 +100,40 @@ PS_OUT PS_PointLight(VS_OUT _in)
 {
     PS_OUT output = (PS_OUT) 0.f;
     
-    // Pixel 의 Position 으로 UV 값을 계산
-    float2 vScreenUV = _in.vPosition.xy / g_Resolution;
-    float4 vViewPos  = POS_TARGET.Sample(g_sam_0, vScreenUV);
+    // 픽셀쉐이더랑 동일한 지점에서 Position 값을 확인한다.    
+    float2 vScreenUV = _in.vPosition.xy/*픽셀 좌표*/ / g_Resolution;
+    float4 vViewPos = POS_TARGET.Sample(g_sam_0, vScreenUV);
     
+    // 광원이 부딪힐 물체가 존재하지 않는다.
     if (0.f == vViewPos.w)
+    {
         discard;
-
-    // ViewPos 에 View 행렬의 역행렬을 곱해 WorldPos 를 구해준다.
+    }
+    
+    // 해당 물체가 볼륨메쉬 내부인지 판정
+    // 추출한 물체의 ViewPos 를 WorldPos 로 변경한다.
     float3 vWorldPos = mul(float4(vViewPos.xyz, 1.f), matViewInv).xyz;
     
-    // Local 로 접근 해서 Volume Mesh 내부 영역에 있는지 확인해야한다.
+    // World 상에 있는 물체의 좌표를, Volume Mesh 의 월드 역행렬을 곱해서 Local 공간으로 데려간다.
     float3 vLocalPos = mul(float4(vWorldPos, 1.f), matWorldInv).xyz;
     
-    // Pixel 의 Local Position 이 Volume Mesh 내부에 있는지 확인 후, 내부에 없다면 discard 해준다.
+    // 물체가 볼륨메쉬 영역 밖이라면 광원계산 중단
     if (0.5f < length(vLocalPos))
+    {
         discard;
-  
+    }
+    
     float3 vViewNormal = NORMAL_TARGET.Sample(g_sam_0, vScreenUV).xyz;
     
+    // 해당 지점이 받을 빛의 세기를 계산한다.
     tLight light = (tLight) 0.f;
-    
     CalculateLight3D(LIGHT_IDX, vViewNormal, vViewPos.xyz, light);
-    
-    output.vDiffuse  = light.Color + light.Ambient;
+        
+    output.vDiffuse = light.Color + light.Ambient;
     output.vSpecular = light.SpecCoef;
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;
-    
+   
     return output;
 }
 
@@ -162,14 +168,25 @@ PS_OUT PS_SpotLight(VS_OUT _in)
     
     // Pixel 의 Position 으로 UV 값을 계산
     float2 vScreenUV = _in.vPosition.xy / g_Resolution;
-    float4 vViewPos  = POS_TARGET.Sample(g_sam_0, vScreenUV);
+    float4 vViewPos = POS_TARGET.Sample(g_sam_0, vScreenUV);
     
     if (0.f == vViewPos.w)
+        discard;
+    
+    // 해당 물체가 볼륨메쉬 내부인지 판정
+    // 추출한 물체의 ViewPos 를 WorldPos 로 변경한다.
+    float3 vWorldPos = mul(float4(vViewPos.xyz, 1.f), matViewInv).xyz;
+    
+    // World 상에 있는 물체의 좌표를, Volume Mesh 의 월드 역행렬을 곱해서 Local 공간으로 데려간다.
+    float3 vLocalPos = mul(float4(vWorldPos, 1.f), matWorldInv).xyz;
+    
+    if (vLocalPos.z <= 2 * sqrt(pow(vLocalPos.x, 2) + pow(vLocalPos.y, 2)))
         discard;
 
     float3 vViewNormal = NORMAL_TARGET.Sample(g_sam_0, vScreenUV).xyz;
     
     tLight light = (tLight) 0.f;
+   
     
     CalculateLight3D(LIGHT_IDX, vViewNormal, vViewPos.xyz, light);
     

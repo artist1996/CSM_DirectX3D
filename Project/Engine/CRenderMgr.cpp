@@ -109,8 +109,15 @@ void CRenderMgr::RenderDebugShape()
 {
 	list<tDebugShapeInfo>::iterator iter = m_DebugShapeList.begin();
 
+	Ptr<CGraphicShader> pDebugShape = CAssetMgr::GetInst()->FindAsset<CGraphicShader>(L"DebugShapeShader");
+	Ptr<CGraphicShader> pDebugLine = CAssetMgr::GetInst()->FindAsset<CGraphicShader>(L"DebugLineShader");
+
 	for (; iter != m_DebugShapeList.end();)
 	{
+		m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+		m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetRSType(RS_TYPE::CULL_NONE);
+		m_DebugObject->MeshRender()->GetMaterial()->SetShader(pDebugShape);
+
 		switch ((*iter).Shape)
 		{
 		case DEBUG_SHAPE::RECT:
@@ -120,10 +127,20 @@ void CRenderMgr::RenderDebugShape()
 			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CircleMesh_Debug"));
 			break;
 		case DEBUG_SHAPE::LINE:
+			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"PointMesh"));
+			m_DebugObject->MeshRender()->GetMaterial()->SetShader(pDebugLine);
+			m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 			break;
 		case DEBUG_SHAPE::CUBE:
+			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh_Debug"));
 			break;
 		case DEBUG_SHAPE::SPHERE:
+			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"SphereMesh"));
+			m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetRSType(RS_TYPE::CULL_FRONT);
+			break;
+		case DEBUG_SHAPE::CONE:
+			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"ConeMesh"));
 			break;
 		}
 
@@ -131,11 +148,19 @@ void CRenderMgr::RenderDebugShape()
 		m_DebugObject->Transform()->SetWorldMatrix((*iter).matWorld);
 
 		// 재질 세팅
+		m_DebugObject->MeshRender()->GetMaterial()->SetScalarParam(INT_0, (int)(*iter).Shape);
 		m_DebugObject->MeshRender()->GetMaterial()->SetScalarParam(VEC4_0, (*iter).vColor);
+
+		if ((*iter).Shape == DEBUG_SHAPE::LINE)
+		{
+			// 시작점, 끝점
+			m_DebugObject->MeshRender()->GetMaterial()->SetScalarParam(VEC4_1, Vec4((*iter).vPos, 1.f));
+			m_DebugObject->MeshRender()->GetMaterial()->SetScalarParam(VEC4_2, Vec4((*iter).vScale, 1.f));
+		}
 		
 		// 깊이 판정 여부에 따라서, 쉐이더의 깊이판정 방식을 결정한다.
 		if((*iter).DepthTest)
-			m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetDSType(DS_TYPE::LESS);
+			m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetDSType(DS_TYPE::NO_WRITE);
 		else
 			m_DebugObject->MeshRender()->GetMaterial()->GetShader()->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
 
@@ -242,6 +267,12 @@ void CRenderMgr::Render(CCamera* _Cam)
 	// ==================
 	m_arrMRT[(UINT)MRT_TYPE::DEFERRED]->OMSet();
 	_Cam->render_deferred();
+
+	// ===============
+	// DECAL RENDERING
+	// ===============
+	m_arrMRT[(UINT)MRT_TYPE::DECAL]->OMSet();
+	_Cam->render_decal();
 
 	// ===============
 	// LIGHT RENDERING

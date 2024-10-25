@@ -136,6 +136,9 @@ void CCamera::SortGameObject()
 			case DOMAIN_DEFERRED:
 				m_vecDeferred.push_back(vecObjects[j]);
 				break;
+			case DOMAIN_DECAL:
+				m_vecDecal.push_back(vecObjects[j]);
+				break;
 			case DOMAIN_OPAQUE:
 				m_vecOpaque.push_back(vecObjects[j]);
 				break;
@@ -164,6 +167,15 @@ void CCamera::render_deferred()
 	for (size_t i = 0; i < m_vecDeferred.size(); ++i)
 	{
 		m_vecDeferred[i]->Render();
+	}
+}
+
+void CCamera::render_decal()
+{
+	// Decal
+	for (size_t i = 0; i < m_vecDecal.size(); ++i)
+	{
+		m_vecDecal[i]->Render();
 	}
 }
 
@@ -257,6 +269,7 @@ void CCamera::clear()
 {
 	// Runtime 중 Domain Type이 변경 될 수 있기 때문에 Render 호출 하고 clear 시켜줌
 	m_vecDeferred.clear();
+	m_vecDecal.clear();
 	m_vecOpaque.clear();
 	m_vecMasked.clear();
 	m_vecTransparent.clear();

@@ -45,7 +45,7 @@ enum class COMPONENT_TYPE
 	MESHRENDER,
 	TILEMAP,
 	PARTICLESYSTEM,
-	DECAl,
+	DECAL,
 	SKYBOX,
 	LANDSCAPE,
 	END,
@@ -98,6 +98,7 @@ enum class BS_TYPE
 	ALPHABLEND,
 	ONE_ONE,
 	ADDITIVE,
+	DECAL,
 
 	END,
 };
@@ -154,6 +155,7 @@ enum class DEBUG_SHAPE
 	LINE,
 	CUBE,
 	SPHERE,
+	CONE,
 };
 
 enum TASK_TYPE
@@ -228,7 +230,9 @@ enum class MRT_TYPE
 
 	DEFERRED,	 // 5개
 	LIGHT,		 // 3개
+	DECAL,		 // 2개
 	SHADOWMAP,	 // 1개
+
 
 	END,
 };

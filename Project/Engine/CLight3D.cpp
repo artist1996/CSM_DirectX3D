@@ -29,10 +29,20 @@ void CLight3D::FinalTick()
 	m_Info.WorldPos = Transform()->GetWorldPos();
 	m_Info.WorldDir = Transform()->GetWorldDir(DIR::FRONT);
 
-	Transform()->SetRelativeScale(m_Info.Radius * 2.f, m_Info.Radius * 2.f, m_Info.Radius * 2.f);
+	if (LIGHT_TYPE::POINT == m_Info.Type)
+		Transform()->SetRelativeScale(m_Info.Radius * 2.f, m_Info.Radius * 2.f, m_Info.Radius * 2.f);
+	else if(LIGHT_TYPE::SPOT == m_Info.Type)
+		Transform()->SetRelativeScale(m_Info.Radius, m_Info.Radius, m_Info.Radius);
 
 	// 자신을 RenderMgr 에 등록시킴
 	m_LightIdx = CRenderMgr::GetInst()->RegisterLight3D(this);
+
+#ifdef _DEBUG
+	if (LIGHT_TYPE::POINT == m_Info.Type)
+		DrawDebugSphere(Transform()->GetWorldMatrix(), Vec4(0.f, 1.f, 0.f, 1.f), 0.f, true);
+	else if(LIGHT_TYPE::SPOT == m_Info.Type)
+		DrawDebugCone(Transform()->GetWorldMatrix(), Vec4(0.f, 1.f, 0.f, 1.f), 0.f, true);
+#endif
 }
 
 void CLight3D::Render()
