@@ -14,11 +14,13 @@
 
 #include "CTransform.h"
 #include "CCollider2D.h"
+#include "CBoundingBox.h"
 
 #include "CKeyMgr.h"
 #include "CTimeMgr.h"
 
 #include "CMRT.h"
+#include "CFrustum.h"
 
 CCamera::CCamera()
 	: CComponent(COMPONENT_TYPE::CAMERA)
@@ -36,6 +38,7 @@ CCamera::CCamera()
 	, m_ShakingIn(false)
 	, m_ShakingOut(false)
 	, m_UI(false)
+	, m_Frustum(nullptr)
 {
 	Vec2 vResolution = CDevice::GetInst()->GetResolution();
 	m_Width = vResolution.x;
@@ -43,10 +46,33 @@ CCamera::CCamera()
 	//m_Width  = 1280.f;
 	//m_Height = 768.f;
 	m_AspectRatio = m_Width / m_Height;
+	m_Frustum = new CFrustum(this);
+}
+
+CCamera::CCamera(const CCamera& _Other)
+	: CComponent(_Other)
+	, m_Priority(-1)
+	, m_LayerCheck(_Other.m_LayerCheck)
+	, m_ProjType(_Other.m_ProjType)
+	, m_Width(_Other.m_Width)
+	, m_Height(_Other.m_Height)
+	, m_Far(_Other.m_Far)
+	, m_FOV(_Other.m_FOV)
+	, m_ProjectionScale(_Other.m_ProjectionScale)
+	, m_AspectRatio(_Other.m_AspectRatio)
+	, m_ZoomIn(_Other.m_ZoomIn)
+	, m_ZoomOut(_Other.m_ZoomOut)
+	, m_ShakingIn(_Other.m_ShakingIn)
+	, m_ShakingOut(_Other.m_ShakingOut)
+	, m_UI(_Other.m_UI)
+	, m_Frustum(nullptr)
+{
+	m_Frustum = m_Frustum->Clone();
 }
 
 CCamera::~CCamera()
 {
+	SAFE_DELETE(m_Frustum);
 }
 
 void CCamera::Begin()
@@ -100,6 +126,9 @@ void CCamera::FinalTick()
 
 	m_matViewInv = XMMatrixInverse(nullptr, m_matView);
 	m_matProjInv = XMMatrixInverse(nullptr, m_matProj);
+
+	// Frustum Update
+	m_Frustum->FinalTick();
 }
 
 void CCamera::SortGameObject()
@@ -126,6 +155,14 @@ void CCamera::SortGameObject()
 			 || nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial()->GetShader())
 			{
 				continue;
+			}
+
+			if (vecObjects[j]->BoundingBox())
+			{
+				if (vecObjects[j]->GetRenderComponent()->IsFrustumCheck()
+					&& false == m_Frustum->FrustumCheck(vecObjects[j]->Transform()->GetWorldPos()
+						, vecObjects[j]->BoundingBox()->GetRadius()))
+					continue;
 			}
 			
 			Ptr<CGraphicShader> pShader = vecObjects[j]->GetRenderComponent()->GetMaterial()->GetShader();

@@ -190,6 +190,12 @@
     <Filter Include="02. EditorUI\15. Viewport">
       <UniqueIdentifier>{d8f342fc-77bf-4613-8911-5f2d7f16620d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. EditorUI\01. Inspector\ComponentUI\13. DecalUI">
+      <UniqueIdentifier>{890f7031-209e-42d2-bc9b-77f2d4e73446}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. EditorUI\01. Inspector\ComponentUI\14. BoundingBoxUI">
+      <UniqueIdentifier>{ed6e260f-1d18-4f1a-9689-608ff6f3d1ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CGameObjectEx.h">
@@ -408,6 +414,12 @@
     <ClInclude Include="ViewportUI.h">
       <Filter>02. EditorUI\15. Viewport</Filter>
     </ClInclude>
+    <ClInclude Include="DecalUI.h">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\13. DecalUI</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBoxUI.h">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\14. BoundingBoxUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -620,6 +632,12 @@
     </ClCompile>
     <ClCompile Include="ViewportUI.cpp">
       <Filter>02. EditorUI\15. Viewport</Filter>
+    </ClCompile>
+    <ClCompile Include="DecalUI.cpp">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\13. DecalUI</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBoxUI.cpp">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\14. BoundingBoxUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -97,6 +97,7 @@ public:
     GET_COMPONENT(FSM, STATEMACHINE);
     GET_COMPONENT(SkyBox, SKYBOX);
     GET_COMPONENT(Decal, DECAL);
+    GET_COMPONENT(BoundingBox, BOUNDINGBOX);
 
 public:
     void Begin();

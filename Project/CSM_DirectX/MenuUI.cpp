@@ -393,6 +393,20 @@ void MenuUI::AddComponent()
 			pObject->AddComponent(new CSkyBox);
 		}
 
+		if (ImGui::MenuItem("Decal"))
+		{
+			Inspector* pInspector = (Inspector*)CEditorMgr::GetInst()->FindEditorUI("Inspector");
+			CGameObject* pObject = pInspector->GetTargetObject();
+
+			if (nullptr == pObject)
+			{
+				ImGui::EndMenu();
+				return;
+			}
+
+			pObject->AddComponent(new CDecal);
+		}
+
 		ImGui::EndMenu();
 	}
 }
@@ -462,9 +476,7 @@ wstring MenuUI::GetAssetKey(ASSET_TYPE _Type, const wstring& _strKey)
 	switch (_Type)
 	{
 	case ASSET_TYPE::MATERIAL:
-	{
 		strKey = wstring(L"material\\" + _strKey + L" %d.mtrl");
-	}
 		break;
 	case ASSET_TYPE::PREFAB:
 		strKey = wstring(L"prefab\\" + _strKey + L" %d.pref");
@@ -473,7 +485,7 @@ wstring MenuUI::GetAssetKey(ASSET_TYPE _Type, const wstring& _strKey)
 		strKey = wstring(L"sprite\\" + _strKey + L" %d.sprite");
 		break;
 	case ASSET_TYPE::ANIMATION:
-		strKey = wstring(L"flipbook\\" + _strKey + L" %d.flip");
+		strKey = wstring(L"animation\\" + _strKey + L" %d.anim");
 		break;
 	default:
 		assert(nullptr);

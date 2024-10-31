@@ -6,9 +6,15 @@ class CDecal :
 {
 private:
     Ptr<CTexture>   m_DecalTex;
+    Ptr<CTexture>   m_EmissiveTex;
 
 public:
-    void SetDecalTexture(Ptr<CTexture> _Tex) { m_DecalTex = _Tex; }
+    void SetDecalTexture(Ptr<CTexture> _Tex)    { m_DecalTex = _Tex; }
+    void SetEmissiveTexture(Ptr<CTexture> _Tex) { m_EmissiveTex = _Tex; }
+
+public:
+    Ptr<CTexture> GetDecalTexture()     { return m_DecalTex; }
+    Ptr<CTexture> GetEmisiiveTexture()  { return m_EmissiveTex; }
 
 public:
     virtual void FinalTick() override;

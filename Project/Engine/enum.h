@@ -48,6 +48,8 @@ enum class COMPONENT_TYPE
 	DECAL,
 	SKYBOX,
 	LANDSCAPE,
+
+	BOUNDINGBOX,
 	END,
 
 	SCRIPT,
@@ -145,6 +147,9 @@ enum SHADER_DOMAIN
 	DOMAIN_UI,			// UI
 
 	DOMAIN_DEBUG,		// µð¹ö±×
+	DOMAIN_SHADOWMAP,	// ShadowMap
+
+
 	DOMAIN_NONE,		// None
 };
 

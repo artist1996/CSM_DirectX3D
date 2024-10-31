@@ -12,6 +12,8 @@ CSkyBox::CSkyBox()
 {
 	SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"SphereMesh"));
 	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"SkyBoxMtrl"));
+
+	SetFrustumCheck(false);
 }
 
 CSkyBox::~CSkyBox()

@@ -18,6 +18,9 @@ private:
     bool   m_IndependentScale; // 부모의 크기에 영향 받지 않음
     
 public:
+    CTransform& operator = (CTransform& _Other);
+
+public:
     void SetRelativePos(Vec3 _Pos)      { m_RelativePos = _Pos; }
     void SetRelativeScale(Vec3 _Scale)  { m_RelativeScale = _Scale; }
     void SetRelativeRotation(Vec3 _Rot) { m_RelativeRotation = _Rot; }

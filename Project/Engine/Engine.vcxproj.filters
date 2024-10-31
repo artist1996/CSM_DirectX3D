@@ -184,6 +184,12 @@
     <ClInclude Include="CDecal.h">
       <Filter>08. Component\RenderComponent\04. Decal</Filter>
     </ClInclude>
+    <ClInclude Include="CFrustum.h">
+      <Filter>08. Component\07. Camera\Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoundingBox.h">
+      <Filter>08. Component\11. BoundingBox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CEngine.cpp">
@@ -351,6 +357,12 @@
     <ClCompile Include="CDecal.cpp">
       <Filter>08. Component\RenderComponent\04. Decal</Filter>
     </ClCompile>
+    <ClCompile Include="CFrustum.cpp">
+      <Filter>08. Component\07. Camera\Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoundingBox.cpp">
+      <Filter>08. Component\11. BoundingBox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01. Header">
@@ -515,9 +527,6 @@
     <Filter Include="HLSL\02. Render\01. 2D">
       <UniqueIdentifier>{65008b77-2500-4bc7-a78c-64efb871fe0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HLSL\02. Render\02. 3D">
-      <UniqueIdentifier>{4113b864-a737-486e-9143-724c4a43c1cb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HLSL\02. Render\03. PostProcess">
       <UniqueIdentifier>{1e562a1d-6dac-4001-9fb0-b5df1dc3409a}</UniqueIdentifier>
     </Filter>
@@ -535,6 +544,15 @@
     </Filter>
     <Filter Include="08. Component\Default">
       <UniqueIdentifier>{9b14e32a-f293-4d9e-8e90-eebff9700de1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\07. Camera\Frustum">
+      <UniqueIdentifier>{fe30a3f2-11d7-4b3b-8300-010ef76f4151}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\11. BoundingBox">
+      <UniqueIdentifier>{6fd7dde0-6152-4703-a3bb-a773ddf617b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\02. Render\02. 3D">
+      <UniqueIdentifier>{4113b864-a737-486e-9143-724c4a43c1cb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -592,6 +610,9 @@
       <Filter>HLSL\02. Render\02. 3D</Filter>
     </FxCompile>
     <FxCompile Include="decal.fx">
+      <Filter>HLSL\02. Render\02. 3D</Filter>
+    </FxCompile>
+    <FxCompile Include="shadowmap.fx">
       <Filter>HLSL\02. Render\02. 3D</Filter>
     </FxCompile>
   </ItemGroup>

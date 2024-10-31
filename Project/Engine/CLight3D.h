@@ -9,6 +9,12 @@ private:
 
     Ptr<CMesh>      m_VolumeMesh;
     Ptr<CMaterial>  m_LightMtrl;
+    Ptr<CTexture>   m_ShadowMapTex;
+
+    Ptr<CMaterial>  m_ShadowMapMtrl;
+    class CMRT*     m_ShadowMapMRT;
+
+    CGameObject*    m_Cam;           // 광원이 보유한 카메라
 
 public:
     void SetLightType(LIGHT_TYPE _Type);
@@ -24,6 +30,8 @@ public:
     Vec3 GetLightColor()      { return m_Info.light.Color; }
     Vec3 GetLightAmbient()    { return m_Info.light.Ambient; }
 
+
+    void CreateShadowMap();
 
     const tLightInfo& GetLightInfo() { return m_Info; }
 

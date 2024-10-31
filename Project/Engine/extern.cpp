@@ -34,9 +34,10 @@ const char* COMPONENT_TYPE_STRING[] =
 	"MESHRENDER",
 	"TILEMAP",
 	"PARTICLE_SYSTEM",
-	"DECAl",
+	"DECAL",
 	"SKYBOX",
 	"LANDSCAPE",
+	"BOUNDINGBOX",
 };
 
 const char* ToString(COMPONENT_TYPE _Type) { return COMPONENT_TYPE_STRING[(UINT)_Type]; }

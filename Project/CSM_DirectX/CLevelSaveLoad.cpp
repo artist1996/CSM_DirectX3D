@@ -233,43 +233,34 @@ CComponent* CLevelSaveLoad::GetComponent(COMPONENT_TYPE _Type)
 	{
 	case COMPONENT_TYPE::TRANSFORM:
 		return new CTransform;
-		break;
 	case COMPONENT_TYPE::COLLIDER2D:
 		return new CCollider2D;
-		break;
 	case COMPONENT_TYPE::COLLIDER3D:
 		break;
 	case COMPONENT_TYPE::LIGHT2D:
 		return new CLight2D;
-		break;
 	case COMPONENT_TYPE::LIGHT3D:
-		break;
+		return new CLight3D;
 	case COMPONENT_TYPE::ANIMATOR2D:
 		return new CAnimator2D;
-		break;
 	case COMPONENT_TYPE::ANIMATOR3D:
 		break;
 	case COMPONENT_TYPE::STATEMACHINE:
 		return new CFSM;
-		break;
 	case COMPONENT_TYPE::RIGIDBODY:
 		return new CRigidbody;
-		break;
 	case COMPONENT_TYPE::CAMERA:
 		return new CCamera;
-		break;
 	case COMPONENT_TYPE::MESHRENDER:
 		return new CMeshRender;
-		break;
 	case COMPONENT_TYPE::TILEMAP:
 		return new CTileMap;
-		break;
 	case COMPONENT_TYPE::PARTICLESYSTEM:
 		return new CParticleSystem;
 	case COMPONENT_TYPE::DECAL:
-		break;
+		return new CDecal;
 	case COMPONENT_TYPE::SKYBOX:
-		break;
+		return new CSkyBox;
 	case COMPONENT_TYPE::LANDSCAPE:
 		break;
 	}

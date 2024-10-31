@@ -206,7 +206,7 @@ float4 PS_Less_AlphaBlend(VTX_OUT _in) : SV_Target
 
 float4 PS_Std2D_Additive(VTX_OUT _in) : SV_Target
 {
-    float4 vColor = float4(0.f, 0.f, 0.f, 1.f);
+    float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
     
     if (UseFlipBook)
     {
@@ -237,18 +237,18 @@ float4 PS_Std2D_Additive(VTX_OUT _in) : SV_Target
         }
         else
         {
-            vColor = float4(1.f, 0.f, 1.f, 1.f);
+            vColor = float4(0.f, 0.f, 0.f, 0.f);
         }
     }
     
     
-    if (0.03f >= vColor.r && 0.03f >= vColor.g && 0.03f >= vColor.b)
-        discard;
+    //if (0.03f >= vColor.r && 0.03f >= vColor.g && 0.03f >= vColor.b)
+    //    discard;
+    //
+    //vColor.r *= 2.f;
+    //vColor.g *= 2.f;
+    //vColor.b *= 2.f;
     
-    vColor.r *= 2.f;
-    vColor.g *= 2.f;
-    vColor.b *= 2.f;
-     
     return vColor;
 }
 

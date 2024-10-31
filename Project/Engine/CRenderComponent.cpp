@@ -11,6 +11,7 @@ CRenderComponent::CRenderComponent(COMPONENT_TYPE _Type)
 	, m_Mesh(nullptr)
 	, m_Mtrl(nullptr)
 	, m_DynamicMtrl(nullptr)
+	, m_FrustumCheck(true)
 {
 }
 
@@ -20,6 +21,7 @@ CRenderComponent::CRenderComponent(const CRenderComponent& _Origin)
 	, m_Mtrl(_Origin.m_Mtrl)
 	, m_SharedMtrl(_Origin.m_SharedMtrl)
 	, m_DynamicMtrl(nullptr)
+	, m_FrustumCheck(_Origin.m_FrustumCheck)
 {
 	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurrentLevel();
 

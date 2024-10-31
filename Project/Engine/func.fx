@@ -114,18 +114,21 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
     {
         // 표면 위치에서 광원의 위치를 빼줘, 광원에서 표면을 향하는 방향 벡터를 구한다.
         float3 vLightViewPos = mul(float4(LightInfo.WorldPos, 1.f), matView).xyz;
-        float3 vLightDir = normalize(_ViewPos - vLightViewPos);
+        float3 vLightDir = mul(float4(LightInfo.WorldDir, 0.f), matView).xyz;
+        //float3 vLightDir = LightInfo.WorldDir;
+        //float3 vLightDir = normalize(_ViewPos - vLightViewPos);
         
         // Pixel 의 View Position 과 Pixel 의 방향 벡터를 구해준다.
-        float3 vPixelViewPos = _ViewPos - vLightViewPos;
+        float3 vPixelViewPos = vLightViewPos - _ViewPos;
         float3 vPixelDir     = normalize(vPixelViewPos);
-
-        // Light 의 방향 벡터와 Pixel 의 방향벡터를 내적 해 cos 세타값을 구해준다.
-        float Dot = saturate(dot(vLightDir, vPixelDir));
+        //float3 vPixelViewPos = _ViewPos - vLightViewPos;
         
+        // Light 의 방향 벡터와 Pixel 의 방향벡터를 내적 해 cos 세타값을 구해준다.
+        float Dot = saturate(dot(-vLightDir, vPixelDir));
+                
         // Light의 ViewPos과 Pixel 의 View Postion 의 차를 구해 Distance 를 구해준다.
         float Distance = length(vLightViewPos - _ViewPos);
-        
+                
         // 내적한 cos 세타값이 Light의 Angle 안에 들어오고 Distance 가 Radius 내에 있다면
         // 빛의 세기를 구해준다.
         if (Dot > cos(LightInfo.Angle) && Distance < LightInfo.Radius)
@@ -142,14 +145,14 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
           
             // 반사 방향과 시선 벡터의 내적 계산
             SpecularPow = saturate(dot(vReflect, -vEye));
-            SpecularPow = pow(SpecularPow, 20);
+            SpecularPow = pow(SpecularPow, 10);
             
             float fDist = length(vLightViewPos - _ViewPos);
             float fCamDist = length(_ViewPos);
             
             // 거리 비율 계산
             Ratio = saturate(cos((PI / 2.f) * saturate(fDist / LightInfo.Radius)));
-            SpecRatio = saturate(cos((PI / 2.f) * saturate(fCamDist / LightInfo.Radius)));
+            SpecRatio = saturate(cos((PI / 2.f) * saturate(fCamDist / LightInfo.Radius)));            
         }
     }
     

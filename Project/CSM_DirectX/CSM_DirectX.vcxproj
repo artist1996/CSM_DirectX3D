@@ -152,6 +152,7 @@
     <ClInclude Include="AE_Sub.h" />
     <ClInclude Include="AnimationEditor.h" />
     <ClInclude Include="AssetUI.h" />
+    <ClInclude Include="BoundingBoxUI.h" />
     <ClInclude Include="CameraUI.h" />
     <ClInclude Include="CEditorCameraScript.h" />
     <ClInclude Include="CEditorMgr.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Content.h" />
     <ClInclude Include="CreateGameObject.h" />
     <ClInclude Include="CTestLevel.h" />
+    <ClInclude Include="DecalUI.h" />
     <ClInclude Include="EditorUI.h" />
     <ClInclude Include="Animator2DUI.h" />
     <ClInclude Include="AnimationUI.h" />
@@ -226,6 +228,7 @@
     <ClCompile Include="AE_Sub.cpp" />
     <ClCompile Include="AnimationEditor.cpp" />
     <ClCompile Include="AssetUI.cpp" />
+    <ClCompile Include="BoundingBoxUI.cpp" />
     <ClCompile Include="CameraUI.cpp" />
     <ClCompile Include="CEditorCameraScript.cpp" />
     <ClCompile Include="CEditorMgr.cpp" />
@@ -240,6 +243,7 @@
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="CreateGameObject.cpp" />
     <ClCompile Include="CTestLevel.cpp" />
+    <ClCompile Include="DecalUI.cpp" />
     <ClCompile Include="EditorUI.cpp" />
     <ClCompile Include="Animator2DUI.cpp" />
     <ClCompile Include="AnimationUI.cpp" />

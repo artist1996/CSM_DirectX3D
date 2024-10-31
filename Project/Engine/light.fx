@@ -16,8 +16,7 @@ struct VS_OUT
     float2 vUV       : TEXCOORD;
 };
 
-// ================================
-// Directional Light Shader 
+// Directional Light Shader
 // MRT  : LIGHT (Diffuse, Specular)
 // Mesh : RectMesh
 // Rasterizer   : CULL_BACK
@@ -42,8 +41,8 @@ VS_OUT VS_DirLight(VS_IN _in)
 
 struct PS_OUT
 {
-    float4 vDiffuse  : SV_Target0;
-    float4 vSpecular : SV_Target1;
+    float4 vDiffuse  : SV_TARGET;
+    float4 vSpecular : SV_TARGET1;
 };
 
 PS_OUT PS_DirLight(VS_OUT _in)
@@ -179,15 +178,33 @@ PS_OUT PS_SpotLight(VS_OUT _in)
     
     // World 상에 있는 물체의 좌표를, Volume Mesh 의 월드 역행렬을 곱해서 Local 공간으로 데려간다.
     float3 vLocalPos = mul(float4(vWorldPos, 1.f), matWorldInv).xyz;
+           
+    //float ConeVolume = ((1.f / 3.f) * PI) * pow(0.5f, 2) * 1.f;
     
-    if (vLocalPos.z <= 2 * sqrt(pow(vLocalPos.x, 2) + pow(vLocalPos.y, 2)))
+    //if (vLocalPos.z <= 2 * sqrt(pow(vLocalPos.x, 2) + pow(vLocalPos.y, 2)))
+    //    discard;
+    
+    //if (ConeVolume >= length(vLocalPos))
+    //    discard;
+    
+    float Height = 1.f;
+    float Radius = 0.5f;
+    
+    float Diagonal = sqrt(Height * Height + Radius * Radius);
+    
+    float CosTheta = Height / Diagonal;
+    
+    float3 Cone = float3(0.f,0.f, Height);
+    
+    float Dot = dot(normalize(vLocalPos), Cone);
+    
+    if(Dot < CosTheta)
         discard;
-
+    
     float3 vViewNormal = NORMAL_TARGET.Sample(g_sam_0, vScreenUV).xyz;
     
     tLight light = (tLight) 0.f;
-   
-    
+        
     CalculateLight3D(LIGHT_IDX, vViewNormal, vViewPos.xyz, light);
     
     output.vDiffuse = light.Color + light.Ambient;

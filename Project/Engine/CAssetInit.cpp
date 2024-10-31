@@ -504,8 +504,8 @@ void CAssetMgr::CreateEngineMesh()
 	// 원뿔의 반지름과 높이 설정
 	//fRadius = 0.5f;
 	//float fHeight = 1.f;
-	
-	// 꼭대기 정점 (Top Vertex)
+	//
+	//// 꼭대기 정점 (Top Vertex)
 	//v.vPos = Vec3(0.f, 0.f, 0.f);	 // 원뿔의 꼭대기
 	//v.vUV = Vec2(0.5f, 0.f);
 	//v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
@@ -671,6 +671,11 @@ void CAssetMgr::CreateEngineMaterial()
 	pMtrl = new CMaterial(true);
 	pMtrl->SetShader(FindAsset<CGraphicShader>(L"DecalShader"));
 	AddAsset(L"DecalMtrl", pMtrl);
+
+	// DirLightShadowMapMtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(FindAsset<CGraphicShader>(L"DirLightShadowMap"));
+	AddAsset(L"DirLightShadowMapMtrl", pMtrl);
 }
 
 void CAssetMgr::CreateEngineTexture()
@@ -1007,6 +1012,17 @@ void CAssetMgr::CreateEngineGraphicShader()
 	pShader->AddTexParam(TEX_0, "Decal Texture");
 
 	AddAsset(L"DecalShader", pShader);
+
+	// DirLightShadowMap
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\shadowmap.fx", "VS_DirLightShadowMap");
+	pShader->CreatePixelShader(L"shader\\shadowmap.fx", "PS_DirLightShadowMap");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_SHADOWMAP);
+
+	AddAsset(L"DirLightShadowMap", pShader);
 }
 
 #include "CParticleTickCS.h"

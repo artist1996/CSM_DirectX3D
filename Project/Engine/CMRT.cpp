@@ -21,9 +21,12 @@ void CMRT::Create(int _RTCount, Ptr<CTexture>* _arrRT, Ptr<CTexture> _DSTex)
 	m_RTCount = _RTCount;
 
 	// MRT 세팅
-	for (UINT i = 0; i < m_RTCount; ++i)
+	for (UINT i = 0; i < 8; ++i)
 	{
-		m_arrRT[i] = _arrRT[i];
+		if (i < _RTCount)
+			m_arrRT[i] = _arrRT[i];
+		else
+			m_arrRT[i] = nullptr;
 	}
 
 	// DepthStencil Tex 설정

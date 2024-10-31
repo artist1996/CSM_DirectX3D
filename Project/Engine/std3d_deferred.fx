@@ -59,14 +59,16 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in)
 {
     PS_OUT output = (PS_OUT) 0.f;
         
-    output.vAlbedo = float4(1.f, 0.f, 1.f, 1.f);
-    output.vNormal = float4(_in.vViewNormal, 1.f);
+    output.vAlbedo   = float4(1.f, 0.f, 1.f, 1.f);
+    output.vNormal   = float4(_in.vViewNormal, 1.f);
     output.vPosition = float4(_in.vViewPos, 1.f);
     output.vEmissive = float4(0.f, 0.f, 0.f, 0.f);
-    output.vData = float4(0.f, 0.f, 0.f, 0.f);
+    output.vData     = float4(0.f, 0.f, 0.f, 0.f);
     
     if (g_btex_0)
+    {
         output.vAlbedo = g_tex_0.Sample(g_sam_0, _in.vUV);
+    }
     
     if (g_btex_1)
     {
@@ -88,7 +90,16 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in)
         // TangentSpace 방향 정보를 적용시킬 표면의 좌표계로 가져온다.
         output.vNormal = float4(mul(vNormal, matRot), 1.f);
     }
+    
+    if(g_btexcube_0)
+    {
+        float3 vViewReflect = reflect(normalize(_in.vViewPos).xyz, output.vNormal.xyz);
+        float3 vWorldReflect = mul(float4(vViewReflect, 0.f), matViewInv).xyz;
+        float3 vReflectColor = g_texcube_0.Sample(g_sam_0, vWorldReflect);
         
+        output.vAlbedo.rgb *= vReflectColor.rgb;
+    }
+    
     return output;
 }
 #endif

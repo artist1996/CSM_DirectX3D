@@ -27,6 +27,8 @@
 #include "RigidbodyUI.h"
 #include "Light3DUI.h"
 #include "SkyBoxUI.h"
+#include "DecalUI.h"
+#include "BoundingBoxUI.h"
 
 #include "ScriptUI.h"
 
@@ -108,6 +110,16 @@ void Inspector::CreateComponentUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX]->SetName("SkyBoxUI");
 	m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX]->SetChildBorder(true);
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::SKYBOX]);
+
+	m_arrComUI[(UINT)COMPONENT_TYPE::DECAL] = new DecalUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::DECAL]->SetName("DecalUI");
+	m_arrComUI[(UINT)COMPONENT_TYPE::DECAL]->SetChildBorder(true);
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::DECAL]);
+
+	m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX] = new BoundingBoxUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX]->SetName("BoundingBoxUI");
+	m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX]->SetChildBorder(true);
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX]);
 }
 
 void Inspector::CreateAssetUI()

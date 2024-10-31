@@ -62,27 +62,35 @@ PS_OUT PS_Decal(VS_OUT _in)
     
     // World 상에 있는 물체의 좌표를, Volume Mesh 의 월드 역행렬을 곱해서 Local 공간으로 데려간다.
     float3 vLocalPos = mul(float4(vWorldPos, 1.f), matWorldInv).xyz;
-    
+   
     // 물체가 볼륨메쉬(Cube) 영역 밖이라면 Decal 중단
     if (0.5f < abs(vLocalPos.x) || 0.5f < abs(vLocalPos.y) || 0.5f < abs(vLocalPos.z))
     {
         discard;
     }
-        
+    
     float4 vColor = float4(0.f, 1.f, 0.f, 1.f);
+    float4 vEmissive = float4(0.f, 0.f, 0.f, 0.f);
+    
+    float2 vUV = (float2) 0.f;
+    vUV.x = vLocalPos.x + 0.5f;
+    vUV.y = 1.f - (vLocalPos.z + 0.5f);
     
     if (g_btex_1)
     {
-        float2 vUV = (float2) 0.f;
-        vUV.x = vLocalPos.x + 0.5f;
-        vUV.y = 1.f - (vLocalPos.z + 0.5f);
         vColor = g_tex_1.Sample(g_sam_0, vUV);
     }
     
-    vColor.rgb *= vColor.a;
+    if(g_btex_2)
+    {
+        vEmissive = g_tex_2.Sample(g_sam_0, vUV);
+    }
     
-    output.vAlbedo  = float4(0.f, 0.f, 0.f, 0.f);
-    output.vEmissive = vColor;
+    
+    vEmissive.rgb *= vEmissive.a;
+    
+    output.vAlbedo = vColor;
+    output.vEmissive = vEmissive;
    
     return output;
 }

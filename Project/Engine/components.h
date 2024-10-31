@@ -10,6 +10,7 @@
 #include "CRigidbody.h"
 #include "CCamera.h"
 #include "CFSM.h"
+#include "CBoundingBox.h"
 
 #include "CMeshRender.h"
 #include "CTileMap.h"

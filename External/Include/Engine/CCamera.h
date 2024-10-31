@@ -11,24 +11,26 @@ class CCamera :
     public CComponent
 {
 private:
-    int       m_Priority;
+    int                  m_Priority;
 
-    UINT      m_LayerCheck;      // 원하는 레이어만 카메라에 찍히도록 설정
+    UINT                 m_LayerCheck;      // 원하는 레이어만 카메라에 찍히도록 설정
 
-    PROJ_TYPE m_ProjType;
+    PROJ_TYPE            m_ProjType;
 
-    float     m_Width;
-    float     m_Height;
-    float     m_Far;             // 카메라가 바라볼 수 있는 z축의 거리
-    float     m_AspectRatio;     // 종횡 비
-    float     m_ProjectionScale;  
-
-    float     m_FOV;             // Field Of View (시야 범위, 시야 각) 원근 투영 시
-
-    Matrix    m_matView;
-    Matrix    m_matViewInv;
-    Matrix    m_matProj;
-    Matrix    m_matProjInv;
+    class CFrustum*      m_Frustum;         // 카메라는 절두체를 가진다.
+    
+    float                m_Width;
+    float                m_Height;
+    float                m_Far;             // 카메라가 바라볼 수 있는 z축의 거리
+    float                m_AspectRatio;     // 종횡 비
+    float                m_ProjectionScale;  
+                         
+    float                m_FOV;             // Field Of View (시야 범위, 시야 각) 원근 투영 시
+                         
+    Matrix               m_matView;
+    Matrix               m_matViewInv;
+    Matrix               m_matProj;
+    Matrix               m_matProjInv;
 
     vector<CGameObject*> m_vecDeferred;     // Deferred
     vector<CGameObject*> m_vecDecal;        // Decal
@@ -110,6 +112,7 @@ private:
 public:
     CLONE(CCamera);
     CCamera();
+    CCamera(const CCamera& _Other);
     virtual ~CCamera();
 
     friend class CRenderMgr;

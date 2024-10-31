@@ -43,13 +43,13 @@ float4 PS_Merge(VS_OUT _in) : SV_Target
 {
     float4 vOutColor = (float4) 0.f;
 
-    float4 vColor = ALBEDO_TARGET.Sample(g_sam_0, _in.vUV);
-    float4 vDiffuse = DIFFUSE_TARGET.Sample(g_sam_0, _in.vUV);
+    float4 vColor    = ALBEDO_TARGET.Sample(g_sam_0, _in.vUV);
+    float4 vDiffuse  = DIFFUSE_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vSpecular = SPECULAR_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vEmissive = EMISSIVE_TARGET.Sample(g_sam_0, _in.vUV);
     
     vOutColor = vColor * vDiffuse + vSpecular + vEmissive;
-    
+
     return vOutColor;
 };
 

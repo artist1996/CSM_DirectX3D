@@ -131,7 +131,6 @@ void CEditorMgr::ImGuiProgress()
 	// ImGui Tick
 	ImGuiTick();
 
-
 	Docking();
 	// ImGui Render    
 	ImGui::Render();

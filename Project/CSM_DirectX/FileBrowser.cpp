@@ -117,4 +117,6 @@ ASSET_TYPE FileBrowser::FindAssetType(const std::filesystem::path& _Path)
 		return ASSET_TYPE::SPRITE;
 	else if (ext == L".anim")
 		return ASSET_TYPE::ANIMATION;
+	else
+		return ASSET_TYPE::END;
 }

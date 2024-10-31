@@ -143,6 +143,20 @@ void CTestLevel::CreateTestLevel()
 
 	pLevel->AddObject(0, pSkyBox);
 
+	CGameObject* pPlayer = new CGameObject;
+	pPlayer->SetName(L"Player");
+	pPlayer->AddComponent(new CTransform);
+	pPlayer->AddComponent(new CMeshRender);
+	pPlayer->AddComponent(new CBoundingBox);
+
+	pPlayer->Transform()->SetRelativePos(0.f, 0.f, 0.f);
+	pPlayer->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
+
+	pPlayer->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
+	pPlayer->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
+
+	pLevel->AddObject(3, pPlayer);
+
 	// 플레이어 오브젝트
 	CGameObject* pPlane = new CGameObject;
 	pPlane->SetName(L"Plane");
@@ -217,8 +231,24 @@ void CTestLevel::CreateTestLevel()
 
 	pLevel->AddObject(3, pDecal);
 
-
 	ChangeLevel(pLevel, LEVEL_STATE::STOP);
+
+	pPlane = new CGameObject;
+	pPlane->SetName(L"Plane");
+	pPlane->AddComponent(new CTransform);
+	pPlane->AddComponent(new CMeshRender);
+	pPlane->AddComponent(new CPlayerScript);
+
+	pPlane->Transform()->SetRelativePos(0.f, 0.f, 0.f);
+	pPlane->Transform()->SetRelativeScale(0.f, 0.f, 1.f);
+	pPlane->Transform()->SetRelativeRotation(Vec3(0.f, 0.f, 0.f));
+
+	pPlane->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"ConeMesh"));
+	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
+	pPlane->MeshRender()->GetDynamicMaterial();
+	//pPlane->MeshRender()->GetMaterial()->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\spotlight.png"));
+
+	pLevel->AddObject(3, pPlane);
 
 	// 충돌 지정
 	CCollisionMgr::GetInst()->CollisionCheck(3, 4); // Player vs Monster
@@ -261,7 +291,7 @@ void CTestLevel::CreateTestObject(CLevel* pLevel, Ptr<CMaterial> pMtrl)
 	
 	pLevel->AddObject(3, pTest2);
 	
-	//// Test Object
+	// Test Object
 	CGameObject* pTest3 = new CGameObject;
 	pTest3->SetName(L"Test3");
 	pTest3->AddComponent(new CTransform);
