@@ -50,7 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //int cx = rectWorkArea.right - rectWorkArea.left;
     //int cy = rectWorkArea.bottom - rectWorkArea.top;
 
-    // CEngine 객체 초기화
+    // CEngine 객체 초기화 1600, 960
     if (FAILED(CEngine::GetInst()->Init( hWnd, POINT{ 1600, 960 }
                                        , (OBJECT_SAVE)&CLevelSaveLoad::SaveGameObject
                                        , (OBJECT_LOAD)&CLevelSaveLoad::LoadGameObject)))

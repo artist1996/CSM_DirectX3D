@@ -192,6 +192,8 @@ void CTexture::Clear(UINT _RegisterNum)
 
 void CTexture::Clear_CS_SRV()
 {
+	ID3D11ShaderResourceView* pSRV = nullptr;
+	CONTEXT->CSSetShaderResources(m_RecentBindingRegisterNum, 1, &pSRV);
 }
 
 void CTexture::Clear_CS_UAV()

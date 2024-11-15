@@ -17,13 +17,11 @@ void CEditorMgr::CreateEditorObject()
 	pEditorCamera->Transform()->SetRelativePos(0.f, 0.f, -1000.f);
 
 	pEditorCamera->Camera()->SetLayerAll();
-	//pEditorCamera->Camera()->SetLayer(31, false);
+	pEditorCamera->Camera()->SetLayer(31, false);
 	pEditorCamera->Camera()->SetFar(100000.f);
 	pEditorCamera->Camera()->SetProjType(PERSPECTIVE);
 
-	//CGameObject* pCloneEditorCamera = pEditorCamera->Clone();
-	//delete pEditorCamera;
-
 	m_vecEditorObject.push_back(pEditorCamera);
+
 	CRenderMgr::GetInst()->RegisterEditorCamera(pEditorCamera->Camera());
 }

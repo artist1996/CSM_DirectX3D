@@ -64,7 +64,7 @@ void CAssetMgr::CreateEngineMesh()
 
 	// Index 버퍼 생성
 	UINT arrIdx[6] = {};
-	arrIdx[0] = 0;	arrIdx[1] = 1;	arrIdx[2] = 2;
+	arrIdx[0] = 2;	arrIdx[1] = 0;	arrIdx[2] = 1;
 	arrIdx[3] = 0; 	arrIdx[4] = 2;	arrIdx[5] = 3;
 
 	pMesh = new CMesh(true);
@@ -467,7 +467,7 @@ void CAssetMgr::CreateEngineMesh()
 	v.vColor    = Vec4(1.f, 1.f, 1.f, 1.f);
 	v.vNormal   = Vec3(0.f, 0.f, -1.f);
 	v.vTangent  = Vec3(1.f, 0.f, 0.f);
-	v.vBinormal = Vec3(0.f, 1.f, 0.f);
+	v.vBinormal = Vec3(0.f, -1.f, 0.f);
 	vecVtx.push_back(v);
 	
 	iSliceCount = 40;
@@ -500,79 +500,6 @@ void CAssetMgr::CreateEngineMesh()
 	AddAsset(L"ConeMesh", pMesh);
 	vecVtx.clear();
 	vecIdx.clear();
-	
-	// 원뿔의 반지름과 높이 설정
-	//fRadius = 0.5f;
-	//float fHeight = 1.f;
-	//
-	//// 꼭대기 정점 (Top Vertex)
-	//v.vPos = Vec3(0.f, 0.f, 0.f);	 // 원뿔의 꼭대기
-	//v.vUV = Vec2(0.5f, 0.f);
-	//v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
-	//v.vNormal = Vec3(0.f, 0.f, 1.f);     // z축 기준으로 법선 설정
-	//v.vTangent = Vec3(1.f, 0.f, 0.f);
-	//v.vBinormal = Vec3(0.f, 1.f, 0.f);
-	//vecVtx.push_back(v);
-	//
-	//// 슬라이스 개수 설정
-	//iSliceCount = 40;
-	//fSliceAngle = XM_2PI / iSliceCount;
-	//fUVXStep = 1.f / float(iSliceCount);
-	//fUVYStep = 1.f;
-	//
-	//// 밑면 정점 및 UV 좌표 생성
-	//for (UINT i = 0; i <= iSliceCount; ++i)
-	//{
-	//	float Theta = i * fSliceAngle;
-	//
-	//	// 밑면 정점 계산
-	//	v.vPos = Vec3(fRadius * cosf(Theta), fRadius * sinf(Theta), fHeight);
-	//	v.vUV = Vec2(fUVXStep * i, fUVYStep);
-	//	v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
-	//
-	//	// 법선 벡터 계산
-	//	Vec3 normal = Vec3(cosf(Theta), sinf(Theta), 0.0f);  // 원뿔 측면 법선
-	//	v.vNormal = normal;
-	//	v.vTangent = Vec3(-sinf(Theta), cosf(Theta), 0.0f);  // 법선에 수직인 접선 벡터
-	//	v.vBinormal = Vec3(0.f, 0.f, 1.f);					 // Binormal은 z축을 가리킴
-	//
-	//	vecVtx.push_back(v);
-	//
-	//	// 인덱스 버퍼 구성
-	//	if (i < iSliceCount)
-	//	{
-	//		// 꼭지점(Top)과 밑면을 연결하는 인덱스
-	//		vecIdx.push_back(0);         // 꼭지점
-	//		vecIdx.push_back(i + 1);     // 현재 슬라이스 정점
-	//		vecIdx.push_back(i + 2);     // 다음 슬라이스 정점 (마지막 슬라이스는 wrap-around 처리)
-	//	}
-	//}
-	//
-	//// 밑면 중심점 추가
-	//v.vPos = Vec3(0.f, 0.f, 0.f);   // 밑면 중심
-	//v.vUV = Vec2(0.5f, 0.5f);
-	//v.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
-	//v.vNormal = Vec3(0.f, 0.f, -1.f); // 밑면은 -z 방향으로 법선
-	//v.vTangent = Vec3(1.f, 0.f, 0.f);
-	//v.vBinormal = Vec3(0.f, 1.f, 0.f);
-	//vecVtx.push_back(v);
-	//
-	//// 밑면 인덱스 추가 (마지막 정점이 밑면 중심이므로 그와 연결)
-	//UINT centerIndex = (UINT)vecVtx.size() - 1;
-	//for (UINT i = 1; i <= iSliceCount; ++i)
-	//{
-	//	vecIdx.push_back(centerIndex); // 밑면 중심
-	//	vecIdx.push_back(i + 1);       // 다음 슬라이스 정점
-	//	vecIdx.push_back(i);           // 현재 슬라이스 정점
-	//}
-	//
-	//// 메쉬 생성
-	//pMesh = new CMesh(true);
-	//pMesh->Create(vecVtx.data(), (UINT)vecVtx.size(), vecIdx.data(), (UINT)vecIdx.size());
-	//AddAsset(L"ConeMesh", pMesh);
-	//
-	//vecVtx.clear();
-	//vecIdx.clear();
 }
 
 void CAssetMgr::CreateEngineMaterial()
@@ -676,6 +603,27 @@ void CAssetMgr::CreateEngineMaterial()
 	pMtrl = new CMaterial(true);
 	pMtrl->SetShader(FindAsset<CGraphicShader>(L"DirLightShadowMap"));
 	AddAsset(L"DirLightShadowMapMtrl", pMtrl);
+
+	// SpotLightShadowMapMtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(FindAsset<CGraphicShader>(L"SpotLightShadowMap"));
+	AddAsset(L"SpotLightShadowMapMtrl", pMtrl);
+
+	// TessTestMtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(FindAsset<CGraphicShader>(L"TessTestShader"));
+	AddAsset(L"TessTestMtrl", pMtrl);
+
+	// LandScapeMtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(FindAsset<CGraphicShader>(L"LandScapeShader"));
+	AddAsset(L"LandScapeMtrl", pMtrl);
+
+	// ShadowBlurMtrl
+
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(FindAsset<CGraphicShader>(L"ShadowBlurShader"));
+	AddAsset(L"ShadowBlurMtrl", pMtrl);
 }
 
 void CAssetMgr::CreateEngineTexture()
@@ -1023,6 +971,57 @@ void CAssetMgr::CreateEngineGraphicShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_SHADOWMAP);
 
 	AddAsset(L"DirLightShadowMap", pShader);
+
+	// SpotLightShadowMap
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\shadowmap.fx", "VS_SpotLightShadowMap");
+	pShader->CreatePixelShader(L"shader\\shadowmap.fx", "PS_SpotLightShadowMap");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_SHADOWMAP);
+
+	AddAsset(L"SpotLightShadowMap", pShader);
+
+	// TessTest Shader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\test_tess.fx", "VS_Tess");
+	pShader->CreateHullShader(L"shader\\test_tess.fx", "HS_Tess");
+	pShader->CreateDomainShader(L"shader\\test_tess.fx", "DS_Tess");
+	pShader->CreatePixelShader(L"shader\\test_tess.fx", "PS_Tess");
+	pShader->SetRSType(RS_TYPE::WIRE_FRAME);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_OPAQUE);
+
+	pShader->AddScalarParam(FLOAT_0, "TessFactor");
+
+	AddAsset(L"TessTestShader", pShader);
+
+	// LandScape Shader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\landscape.fx", "VS_LandScape");
+	pShader->CreateHullShader(L"shader\\landscape.fx", "HS_LandScape");
+	pShader->CreateDomainShader(L"shader\\landscape.fx", "DS_LandScape");
+	pShader->CreatePixelShader(L"shader\\landscape.fx", "PS_LandScape");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetDSType(DS_TYPE::LESS);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED);
+
+	AddAsset(L"LandScapeShader", pShader);
+
+	// ShadowBlurShader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\shadowblur.fx", "VS_ShadowBlur");
+	pShader->CreatePixelShader(L"shader\\shadowblur.fx", "PS_ShadowBlur");
+	pShader->SetRSType(RS_TYPE::CULL_NONE);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetBSType(BS_TYPE::ALPHABLEND);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_SHADOWBLUR);
+	AddAsset(L"ShadowBlurShader", pShader);
 }
 
 #include "CParticleTickCS.h"

@@ -181,6 +181,7 @@
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="Inspector.h" />
+    <ClInclude Include="LandScapeUI.h" />
     <ClInclude Include="LevelEditor.h" />
     <ClInclude Include="Light2DUI.h" />
     <ClInclude Include="Light3DUI.h" />
@@ -258,6 +259,7 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Inspector.cpp" />
     <ClCompile Include="Inspector_Init.cpp" />
+    <ClCompile Include="LandScapeUI.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="Light2DUI.cpp" />
     <ClCompile Include="Light3DUI.cpp" />

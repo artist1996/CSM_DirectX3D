@@ -20,7 +20,7 @@ CGameObject::CGameObject()
 	, m_LayerIdx(-1)	// 최초 생성 시 어느 레이어 소속도 아니다(레벨안에 있지 않은 상태)
 	, m_Dead(false)
 	, m_GroundCollision(false)
-	, m_Color(0.f)
+	, m_Color(0)
 	, m_FontScale(0.f)
 	, m_Active(true)
 {

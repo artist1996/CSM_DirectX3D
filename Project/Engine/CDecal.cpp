@@ -17,7 +17,7 @@ CDecal::~CDecal()
 
 void CDecal::FinalTick()
 {
-	DrawDebugCube(Transform()->GetWorldMatrix(), Vec4(0.f, 1.f, 0.f, 1.f), 0, true);
+	DrawDebugCube(Transform()->GetWorldMat(), Vec4(0.f, 1.f, 0.f, 1.f), 0, true);
 }
 
 void CDecal::Render()

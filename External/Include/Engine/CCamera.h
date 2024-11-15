@@ -26,6 +26,8 @@ private:
     float                m_ProjectionScale;  
                          
     float                m_FOV;             // Field Of View (시야 범위, 시야 각) 원근 투영 시
+
+    tRay                 m_Ray;
                          
     Matrix               m_matView;
     Matrix               m_matViewInv;
@@ -41,6 +43,8 @@ private:
     vector<CGameObject*> m_vecEffect;       // 2D Effect
     vector<CGameObject*> m_vecPostProcess;  // 후처리
     vector<CGameObject*> m_vecUI;           // UI
+
+    vector<CGameObject*> m_vecShadowMap;    // ShadowMap
 
     bool                 m_ZoomIn;
     bool                 m_ZoomOut;
@@ -80,6 +84,8 @@ public:
     
     bool GetLayerCheck(int _LayerIdx) { return m_LayerCheck & (1 << _LayerIdx); }
 
+    const tRay& GetRay()          { return m_Ray; }
+
     const Matrix& GetViewMat()    { return m_matView; }
     const Matrix& GetViewMatInv() { return m_matViewInv; }
     const Matrix& GetProjMat()    { return m_matProj; }
@@ -93,8 +99,10 @@ public:
     virtual void Begin() override;
     virtual void FinalTick() override;
 
-private:
+public:
     void SortGameObject();
+    void SortGameObject_ShadowMap();
+    void SortGameObject_ShadowBlur();
 
     void render_deferred();
     void render_decal();
@@ -107,7 +115,14 @@ private:
     void render_postprocess();
     void render_ui();
 
+    void render_shadowmap();
+    void render_shadowblur();
+
     void clear();
+
+private:
+    void CalcRay();
+        
 
 public:
     CLONE(CCamera);

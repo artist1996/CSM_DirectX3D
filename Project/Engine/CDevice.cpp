@@ -459,13 +459,13 @@ int CDevice::CreateBlendState()
 
 	// Src + Dest (Additive Blending)
 	Desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	Desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	Desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	Desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	Desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 
 	Desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	Desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-	Desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
-
+	Desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	Desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	
 	if (FAILED(DEVICE->CreateBlendState(&Desc, m_BSState[(UINT)BS_TYPE::ADDITIVE].GetAddressOf())))
 	{
 		return E_FAIL;
@@ -539,6 +539,25 @@ int CDevice::CreateSamplerState()
 		return E_FAIL;
 	}
 
+	Desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	Desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	Desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	Desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // 포인트 필터링
+	Desc.MipLODBias = 0.f;
+	Desc.MaxAnisotropy = 1.f;
+	Desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	Desc.BorderColor[0] = 0.f;
+	Desc.BorderColor[1] = 0.f;
+	Desc.BorderColor[2] = 0.f;
+	Desc.BorderColor[3] = 0.f;
+	Desc.MinLOD = 0;
+	Desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	if (FAILED(DEVICE->CreateSamplerState(&Desc, m_Sampler[3].GetAddressOf())))
+	{
+		return E_FAIL;
+	}
+
 	CONTEXT->VSSetSamplers(0, 1, m_Sampler[0].GetAddressOf());
 	CONTEXT->HSSetSamplers(0, 1, m_Sampler[0].GetAddressOf());
 	CONTEXT->DSSetSamplers(0, 1, m_Sampler[0].GetAddressOf());
@@ -559,6 +578,13 @@ int CDevice::CreateSamplerState()
 	CONTEXT->GSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
 	CONTEXT->PSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
 	CONTEXT->CSSetSamplers(2, 1, m_Sampler[2].GetAddressOf());
+
+	CONTEXT->VSSetSamplers(3, 1, m_Sampler[3].GetAddressOf());
+	CONTEXT->HSSetSamplers(3, 1, m_Sampler[3].GetAddressOf());
+	CONTEXT->DSSetSamplers(3, 1, m_Sampler[3].GetAddressOf());
+	CONTEXT->GSSetSamplers(3, 1, m_Sampler[3].GetAddressOf());
+	CONTEXT->PSSetSamplers(3, 1, m_Sampler[3].GetAddressOf());
+	CONTEXT->CSSetSamplers(3, 1, m_Sampler[3].GetAddressOf());
 
 	return S_OK;
 }

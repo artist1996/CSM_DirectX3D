@@ -35,4 +35,10 @@ void BoundingBoxUI::Update()
 	{
 		pBoundingBox->SetOffset(fOffset);
 	}
+
+	bool& IsRender = pBoundingBox->IsDebugRender();
+	ImGui::Text("Debug Render");
+	ImGui::SameLine(100);
+	ImGui::Checkbox("##BoundingBoxDebugRender", &IsRender);
+
 }

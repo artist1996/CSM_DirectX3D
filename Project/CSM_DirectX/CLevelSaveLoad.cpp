@@ -262,7 +262,9 @@ CComponent* CLevelSaveLoad::GetComponent(COMPONENT_TYPE _Type)
 	case COMPONENT_TYPE::SKYBOX:
 		return new CSkyBox;
 	case COMPONENT_TYPE::LANDSCAPE:
-		break;
+		return new CLandScape;
+	case COMPONENT_TYPE::BOUNDINGBOX:
+		return new CBoundingBox;
 	}
 	return nullptr;
 }

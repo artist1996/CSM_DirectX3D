@@ -9,12 +9,13 @@ private:
 
     Ptr<CMesh>      m_VolumeMesh;
     Ptr<CMaterial>  m_LightMtrl;
-    Ptr<CTexture>   m_ShadowMapTex;
 
     Ptr<CMaterial>  m_ShadowMapMtrl;
     class CMRT*     m_ShadowMapMRT;
 
     CGameObject*    m_Cam;           // 광원이 보유한 카메라
+
+    Vec3            m_TargetPos;
 
 public:
     void SetLightType(LIGHT_TYPE _Type);

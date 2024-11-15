@@ -11,6 +11,12 @@ struct Vtx
 	Vec3    vBinormal;
 };
 
+struct tRay
+{
+	Vec3 vStart;	// Ray 의 시작 지점
+	Vec3 vDir;		// Ray 의 방향
+};
+
 // ====================
 // 상수 버퍼 연동 구조체
 // ====================

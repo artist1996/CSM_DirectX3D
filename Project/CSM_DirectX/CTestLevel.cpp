@@ -57,23 +57,6 @@ void CTestLevel::CreateTestLevel()
 	CGameObject* pObject = nullptr;
 
 	// 3D 광원 추가
-	//pObject = new CGameObject;
-	//pObject->SetName(L"Point Light");
-	//pObject->AddComponent(new CTransform);
-	//pObject->AddComponent(new CLight3D);
-	//
-	////pObject->Transform()->SetRelativePos(Vec3(-300.f, 0.f, 0.f));
-	//pObject->Transform()->SetRelativeRotation(XM_PI / 4.f, XM_PI / 4.f, 0.f);
-	//
-	//pObject->Light3D()->SetLightType(LIGHT_TYPE::POINT);
-	//pObject->Light3D()->SetLightColor(Vec3(1.f, 0.5f, 0.5f));
-	//pObject->Light3D()->SetLightAmbient(Vec3(0.f, 0.f, 0.f));
-	//pObject->Light3D()->SetSpecularCoefficient(0.3f);
-	//pObject->Light3D()->SetRadius(800.f);
-	//
-	//pLevel->AddObject(0, pObject);
-
-	// 3D 광원 추가
 	pObject = new CGameObject;
 	pObject->SetName(L"Directional");
 	pObject->AddComponent(new CTransform);
@@ -82,7 +65,22 @@ void CTestLevel::CreateTestLevel()
 	pObject->Transform()->SetRelativePos(Vec3(-300.f, 0.f, 0.f));
 	pObject->Transform()->SetRelativeRotation(XM_PI / 4.f, XM_PI / 4.f, 0.f);
 	
-	pObject->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+	//pObject->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
+	pObject->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
+	pObject->Light3D()->SetLightAmbient(Vec3(0.1f, 0.1f, 0.1f));
+	pObject->Light3D()->SetSpecularCoefficient(0.3f);
+	
+	pLevel->AddObject(0, pObject);
+
+	pObject = new CGameObject;
+	pObject->SetName(L"Directional");
+	pObject->AddComponent(new CTransform);
+	pObject->AddComponent(new CLight3D);
+
+	pObject->Transform()->SetRelativePos(Vec3(-300.f, 0.f, 0.f));
+	pObject->Transform()->SetRelativeRotation(XM_PI / 4.f, XM_PI / 4.f, 0.f);
+
+	//pObject->Light3D()->SetLightType(LIGHT_TYPE::DIRECTIONAL);
 	pObject->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 	pObject->Light3D()->SetLightAmbient(Vec3(0.1f, 0.1f, 0.1f));
 	pObject->Light3D()->SetSpecularCoefficient(0.3f);
@@ -93,16 +91,16 @@ void CTestLevel::CreateTestLevel()
 	pObject->SetName(L"PointLight");
 	pObject->AddComponent(new CTransform);
 	pObject->AddComponent(new CLight3D);
-
+	
 	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 	pObject->Transform()->SetRelativeRotation(XM_PI / 4.f, XM_PI / 4.f, 0.f);
-
+	
 	pObject->Light3D()->SetLightType(LIGHT_TYPE::POINT);
 	pObject->Light3D()->SetLightColor(Vec3(1.f, 1.f, 1.f));
 	pObject->Light3D()->SetRadius(500.f);
 	//pObject->Light3D()->SetLightAmbient(Vec3(0.1f, 0.1f, 0.1f));
 	pObject->Light3D()->SetSpecularCoefficient(0.3f);
-
+	
 	pLevel->AddObject(0, pObject);
 	
 
@@ -112,11 +110,10 @@ void CTestLevel::CreateTestLevel()
 	pObject->AddComponent(new CTransform);
 	pObject->AddComponent(new CLight3D);
 	
-	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 1500.f));
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
 	
 	pObject->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
 	pObject->Light3D()->SetLightColor(Vec3(0.9f, 0.9f, 0.9f));
-	//pObject->Light3D()->SetLightAmbient(Vec3(0.f, 0.1f, 0.1f));
 	pObject->Light3D()->SetSpecularCoefficient(0.3f);
 	pObject->Light3D()->SetAngle(XM_PI / 2.f);
 	pObject->Light3D()->SetRadius(500.f);
@@ -135,11 +132,11 @@ void CTestLevel::CreateTestLevel()
 
 	//Ptr<CTexture> pSkyBoxTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\skybox\\SkyWater.dds");
 	//pSkyBox->SkyBox()->SetSkyBoxTexture(pSkyBoxTex);
-	//pSkyBox->SkyBox()->SetSkyBoxType(CUBE);		
+	//pSkyBox->SkyBox()->SetSkyBoxType(SKYBOX_TYPE::CUBE);
 
 	Ptr<CTexture> pSkyBoxTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\skybox\\Sky02.jpg");
 	pSkyBox->SkyBox()->SetSkyBoxTexture(pSkyBoxTex);
-	//pSkyBox->SkyBox()->SetSkyBoxType(SKYBOX_TYPE::SPHERE);
+	pSkyBox->SkyBox()->SetSkyBoxType(SKYBOX_TYPE::SPHERE);
 
 	pLevel->AddObject(0, pSkyBox);
 
@@ -154,69 +151,10 @@ void CTestLevel::CreateTestLevel()
 
 	pPlayer->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
 	pPlayer->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
+	pPlayer->MeshRender()->GetDynamicMaterial();
+	//pPlayer->MeshRender()->GetMaterial()->SetTexParam(TEXCUBE_0, pSkyBoxTex);
 
 	pLevel->AddObject(3, pPlayer);
-
-	// 플레이어 오브젝트
-	CGameObject* pPlane = new CGameObject;
-	pPlane->SetName(L"Plane");
-	pPlane->AddComponent(new CTransform);
-	pPlane->AddComponent(new CMeshRender);
-	pPlane->AddComponent(new CPlayerScript);
-
-	pPlane->Transform()->SetRelativePos(0.f, -500.f, 0.f);
-	pPlane->Transform()->SetRelativeScale(4000.f, 4000.f, 1.f);
-	pPlane->Transform()->SetRelativeRotation(Vec3(XM_PI / 2.f, 0.f, 0.f));
-
-	pPlane->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
-	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
-
-	pLevel->AddObject(3, pPlane);
-
-	pPlane = new CGameObject;
-	pPlane->SetName(L"Plane");
-	pPlane->AddComponent(new CTransform);
-	pPlane->AddComponent(new CMeshRender);
-	pPlane->AddComponent(new CPlayerScript);
-
-	pPlane->Transform()->SetRelativePos(0.f, 1500.f, 2000.f);
-	pPlane->Transform()->SetRelativeScale(4000.f, 4000.f, 1.f);
-	pPlane->Transform()->SetRelativeRotation(Vec3(0.f, 0.f, 0.f));
-
-	pPlane->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
-	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
-
-	pLevel->AddObject(3, pPlane);
-
-	pPlane = new CGameObject;
-	pPlane->SetName(L"Plane");
-	pPlane->AddComponent(new CTransform);
-	pPlane->AddComponent(new CMeshRender);
-	pPlane->AddComponent(new CPlayerScript);
-
-	pPlane->Transform()->SetRelativePos(2000.f, 1500.f, 0.f);
-	pPlane->Transform()->SetRelativeScale(4000.f, 4000.f, 1.f);
-	pPlane->Transform()->SetRelativeRotation(Vec3(0.f, XM_PI / 2.f, 0.f));
-
-	pPlane->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
-	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
-
-	pLevel->AddObject(3, pPlane);
-
-	pPlane = new CGameObject;
-	pPlane->SetName(L"Plane");
-	pPlane->AddComponent(new CTransform);
-	pPlane->AddComponent(new CMeshRender);
-	pPlane->AddComponent(new CPlayerScript);
-
-	pPlane->Transform()->SetRelativePos(-2000.f, 1500.f, 0.f);
-	pPlane->Transform()->SetRelativeScale(4000.f, 4000.f, 1.f);
-	pPlane->Transform()->SetRelativeRotation(Vec3(0.f, XM_PI / 2.f, 0.f));
-
-	pPlane->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
-	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
-
-	pLevel->AddObject(3, pPlane);
 
 	// Decal Object 추가
 	CGameObject* pDecal = new CGameObject;
@@ -233,26 +171,24 @@ void CTestLevel::CreateTestLevel()
 
 	ChangeLevel(pLevel, LEVEL_STATE::STOP);
 
-	pPlane = new CGameObject;
-	pPlane->SetName(L"Plane");
-	pPlane->AddComponent(new CTransform);
-	pPlane->AddComponent(new CMeshRender);
-	pPlane->AddComponent(new CPlayerScript);
+	// LandScape 추가
+	CGameObject* pLandScape = new CGameObject;
+	pLandScape->SetName(L"LandScape");
+	pLandScape->AddComponent(new CTransform);
+	pLandScape->AddComponent(new CLandScape);
 
-	pPlane->Transform()->SetRelativePos(0.f, 0.f, 0.f);
-	pPlane->Transform()->SetRelativeScale(0.f, 0.f, 1.f);
-	pPlane->Transform()->SetRelativeRotation(Vec3(0.f, 0.f, 0.f));
+	pLandScape->Transform()->SetRelativePos(0.f, 0.f, 0.f);
+	pLandScape->Transform()->SetRelativeScale(1000.f, 3000.f, 1000.f);
 
-	pPlane->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"ConeMesh"));
-	pPlane->MeshRender()->SetMaterial(pStd3D_DefferedMtrl);
-	pPlane->MeshRender()->GetDynamicMaterial();
-	//pPlane->MeshRender()->GetMaterial()->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\spotlight.png"));
+	pLandScape->LandScape()->SetFace(16, 16);
+	pLandScape->LandScape()->SetHeightMap(CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\HeightMap_01.jpg"));
+	pLandScape->LandScape()->CreateHeightMap(1024, 1024);
 
-	pLevel->AddObject(3, pPlane);
+	pLevel->AddObject(0, pLandScape);
 
 	// 충돌 지정
 	CCollisionMgr::GetInst()->CollisionCheck(3, 4); // Player vs Monster
-	CCollisionMgr::GetInst()->CollisionCheck(5, 4); // Player Projectile vs Monster	
+	CCollisionMgr::GetInst()->CollisionCheck(5, 4); // Player Projectile vs Monster
 }
 
 void CTestLevel::CreatePrefab()

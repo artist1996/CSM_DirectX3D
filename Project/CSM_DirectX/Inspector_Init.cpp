@@ -29,6 +29,7 @@
 #include "SkyBoxUI.h"
 #include "DecalUI.h"
 #include "BoundingBoxUI.h"
+#include "LandScapeUI.h"
 
 #include "ScriptUI.h"
 
@@ -120,6 +121,11 @@ void Inspector::CreateComponentUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX]->SetName("BoundingBoxUI");
 	m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX]->SetChildBorder(true);
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::BOUNDINGBOX]);
+
+	m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE] = new LandScapeUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE]->SetName("LandScapeUI");
+	m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE]->SetChildBorder(true);
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE]);
 }
 
 void Inspector::CreateAssetUI()

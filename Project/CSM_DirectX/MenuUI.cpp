@@ -407,6 +407,34 @@ void MenuUI::AddComponent()
 			pObject->AddComponent(new CDecal);
 		}
 
+		if (ImGui::MenuItem("Bounding Box"))
+		{
+			Inspector* pInspector = (Inspector*)CEditorMgr::GetInst()->FindEditorUI("Inspector");
+			CGameObject* pObject = pInspector->GetTargetObject();
+
+			if (nullptr == pObject)
+			{
+				ImGui::EndMenu();
+				return;
+			}
+
+			pObject->AddComponent(new CBoundingBox);
+		}
+
+		if (ImGui::MenuItem("LandScape"))
+		{
+			Inspector* pInspector = (Inspector*)CEditorMgr::GetInst()->FindEditorUI("Inspector");
+			CGameObject* pObject = pInspector->GetTargetObject();
+
+			if (nullptr == pObject)
+			{
+				ImGui::EndMenu();
+				return;
+			}
+
+			pObject->AddComponent(new CLandScape);
+		}
+
 		ImGui::EndMenu();
 	}
 }

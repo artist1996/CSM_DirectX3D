@@ -5,7 +5,7 @@
 
 ViewportUI::ViewportUI()
 {
-	SetMove(false);
+	SetMove(true);
 	SetHorizontalScrollBar(false);
 }
 

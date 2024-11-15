@@ -148,6 +148,7 @@ enum SHADER_DOMAIN
 
 	DOMAIN_DEBUG,		// 디버그
 	DOMAIN_SHADOWMAP,	// ShadowMap
+	DOMAIN_SHADOWBLUR,  // ShadowBlur
 
 
 	DOMAIN_NONE,		// None
@@ -237,6 +238,7 @@ enum class MRT_TYPE
 	LIGHT,		 // 3개
 	DECAL,		 // 2개
 	SHADOWMAP,	 // 1개
+	SHADOWBLUR,
 
 
 	END,

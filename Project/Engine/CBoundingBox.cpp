@@ -7,6 +7,7 @@ CBoundingBox::CBoundingBox()
 	: CComponent(COMPONENT_TYPE::BOUNDINGBOX)
 	, m_Offset(1.f)
 	, m_Radius(0.f)
+	, m_DebugRender(false)
 {
 }
 
@@ -22,7 +23,8 @@ void CBoundingBox::FinalTick()
 
 
 #ifdef _DEBUG
-	DrawDebugSphere(Transform()->GetWorldPos(), m_Radius, Vec4(0.f, 1.f, 0.f, 1.f), 0.f, false);
+	if(m_DebugRender)
+		DrawDebugSphere(Transform()->GetWorldPos(), m_Radius, Vec4(0.f, 1.f, 0.f, 1.f), 0.f, false);
 #endif
 }
 

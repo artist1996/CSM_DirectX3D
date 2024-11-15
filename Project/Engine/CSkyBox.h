@@ -27,6 +27,7 @@ public:
 public:
     virtual void FinalTick() override;
     virtual void Render()    override;
+    virtual void render_shadowmap() override {}
 
 public:
     virtual void SaveToFile(FILE* _pFile)   override;

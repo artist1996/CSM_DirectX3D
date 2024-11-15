@@ -121,14 +121,37 @@ void CRenderMgr::CreateMRT()
 											, (UINT)vResolution.x, (UINT)vResolution.y
 											, DXGI_FORMAT_R32G32B32A32_FLOAT
 											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			CAssetMgr::GetInst()->CreateTexture(L"ShadowTargetTex"
+											, (UINT)vResolution.x, (UINT)vResolution.y
+											, DXGI_FORMAT_R32G32B32A32_FLOAT
+											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 		};
 		Ptr<CTexture> pDSTex = nullptr;
 		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
 
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT] = new CMRT;
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetName(L"Light");
-		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(2, arrRT, pDSTex);
+		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(3, arrRT, pDSTex);
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetClearColor(arrClearColor, false);
+	}
+
+	// ===============
+	// ShadowBlur MRT
+	// ===============
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"ShadowBlurTex"
+											, (UINT)vResolution.x, (UINT)vResolution.y
+											, DXGI_FORMAT_R32G32B32A32_FLOAT
+											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE), };
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+
+		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR]->SetName(L"ShadowBlur");
+		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR]->Create(1, arrRT, nullptr);
+		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR]->SetClearColor(arrClearColor, false);
 	}
 
 	// =====
@@ -206,7 +229,6 @@ void CRenderMgr::CreateMaterial()
 	pMtrl->SetTexParam(TEX_1, CAssetMgr::GetInst()->FindAsset<CTexture>(L"NormalTargetTex"));
 	CAssetMgr::GetInst()->AddAsset(L"SpotLightMtrl", pMtrl);
 
-
 	// MergeShader
 	pShader = new CGraphicShader;
 	pShader->CreateVertexShader(L"shader\\merge.fx", "VS_Merge");
@@ -223,6 +245,7 @@ void CRenderMgr::CreateMaterial()
 	m_MergeMtrl->SetTexParam(TEX_1, CAssetMgr::GetInst()->FindAsset<CTexture>(L"DiffuseTargetTex"));
 	m_MergeMtrl->SetTexParam(TEX_2, CAssetMgr::GetInst()->FindAsset<CTexture>(L"SpecularTargetTex"));
 	m_MergeMtrl->SetTexParam(TEX_3, CAssetMgr::GetInst()->FindAsset<CTexture>(L"EmissiveTargetTex"));
+	m_MergeMtrl->SetTexParam(TEX_4, CAssetMgr::GetInst()->FindAsset<CTexture>(L"ShadowBlurTex"));
 
 	// RectMesh
 	m_RectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");

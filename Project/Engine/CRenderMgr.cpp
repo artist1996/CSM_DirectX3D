@@ -181,6 +181,24 @@ void CRenderMgr::RenderDebugShape()
 	}
 }
 
+CCamera* CRenderMgr::GetPOVCam()
+{
+	CLevel* pCurLevel = CLevelMgr::GetInst()->GetCurrentLevel();
+
+	if (nullptr == pCurLevel)
+		return nullptr;
+
+	if (LEVEL_STATE::PLAY == pCurLevel->GetState())
+	{
+		if (m_vecCam.empty())
+			return nullptr;
+
+		return m_vecCam[0];
+	}
+	else
+		return m_EditorCamera;
+}
+
 void CRenderMgr::RenderStart()
 {
 	// Output Merge State (출력 병합 단계)
@@ -249,6 +267,15 @@ void CRenderMgr::RenderStart()
 
 void CRenderMgr::Render(CCamera* _Cam)
 {
+	// ================
+	// Create ShadowMap
+	// ================
+	// 광원 시점에서 물체들의 깊이를 기록
+	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
+	{
+		m_vecLight3D[i]->CreateShadowMap();
+	}
+
 	// 오브젝트 분류
 	_Cam->SortGameObject();
 
@@ -261,15 +288,6 @@ void CRenderMgr::Render(CCamera* _Cam)
 
 	// MRT 모두 클리어
 	ClearMRT();
-
-	// ================
-	// Create ShadowMap
-	// ================
-	// 광원 시점에서 물체들의 깊이를 기록
-	//for (size_t i = 0; i < m_vecLight3D.size(); ++i)
-	//{
-	//	m_vecLight3D[i]->CreateShadowMap();
-	//}
 
 	// ==================
 	// DEFERRED RENDERING
@@ -292,6 +310,9 @@ void CRenderMgr::Render(CCamera* _Cam)
 	{
 		m_vecLight3D[i]->Render();
 	}
+
+	// Shadow Blur
+	_Cam->render_shadowblur();
 
 	// ===================================
 	// MERGE ALBEDO + LIGHTS ==> SwapChain

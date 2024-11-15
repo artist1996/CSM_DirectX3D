@@ -164,7 +164,7 @@
       <Filter>04. Manager\09. FontMgr</Filter>
     </ClInclude>
     <ClInclude Include="CFSM.h">
-      <Filter>08. Component\10. FSM</Filter>
+      <Filter>08. Component\11. BoundingBox\10. FSM</Filter>
     </ClInclude>
     <ClInclude Include="CState.h">
       <Filter>Module</Filter>
@@ -189,6 +189,15 @@
     </ClInclude>
     <ClInclude Include="CBoundingBox.h">
       <Filter>08. Component\11. BoundingBox</Filter>
+    </ClInclude>
+    <ClInclude Include="CLandScape.h">
+      <Filter>08. Component\RenderComponent\06. LandScape</Filter>
+    </ClInclude>
+    <ClInclude Include="CHeightMapCS.h">
+      <Filter>HLSL\03. Compute Shader\03. LandScape\02. HeightMap</Filter>
+    </ClInclude>
+    <ClInclude Include="CRaycastCS.h">
+      <Filter>HLSL\03. Compute Shader\03. LandScape\01. Raycasting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -334,7 +343,7 @@
       <Filter>04. Manager\09. FontMgr</Filter>
     </ClCompile>
     <ClCompile Include="CFSM.cpp">
-      <Filter>08. Component\10. FSM</Filter>
+      <Filter>08. Component\11. BoundingBox\10. FSM</Filter>
     </ClCompile>
     <ClCompile Include="CState.cpp">
       <Filter>Module</Filter>
@@ -362,6 +371,18 @@
     </ClCompile>
     <ClCompile Include="CBoundingBox.cpp">
       <Filter>08. Component\11. BoundingBox</Filter>
+    </ClCompile>
+    <ClCompile Include="CLandScape.cpp">
+      <Filter>08. Component\RenderComponent\06. LandScape</Filter>
+    </ClCompile>
+    <ClCompile Include="CLandScape_Init.cpp">
+      <Filter>08. Component\RenderComponent\06. LandScape</Filter>
+    </ClCompile>
+    <ClCompile Include="CHeightMapCS.cpp">
+      <Filter>HLSL\03. Compute Shader\03. LandScape\02. HeightMap</Filter>
+    </ClCompile>
+    <ClCompile Include="CRaycastCS.cpp">
+      <Filter>HLSL\03. Compute Shader\03. LandScape\01. Raycasting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -524,17 +545,11 @@
     <Filter Include="HLSL\02. Render">
       <UniqueIdentifier>{6f314835-5a03-4c91-a83b-7766e21b791b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HLSL\02. Render\01. 2D">
-      <UniqueIdentifier>{65008b77-2500-4bc7-a78c-64efb871fe0c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HLSL\02. Render\03. PostProcess">
       <UniqueIdentifier>{1e562a1d-6dac-4001-9fb0-b5df1dc3409a}</UniqueIdentifier>
     </Filter>
     <Filter Include="04. Manager\10. RandomMgr">
       <UniqueIdentifier>{271755b3-f56b-4594-9c34-44f78cceefdc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="08. Component\10. FSM">
-      <UniqueIdentifier>{893487aa-3f50-4161-8c5f-38cb55d44684}</UniqueIdentifier>
     </Filter>
     <Filter Include="08. Component\09. Light3D">
       <UniqueIdentifier>{b4c7b94c-47e4-4605-bca4-70cd54e3bf8e}</UniqueIdentifier>
@@ -553,6 +568,21 @@
     </Filter>
     <Filter Include="HLSL\02. Render\02. 3D">
       <UniqueIdentifier>{4113b864-a737-486e-9143-724c4a43c1cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\02. Render\01. 2D">
+      <UniqueIdentifier>{65008b77-2500-4bc7-a78c-64efb871fe0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\11. BoundingBox\10. FSM">
+      <UniqueIdentifier>{893487aa-3f50-4161-8c5f-38cb55d44684}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\03. LandScape">
+      <UniqueIdentifier>{cd65e030-7f78-4590-bed1-4ee1d5862773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\03. LandScape\02. HeightMap">
+      <UniqueIdentifier>{172f4bc1-7b3d-4e8e-81d7-910be37e2614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\03. LandScape\01. Raycasting">
+      <UniqueIdentifier>{7289d7f0-5466-44aa-bf8d-4fef0876f316}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -614,6 +644,21 @@
     </FxCompile>
     <FxCompile Include="shadowmap.fx">
       <Filter>HLSL\02. Render\02. 3D</Filter>
+    </FxCompile>
+    <FxCompile Include="test_tess.fx">
+      <Filter>HLSL\02. Render\02. 3D</Filter>
+    </FxCompile>
+    <FxCompile Include="landscape.fx">
+      <Filter>HLSL\02. Render\02. 3D</Filter>
+    </FxCompile>
+    <FxCompile Include="shadowblur.fx">
+      <Filter>HLSL\02. Render\02. 3D</Filter>
+    </FxCompile>
+    <FxCompile Include="heightmap.fx">
+      <Filter>HLSL\03. Compute Shader\03. LandScape\02. HeightMap</Filter>
+    </FxCompile>
+    <FxCompile Include="raycast.fx">
+      <Filter>HLSL\03. Compute Shader\03. LandScape\01. Raycasting</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

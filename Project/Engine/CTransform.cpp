@@ -50,7 +50,7 @@ void CTransform::FinalTick()
 	if (GetOwner()->GetParent())
 	{
 		// 부모의 월드행렬을 곱해서 최종 월드행렬을 계산함
-		const Matrix& matParentWorldMat = GetOwner()->GetParent()->Transform()->GetWorldMatrix();
+		const Matrix& matParentWorldMat = GetOwner()->GetParent()->Transform()->GetWorldMat();
 		
 		if (m_IndependentScale)
 		{ 

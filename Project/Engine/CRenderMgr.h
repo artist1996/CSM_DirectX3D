@@ -46,6 +46,7 @@ public:
 	Ptr<CTexture> GetCopyTex()	 { return m_CopyTex; }
 
 	CMRT* GetMRT(MRT_TYPE _Type) { return m_arrMRT[(UINT)_Type]; }
+	CCamera* GetPOVCam();
 
 private:
 	void RenderStart();

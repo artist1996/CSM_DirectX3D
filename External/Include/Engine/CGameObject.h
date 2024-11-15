@@ -98,6 +98,7 @@ public:
     GET_COMPONENT(SkyBox, SKYBOX);
     GET_COMPONENT(Decal, DECAL);
     GET_COMPONENT(BoundingBox, BOUNDINGBOX);
+    GET_COMPONENT(LandScape, LANDSCAPE);
 
 public:
     void Begin();

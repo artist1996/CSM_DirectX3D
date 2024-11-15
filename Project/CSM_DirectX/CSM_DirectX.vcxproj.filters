@@ -196,6 +196,9 @@
     <Filter Include="02. EditorUI\01. Inspector\ComponentUI\14. BoundingBoxUI">
       <UniqueIdentifier>{ed6e260f-1d18-4f1a-9689-608ff6f3d1ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. EditorUI\01. Inspector\ComponentUI\15. LandScapeUI">
+      <UniqueIdentifier>{703c1209-b091-43e3-b87b-afbe56c48bef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CGameObjectEx.h">
@@ -420,6 +423,9 @@
     <ClInclude Include="BoundingBoxUI.h">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\14. BoundingBoxUI</Filter>
     </ClInclude>
+    <ClInclude Include="LandScapeUI.h">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\15. LandScapeUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -638,6 +644,9 @@
     </ClCompile>
     <ClCompile Include="BoundingBoxUI.cpp">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\14. BoundingBoxUI</Filter>
+    </ClCompile>
+    <ClCompile Include="LandScapeUI.cpp">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\15. LandScapeUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

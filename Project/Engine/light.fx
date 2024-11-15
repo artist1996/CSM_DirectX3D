@@ -26,7 +26,16 @@ struct VS_OUT
 #define LIGHT_IDX       g_int_0
 #define POS_TARGET      g_tex_0
 #define NORMAL_TARGET   g_tex_1
+#define SHADOWMAP       g_tex_2
+
+#define LIGHT_VP        g_mat_0
 // ================================
+
+float3 ApplyFog(float3 _Color, float _Depth, float3 _FogColor, float _FogStart, float _FogEnd)
+{
+    float fogAmount = saturate((_Depth - _FogStart) / (_FogEnd - _FogStart));
+    return lerp(_Color, _FogColor, fogAmount);
+}
 
 VS_OUT VS_DirLight(VS_IN _in)
 {
@@ -41,13 +50,16 @@ VS_OUT VS_DirLight(VS_IN _in)
 
 struct PS_OUT
 {
-    float4 vDiffuse  : SV_TARGET;
-    float4 vSpecular : SV_TARGET1;
+    float4 vDiffuse  : SV_Target;
+    float4 vSpecular : SV_Target1;
+    float4 vShadow   : SV_Target2;
 };
 
 PS_OUT PS_DirLight(VS_OUT _in)
 {
     PS_OUT output = (PS_OUT) 0.f;
+    
+    float4 ShadowMapColor = 0.f;
     
     // Render Target 들의 해상도는 전부 동일하니 UV 값으로 PositionTarget, NormalTarget 을 참조 해 Position 과 Normal 값을 가져온다.
     float4 vViewPos     = POS_TARGET.Sample(g_sam_0, _in.vUV);
@@ -56,17 +68,56 @@ PS_OUT PS_DirLight(VS_OUT _in)
     if(0.f == vViewPos.w)
         discard;
     
+    float2 vShadowMapUV = (float2) 0.f;
+    int bShadow = false;
+    //float2 vShadowMapUV = float2(0.f, 0.f);
+    if(g_btex_2)
+    {
+        // 빛을 받을 지점(ViewPos) 을 WorldPos 로 변경하고, 광원시점으로 투영시킨다.
+        float3 vWorldPos = mul(float4(vViewPos.xyz, 1.f), matViewInv).xyz;
+        float4 vProjPos = mul(float4(vWorldPos, 1.f), LIGHT_VP);
+        vProjPos.xyz = vProjPos.xyz / vProjPos.w;
+        
+        // 광원으로 투영시킨 NDC 좌표를 UV 로 변환해서 광원시점에 기록된 물체의 깊이를 확인한다.
+        vShadowMapUV = float2((vProjPos.x + 1.f) * 0.5f, 1.f - (vProjPos.y + 1.f) * 0.5f);
+        float fDist = g_tex_2.Sample(g_sam_3, vShadowMapUV).x;
+        
+        // 광원 시점에서 물체가 기록된 범위(시야 범위) 이내에서만 테스트를 진행한다.
+        if (0.f < vShadowMapUV.x && vShadowMapUV.x < 1.f
+            && 0.f < vShadowMapUV.y && vShadowMapUV.y < 1.f)
+        {
+            // 광원시점에서 기록된 깊이값과, 투영된 깊이를 비교한다.
+            // 기록된 깊이보다 현재 투영시킨 깊이가 더 길다면, 광원시점에서 가려진 지점이다 ==> 그림자가 생겨야 한다.
+            if (fDist + 0.0001f < vProjPos.z)
+            {
+                bShadow = true;
+            }
+        }
+    }
+    
     float3 vViewNormal  = NORMAL_TARGET.Sample(g_sam_0, _in.vUV).xyz;
     
     tLight light    = (tLight) 0.f;
     CalculateLight3D(LIGHT_IDX, vViewNormal, vViewPos.xyz, light);
     
-    output.vDiffuse  = light.Color + light.Ambient;
-    output.vSpecular = light.SpecCoef;
+    if(bShadow)
+    {
+        output.vShadow = float4(0.f, 0.f, 0.f, 1.f);
+        //output.vDiffuse = light.Color + light.Ambient * 0.1f;
+    }
+    else
+    {
+        output.vShadow = float4(1.f, 1.f, 1.f, 1.f);
+        output.vSpecular = light.SpecCoef;
+        //output.vDiffuse = light.Color + light.Ambient;
+    }
     
+    //output.vDiffuse = float4(ApplyFog(output.vDiffuse.rgb, length(vViewPos.xyz), float3(0.f, 1.f, 0.f), 0.f, 10000.f), output.vDiffuse.a);
+
+    output.vDiffuse = light.Color + light.Ambient;
     output.vDiffuse.a  = 1.f;
     output.vSpecular.a = 1.f;
-    
+        
     return output;
 }
 
@@ -168,7 +219,7 @@ PS_OUT PS_SpotLight(VS_OUT _in)
     // Pixel 의 Position 으로 UV 값을 계산
     float2 vScreenUV = _in.vPosition.xy / g_Resolution;
     float4 vViewPos = POS_TARGET.Sample(g_sam_0, vScreenUV);
-    
+       
     if (0.f == vViewPos.w)
         discard;
     
@@ -178,14 +229,6 @@ PS_OUT PS_SpotLight(VS_OUT _in)
     
     // World 상에 있는 물체의 좌표를, Volume Mesh 의 월드 역행렬을 곱해서 Local 공간으로 데려간다.
     float3 vLocalPos = mul(float4(vWorldPos, 1.f), matWorldInv).xyz;
-           
-    //float ConeVolume = ((1.f / 3.f) * PI) * pow(0.5f, 2) * 1.f;
-    
-    //if (vLocalPos.z <= 2 * sqrt(pow(vLocalPos.x, 2) + pow(vLocalPos.y, 2)))
-    //    discard;
-    
-    //if (ConeVolume >= length(vLocalPos))
-    //    discard;
     
     float Height = 1.f;
     float Radius = 0.5f;
@@ -197,21 +240,21 @@ PS_OUT PS_SpotLight(VS_OUT _in)
     float3 Cone = float3(0.f,0.f, Height);
     
     float Dot = dot(normalize(vLocalPos), Cone);
-    
+      
     if(Dot < CosTheta)
         discard;
-    
-    float3 vViewNormal = NORMAL_TARGET.Sample(g_sam_0, vScreenUV).xyz;
-    
-    tLight light = (tLight) 0.f;
         
+    tLight light = (tLight) 0.f;
+
+    float3 vViewNormal = NORMAL_TARGET.Sample(g_sam_0, vScreenUV).xyz;
+
     CalculateLight3D(LIGHT_IDX, vViewNormal, vViewPos.xyz, light);
     
     output.vDiffuse = light.Color + light.Ambient;
     output.vSpecular = light.SpecCoef;
     output.vDiffuse.a = 1.f;
     output.vSpecular.a = 1.f;
-    
+        
     return output;
 }
 

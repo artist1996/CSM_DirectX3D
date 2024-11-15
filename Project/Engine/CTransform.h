@@ -45,7 +45,8 @@ public:
 
     bool IsIndependentScale()          { return m_IndependentScale; }
 
-    const Matrix& GetWorldMatrix()     { return m_matWorld; }
+    const Matrix& GetWorldMat()        { return m_matWorld; }
+    const Matrix& GetWorldMatInv()     { return m_matWorldInv; }
 
 public:
     virtual void FinalTick() override;

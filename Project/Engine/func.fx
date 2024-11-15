@@ -110,49 +110,90 @@ void CalculateLight3D(int _LightIdx, float3 _ViewNormal, float3 _ViewPos, inout 
         SpecRatio = saturate(cos((PI / 2.f) * saturate(CamDistance / LightInfo.Radius)));
     }
     
+    //else if(2 == LightInfo.Type)
+    //{
+    //    // 표면 위치에서 광원의 위치를 빼줘, 광원에서 표면을 향하는 방향 벡터를 구한다.
+    //    float3 vLightViewPos = mul(float4(LightInfo.WorldPos, 1.f), matView).xyz;
+    //    float3 vLightDir = mul(float4(LightInfo.WorldDir, 0.f), matView).xyz;
+    //    //float3 vLightDir = normalize(_ViewPos - vLightViewPos);
+    //    
+    //    // Pixel 의 View Position 과 Pixel 의 방향 벡터를 구해준다.
+    //    float3 vPixelViewPos = vLightViewPos - _ViewPos;
+    //    float3 vPixelDir     = normalize(vPixelViewPos);
+    //    //float3 vPixelViewPos = _ViewPos - vLightViewPos;
+    //    
+    //    // Light 의 방향 벡터와 Pixel 의 방향벡터를 내적 해 cos 세타값을 구해준다.
+    //    float Dot = saturate(dot(-vLightDir, vPixelDir));
+    //            
+    //    // Light의 ViewPos과 Pixel 의 View Postion 의 차를 구해 Distance 를 구해준다.
+    //    float Distance = length(vLightViewPos - _ViewPos);
+    //            
+    //    // 내적한 cos 세타값이 Light의 Angle 안에 들어오고 Distance 가 Radius 내에 있다면
+    //    // 빛의 세기를 구해준다.
+    //    
+    //    if (Dot > cos(LightInfo.Angle) && Distance < LightInfo.Radius * 2.f)
+    //    {
+    //        // 빛의 세기 계산
+    //        LightPow = saturate(dot(-vLightDir, _ViewNormal));
+    //        
+    //        // 반사광 계산
+    //        float3 vReflect = vLightDir + 2.f * dot(-vLightDir, _ViewNormal) * _ViewNormal;
+    //        vReflect = normalize(vReflect);
+    //        
+    //        // 카메라에서 물체를 향하는 방향 계산      
+    //        float3 vEye = normalize(_ViewPos);
+    //      
+    //        // 반사 방향과 시선 벡터의 내적 계산
+    //        SpecularPow = saturate(dot(vReflect, -vEye));
+    //        SpecularPow = pow(SpecularPow, 10);
+    //        
+    //        float fDist = length(vLightViewPos - _ViewPos);
+    //        float fCamDist = length(_ViewPos);
+    //        
+    //        // 거리 비율 계산
+    //        Ratio = saturate(cos((PI / 2.f) * saturate(fDist / LightInfo.Radius)));
+    //        SpecRatio = saturate(cos((PI / 2.f) * saturate(fCamDist / LightInfo.Radius)));            
+    //    }
+    //}
+    
     else if(2 == LightInfo.Type)
     {
-        // 표면 위치에서 광원의 위치를 빼줘, 광원에서 표면을 향하는 방향 벡터를 구한다.
         float3 vLightViewPos = mul(float4(LightInfo.WorldPos, 1.f), matView).xyz;
+        float3 ToLight = vLightViewPos - _ViewPos;
+
+        float fDistance = length(ToLight);
+        
+        if(LightInfo.Radius < fDistance)
+            return;
+        
         float3 vLightDir = mul(float4(LightInfo.WorldDir, 0.f), matView).xyz;
-        //float3 vLightDir = LightInfo.WorldDir;
-        //float3 vLightDir = normalize(_ViewPos - vLightViewPos);
         
-        // Pixel 의 View Position 과 Pixel 의 방향 벡터를 구해준다.
-        float3 vPixelViewPos = vLightViewPos - _ViewPos;
-        float3 vPixelDir     = normalize(vPixelViewPos);
-        //float3 vPixelViewPos = _ViewPos - vLightViewPos;
+        float Dot = saturate(dot(-vLightDir, normalize(ToLight)));
         
-        // Light 의 방향 벡터와 Pixel 의 방향벡터를 내적 해 cos 세타값을 구해준다.
-        float Dot = saturate(dot(-vLightDir, vPixelDir));
-                
-        // Light의 ViewPos과 Pixel 의 View Postion 의 차를 구해 Distance 를 구해준다.
-        float Distance = length(vLightViewPos - _ViewPos);
-                
-        // 내적한 cos 세타값이 Light의 Angle 안에 들어오고 Distance 가 Radius 내에 있다면
-        // 빛의 세기를 구해준다.
-        if (Dot > cos(LightInfo.Angle) && Distance < LightInfo.Radius)
+        float LightTheta = cos(LightInfo.Angle);
+        
+        if (LightTheta < Dot)
         {
-            // 빛의 세기 계산
+             // 빛의 세기 계산
             LightPow = saturate(dot(-vLightDir, _ViewNormal));
-            
-            // 반사광 계산
+             
+             // 반사광 계산
             float3 vReflect = vLightDir + 2.f * dot(-vLightDir, _ViewNormal) * _ViewNormal;
             vReflect = normalize(vReflect);
-            
-            // 카메라에서 물체를 향하는 방향 계산      
+             
+             // 카메라에서 물체를 향하는 방향 계산      
             float3 vEye = normalize(_ViewPos);
-          
-            // 반사 방향과 시선 벡터의 내적 계산
+            
+             // 반사 방향과 시선 벡터의 내적 계산
             SpecularPow = saturate(dot(vReflect, -vEye));
             SpecularPow = pow(SpecularPow, 10);
-            
+             
             float fDist = length(vLightViewPos - _ViewPos);
             float fCamDist = length(_ViewPos);
-            
-            // 거리 비율 계산
+             
+             // 거리 비율 계산
             Ratio = saturate(cos((PI / 2.f) * saturate(fDist / LightInfo.Radius)));
-            SpecRatio = saturate(cos((PI / 2.f) * saturate(fCamDist / LightInfo.Radius)));            
+            SpecRatio = saturate(cos((PI / 2.f) * saturate(fCamDist / LightInfo.Radius)));
         }
     }
     
@@ -170,6 +211,71 @@ float3 GetRandom(in Texture2D _NoiseTexture, uint _ID, uint _maxID)
     float3 vRandom = _NoiseTexture.SampleLevel(g_sam_1, vUV, 0).xyz;
     
     return vRandom;
+}
+
+float GetTessFactor(float _MinLevel, float _MaxLevel
+                  , float _MinRange, float _MaxRange
+                  , float3 _CamPos, float3 _Pos)
+{
+    float D = distance(_CamPos, _Pos);
+    
+    if(D < _MaxRange)
+        return pow(2.f, _MaxLevel);
+    else if (_MinRange < D)
+        return pow(2.f, _MinLevel);
+    else
+    {
+        float fRatio = 1.f - (D - _MaxRange) / abs(_MaxRange - _MinRange);
+        float Level = 1.f + fRatio * (_MaxLevel - _MinLevel - 1.f);
+        return pow(2.f, Level);
+    }
+}
+
+int IntersectsRay(float3 _Pos[3], float3 _vStart, float3 _vDir, out float3 _CrossPos, out uint _Dist)
+{
+    // 삼각형 표면 방향 벡터
+    float3 Edge[2] = { (float3) 0.f, (float3) 0.f };
+    Edge[0] = _Pos[1] - _Pos[0];
+    Edge[1] = _Pos[2] - _Pos[0];
+    
+    // 삼각형에 수직방향인 법선(Normal) 벡터
+    float3 Normal = normalize(cross(Edge[0], Edge[1]));
+    
+    // 삼각형 법선벡터와 Ray 의 Dir 을 내적
+    // 광선에서 삼각형으로 향하는 수직벡터와, 광선의 방향벡터 사이의 cos 값
+    float NdotD = -dot(Normal, _vDir);
+        
+    float3 vStoP0 = _vStart - _Pos[0];
+    float VerticalDist = dot(Normal, vStoP0); // 광선을 지나는 한점에서 삼각형 평면으로의 수직 길이
+            
+    // 광선이 진행하는 방향으로, 삼각형을 포함하는 평면까지의 거리
+    float RtoTriDist = VerticalDist / NdotD;
+        
+    // 광선이, 삼각형을 포함하는 평면을 지나는 교점
+    float3 vCrossPoint = _vStart + RtoTriDist * _vDir;
+        
+    // 교점이 삼각형 내부인지 테스트
+    float3 P0toCross = vCrossPoint - _Pos[0];
+    
+    float3 Full = cross(Edge[0], Edge[1]);
+    float3 U = cross(Edge[0], P0toCross);
+    float3 V = cross(Edge[1], P0toCross);
+       
+    // 직선과 삼각형 평면의 교점이 삼각형 1번과 2번 사이에 존재하는지 체크
+    //      0
+    //     /  \
+    //    1 -- 2    
+    if (dot(U, Full) < 0.f)
+        return 0;
+    
+    // 교점이 삼각형 내부인지 체크
+    if (length(Full) < length(U) + length(V))
+        return 0;
+        
+    _CrossPos = vCrossPoint;
+    _Dist = (uint)RtoTriDist;
+    
+    return 1;
 }
 
 #endif

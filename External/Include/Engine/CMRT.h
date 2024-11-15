@@ -14,6 +14,7 @@ private:
 
 public:
     Ptr<CTexture> GetRT(int _Index) { return m_arrRT[_Index]; }
+    const D3D11_VIEWPORT& GetViewPort() { return m_ViewPort; }
 
 public:
     void Create(int _RTCount, Ptr<CTexture>* _arrRT, Ptr<CTexture> _DSTex);

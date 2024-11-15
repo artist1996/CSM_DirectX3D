@@ -51,7 +51,7 @@ void CCollider2D::FinalTick()
 		matObjectScaleInv = XMMatrixInverse(nullptr, matObjectScaleInv);
 	}
 
-	m_matColWorld = matScale * matTranslation * matObjectScaleInv * GetOwner()->Transform()->GetWorldMatrix();
+	m_matColWorld = matScale * matTranslation * matObjectScaleInv * GetOwner()->Transform()->GetWorldMat();
 
 	
 	if (m_bRender)

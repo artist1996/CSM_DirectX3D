@@ -29,6 +29,9 @@ public:
     virtual void Render() PURE;
     virtual CRenderComponent* Clone() PURE;
 
+    virtual void render_shadowmap();
+    virtual void render_shadowblur();
+
 public:
     void SaveDataToFile(FILE* _pFile);
     void LoadDataFromFile(FILE* _pFile);
