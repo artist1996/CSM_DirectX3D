@@ -21,7 +21,7 @@ void CMRT::Create(int _RTCount, Ptr<CTexture>* _arrRT, Ptr<CTexture> _DSTex)
 	m_RTCount = _RTCount;
 
 	// MRT ¼¼ÆÃ
-	for (UINT i = 0; i < 8; ++i)
+	for (int i = 0; i < 8; ++i)
 	{
 		if (i < _RTCount)
 			m_arrRT[i] = _arrRT[i];

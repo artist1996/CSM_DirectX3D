@@ -21,39 +21,30 @@ int CStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 {
 	assert(0 == (_ElementSize % 16));
 
-	m_SB           = nullptr;
-	m_SB_Write     = nullptr;
-	m_SB_Read      = nullptr;
-			       
-	m_SRV          = nullptr;
-	m_UAV          = nullptr;
-	
-	m_SysMemMove   = _SysMemMove;
-	m_Type         = _Type;
+	m_Type = _Type;
 
-	m_ElementSize  = _ElementSize;
+	m_SB = nullptr;
+	m_SB_Write = nullptr;
+	m_SB_Read = nullptr;
+	m_SRV = nullptr;
+
+	m_ElementSize = _ElementSize;
 	m_ElementCount = _ElementCount;
+
+	m_SysMemMove = _SysMemMove;
 
 	// ID3D11Buffer 甫 StructuredBuffer 侩档肺 积己窍扁
 	if (SB_TYPE::SRV_UAV == _Type)
-		m_Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;	
+		m_Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	else
 		m_Desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-	m_Desc.ByteWidth		   = m_ElementSize * m_ElementCount;
-	m_Desc.MiscFlags		   = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	m_Desc.ByteWidth = m_ElementSize * m_ElementCount;
+	m_Desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 	m_Desc.StructureByteStride = m_ElementSize;
 
-	if (!m_SysMemMove)
-	{
-		m_Desc.Usage		  = D3D11_USAGE_DYNAMIC;
-		m_Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	}
-	else
-	{
-		m_Desc.Usage		  = D3D11_USAGE_DEFAULT;
-		m_Desc.CPUAccessFlags = 0;
-	}
+	m_Desc.Usage = D3D11_USAGE_DEFAULT;
+	m_Desc.CPUAccessFlags = 0;
 
 	HRESULT hr = S_OK;
 	if (nullptr == _InitData)
@@ -63,49 +54,51 @@ int CStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 
 	else
 	{
-		D3D11_SUBRESOURCE_DATA tSub = {};
-		tSub.pSysMem = _InitData;
-		hr = DEVICE->CreateBuffer(&m_Desc, &tSub, m_SB.GetAddressOf());
+		D3D11_SUBRESOURCE_DATA sub = {};
+		sub.pSysMem = _InitData;
+		hr = DEVICE->CreateBuffer(&m_Desc, &sub, m_SB.GetAddressOf());
 	}
 
 	if (FAILED(hr))
 		return E_FAIL;
 
-	// 眠啊 Buffer 积己
+
+	// 眠啊滚欺 积己
 	if (m_SysMemMove)
 	{
-		m_Desc.BindFlags	  = D3D11_BIND_SHADER_RESOURCE;
-		m_Desc.Usage		  = D3D11_USAGE_DYNAMIC;
-		m_Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		
-		// Write Buffer 积己
-		if (nullptr == _InitData)
-		{		
-			hr = DEVICE->CreateBuffer(&m_Desc, nullptr, m_SB_Write.GetAddressOf());
-		}
-		else
-		{
-			D3D11_SUBRESOURCE_DATA tSub = {};
-			tSub.pSysMem = _InitData;
-			hr = DEVICE->CreateBuffer(&m_Desc, &tSub, m_SB_Write.GetAddressOf());
-		}
+		D3D11_BUFFER_DESC tRWBufferDesc = m_Desc;
 
-		// Read Buffer 积己
-		m_Desc.Usage	      = D3D11_USAGE_DEFAULT;
-		m_Desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		tRWBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		tRWBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		tRWBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 		if (nullptr == _InitData)
 		{
-			hr = DEVICE->CreateBuffer(&m_Desc, nullptr, m_SB_Read.GetAddressOf());
+			hr = DEVICE->CreateBuffer(&tRWBufferDesc, nullptr, m_SB_Write.GetAddressOf());
 		}
+
 		else
 		{
-			D3D11_SUBRESOURCE_DATA tSub = {};
-			tSub.pSysMem = _InitData;
-			hr = DEVICE->CreateBuffer(&m_Desc, &tSub, m_SB_Read.GetAddressOf());
+			D3D11_SUBRESOURCE_DATA sub = {};
+			sub.pSysMem = _InitData;
+			hr = DEVICE->CreateBuffer(&tRWBufferDesc, &sub, m_SB_Write.GetAddressOf());
+		}
+
+		tRWBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+		tRWBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+		if (nullptr == _InitData)
+		{
+			hr = DEVICE->CreateBuffer(&tRWBufferDesc, nullptr, m_SB_Read.GetAddressOf());
+		}
+
+		else
+		{
+			D3D11_SUBRESOURCE_DATA sub = {};
+			sub.pSysMem = _InitData;
+			hr = DEVICE->CreateBuffer(&tRWBufferDesc, &sub, m_SB_Read.GetAddressOf());
 		}
 	}
-
 
 	// ShaderResourceView 积己窍扁
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
@@ -118,16 +111,14 @@ int CStructuredBuffer::Create(UINT _ElementSize, UINT _ElementCount, SB_TYPE _Ty
 		return E_FAIL;
 	}
 
-	// Unordered Access View 积己
-	
-	if (SB_TYPE::SRV_UAV == m_Type)
+	// UAV 积己
+	if (m_Type == SB_TYPE::SRV_UAV)
 	{
-		D3D11_UNORDERED_ACCESS_VIEW_DESC tDesc = {};
+		D3D11_UNORDERED_ACCESS_VIEW_DESC Desc = {};
 
-		tDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-		tDesc.Buffer.NumElements = m_ElementCount;
-				
-		if (FAILED(DEVICE->CreateUnorderedAccessView(m_SB.Get(), &tDesc, m_UAV.GetAddressOf())))
+		Desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		Desc.Buffer.NumElements = m_ElementCount;
+		if (FAILED(DEVICE->CreateUnorderedAccessView(m_SB.Get(), &Desc, m_UAV.GetAddressOf())))
 		{
 			return E_FAIL;
 		}

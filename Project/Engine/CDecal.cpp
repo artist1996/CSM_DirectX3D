@@ -8,7 +8,7 @@ CDecal::CDecal()
 	: CRenderComponent(COMPONENT_TYPE::DECAL)
 {
 	SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
-	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"DecalMtrl"));
+	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"DecalMtrl"), 0);
 }
 
 CDecal::~CDecal()
@@ -24,11 +24,11 @@ void CDecal::Render()
 {
 	Transform()->Binding();
 
-	GetMaterial()->SetTexParam(TEX_1, m_DecalTex);
-	GetMaterial()->SetTexParam(TEX_2, m_EmissiveTex);
-	GetMaterial()->Binding();
+	GetMaterial(0)->SetTexParam(TEX_1, m_DecalTex);
+	GetMaterial(0)->SetTexParam(TEX_2, m_EmissiveTex);
+	GetMaterial(0)->Binding();
 
-	GetMesh()->Render();
+	GetMesh()->Render(0);
 }
 
 void CDecal::SaveToFile(FILE* _File)

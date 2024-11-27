@@ -12,9 +12,18 @@ CLandScape::CLandScape()
 	: CRenderComponent(COMPONENT_TYPE::LANDSCAPE)
 	, m_FaceX(1)
 	, m_FaceZ(1)
+	, m_MinLevel(0)
+	, m_MaxLevel(4)
+	, m_MaxLevelRange(2000.f)
+	, m_MinLevelRange(6000.f)
 	, m_BrushIdx(-1)
 	, m_BrushScale(Vec2(0.2f, 0.2f))
 	, m_IsHeightMapCreated(false)
+	, m_WeightMap(nullptr)
+	, m_WeightWidth(0)
+	, m_WeightHeight(0)
+	, m_WeightIdx(0)
+	, m_Mode(LANDSCAPE_MODE::SPLATING)
 {
 	SetFace(m_FaceX, m_FaceZ);
 
@@ -23,12 +32,23 @@ CLandScape::CLandScape()
 
 CLandScape::~CLandScape()
 {
-	if (nullptr != m_RaycastOut)
-		delete m_RaycastOut;
+	SAFE_DELETE(m_RaycastOut);
+	SAFE_DELETE(m_WeightMap);
 }
 
 void CLandScape::FinalTick()
 {
+	// 모드 전환
+	if (KEY_TAP(KEY::NUM6))
+	{
+		if (HEIGHTMAP == m_Mode)
+			m_Mode = SPLATING;
+		else if (SPLATING == m_Mode)
+			m_Mode = NONE;
+		else
+			m_Mode = HEIGHTMAP;
+	}
+
 	// 브러쉬 바꾸기
 	if (KEY_TAP(KEY::NUM7))
 	{
@@ -37,18 +57,50 @@ void CLandScape::FinalTick()
 			m_BrushIdx = 0;
 	}
 
-	if (m_IsHeightMapCreated && KEY_PRESSED(KEY::LBTN))
+	// 가중치 인덱스 바꾸기
+	if (KEY_TAP(KEY::NUM8))
 	{
-		Raycasting();
+		++m_WeightIdx;
+		if ((int)m_ColorTex->GetArraySize() <= m_WeightIdx)
+			m_WeightIdx = 0;
+	}
 
-		if (m_Out.Success)
+	if (NONE == m_Mode)
+		return;
+
+	Raycasting();
+
+	if (HEIGHTMAP == m_Mode)
+	{
+		if (m_IsHeightMapCreated && KEY_PRESSED(KEY::LBTN))
 		{
-			// 높이맵 설정
-			m_HeightMapCS->SetBrushPos(m_RaycastOut);
-			m_HeightMapCS->SetBrushScale(m_BrushScale);
-			m_HeightMapCS->SetHeightMap(m_HeightMap);
-			m_HeightMapCS->SetBrushTex(m_vecBrush[m_BrushIdx]);
-			m_HeightMapCS->Execute();
+			if (m_Out.Success)
+			{
+				// 높이맵 설정
+				m_HeightMapCS->SetBrushPos(m_RaycastOut);
+				m_HeightMapCS->SetBrushScale(m_BrushScale);
+				m_HeightMapCS->SetHeightMap(m_HeightMap);
+				m_HeightMapCS->SetBrushTex(m_vecBrush[m_BrushIdx]);
+				m_HeightMapCS->Execute();
+			}
+		}
+	}
+
+	else if (SPLATING == m_Mode)
+	{
+		if (KEY_PRESSED(KEY::LBTN) && m_WeightWidth != 0 && m_WeightHeight != 0)
+		{
+			if (m_Out.Success)
+			{
+				m_WeightMapCS->SetBrushPos(m_RaycastOut);
+				m_WeightMapCS->SetBrushScale(m_BrushScale);
+				m_WeightMapCS->SetBrushTex(m_vecBrush[m_BrushIdx]);
+				m_WeightMapCS->SetWeightMap(m_WeightMap);
+				m_WeightMapCS->SetWeightIdx(m_WeightIdx);
+				m_WeightMapCS->SetWeightMapWidthHeight(m_WeightWidth, m_WeightHeight);
+
+				m_WeightMapCS->Execute();
+			}
 		}
 	}
 }
@@ -60,17 +112,49 @@ void CLandScape::Render()
 	//GetMaterial()->GetShader()->SetRSType(RS_TYPE::WIRE_FRAME);
 
 	// 지형의 면 개수
-	GetMaterial()->SetScalarParam(INT_0, m_FaceX);
-	GetMaterial()->SetScalarParam(INT_1, m_FaceZ);
+	GetMaterial(0)->SetScalarParam(INT_0, m_FaceX);
+	GetMaterial(0)->SetScalarParam(INT_1, m_FaceZ);
+
+	// 지형 모드
+	GetMaterial(0)->SetScalarParam(INT_2, (int)m_Mode);
+
+	// 텍스쳐 배열 개수
+	GetMaterial(0)->SetScalarParam(INT_3, (int)m_ColorTex->GetArraySize());
+
+	// 테셀레이션 레벨
+	GetMaterial(0)->SetScalarParam(VEC4_0, Vec4(m_MinLevel, m_MaxLevel, m_MinLevelRange, m_MaxLevelRange));
+
+	// 카메라 월드 위치
+	CCamera* pCam = CRenderMgr::GetInst()->GetPOVCam();
+	GetMaterial(0)->SetScalarParam(VEC4_1, pCam->Transform()->GetWorldPos());
 
 	// 지형에 적용시킬 높이맵
-	GetMaterial()->SetTexParam(TEX_0, m_HeightMap);
+	GetMaterial(0)->SetTexParam(TEX_0, m_HeightMap);
+
+	// 지형 색상 및 노말 텍스쳐
+	GetMaterial(0)->SetTexParam(TEXARR_0, m_ColorTex);
+	GetMaterial(0)->SetTexParam(TEXARR_1, m_NormalTex);
+
+	// Brush 정보
+	GetMaterial(0)->SetTexParam(TEX_1, m_vecBrush[m_BrushIdx]);
+	GetMaterial(0)->SetScalarParam(VEC2_0, m_BrushScale);
+	GetMaterial(0)->SetScalarParam(VEC2_1, m_Out.Location);
+	GetMaterial(0)->SetScalarParam(FLOAT_0, (float)m_Out.Success);
+
+	// 가중치 해상도
+	GetMaterial(0)->SetScalarParam(VEC2_2, Vec2(m_WeightWidth, m_WeightHeight));
+
+	// WeightMap t20 바인딩
+	m_WeightMap->Binding(20);
 
 	// 재질 바인딩
-	GetMaterial()->Binding();
+	GetMaterial(0)->Binding();
 
 	// 렌더링
-	GetMesh()->Render();
+	GetMesh()->Render(0);
+
+	// WeightMap 버퍼 바인딩 클리어
+	m_WeightMap->Clear(20);
 }
 
 void CLandScape::SetFace(int _X, int _Z)
@@ -79,7 +163,7 @@ void CLandScape::SetFace(int _X, int _Z)
 	m_FaceZ = _Z;
 
 	CreateMesh();
-	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"LandScapeMtrl"));
+	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"LandScapeMtrl"), 0);
 }
 
 int CLandScape::Raycasting()

@@ -23,6 +23,12 @@ cbuffer OBJECT_POS : register(b0)
 
 cbuffer MATERIAL : register(b1)
 {
+    // 재질 계수
+    float4 g_vDiff;
+    float4 g_vSpec;
+    float4 g_vAmb;
+    float4 g_vEmv;
+    
     int g_int_0;
     int g_int_1;
     int g_int_2;
@@ -58,8 +64,10 @@ cbuffer MATERIAL : register(b1)
     int g_btexcube_1;
     int g_btexarr_0;
     int g_btexarr_1;
-    
-    int2 mtrlpadding;
+       
+    // 3D Animation 정보
+    int g_iAnim;
+    int g_iBoneCount;
 }
 
 cbuffer SPRITE_INFO : register(b2)
@@ -106,5 +114,9 @@ Texture2DArray g_texarr_1 : register(t9);
 Texture2D g_AtlasTex : register(t10);
 StructuredBuffer<tLightInfo> g_Light2DBuffer : register(t11);
 StructuredBuffer<tLightInfo> g_Light3DBuffer : register(t12);
+
+// Animation3D Bone Matrix Buffer
+StructuredBuffer<Matrix> g_arrBoneMat : register(t17);
+
 
 #endif

@@ -1,28 +1,37 @@
 #pragma once
 #include "CComponent.h"
 
+struct tMtrlSet
+{
+    Ptr<CMaterial> pSharedMtrl;     // 공유 머테리얼
+    Ptr<CMaterial> pDynamicMtrl;    // 공유 머테리얼 복사본
+    Ptr<CMaterial> pCurMtrl;        // 현재 사용 할 머테리얼
+};
+
 class CRenderComponent :
     public CComponent
 {
 private:
     Ptr<CMesh>          m_Mesh;
-    Ptr<CMaterial>      m_Mtrl;         // 현재 사용중인 재질
-    Ptr<CMaterial>      m_SharedMtrl;   // 공유 재질(마스터)
-    Ptr<CMaterial>      m_DynamicMtrl;  // 임시 재질
+    vector<tMtrlSet>    m_vecMtrls;     // 재질
 
-    bool                m_FrustumCheck;
+    bool                m_FrustumCheck; // 절두체 체크를 받을것인지 말것인지
 
 public:
-    void SetMesh(Ptr<CMesh> _Mesh)    { m_Mesh = _Mesh; }
-    void SetMaterial(Ptr<CMaterial> _Mtrl);
+    void SetMesh(Ptr<CMesh> _Mesh);
+    Ptr<CMesh> GetMesh() { return m_Mesh; }
+    void SetMaterial(Ptr<CMaterial> _Mtrl, UINT _Idx);
 
     void SetFrustumCheck(bool _Check) { m_FrustumCheck = _Check; }
     bool IsFrustumCheck()             { return m_FrustumCheck; }
 
-    Ptr<CMesh> GetMesh()              { return m_Mesh; }
-    Ptr<CMaterial> GetMaterial()      { return m_Mtrl; }
-    Ptr<CMaterial> GetSharedMaterial();
-    Ptr<CMaterial> GetDynamicMaterial();
+    Ptr<CMaterial> GetMaterial(UINT _Idx);
+    Ptr<CMaterial> GetSharedMaterial(UINT _Idx);
+
+    // 동적 재질 생성 및 반환
+    Ptr<CMaterial> GetDynamicMaterial(UINT _Idx);
+
+    UINT GetMaterialCount()           { return (UINT)m_vecMtrls.size(); }
 
 public:
     virtual void FinalTick() PURE;

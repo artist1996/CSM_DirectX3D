@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CAssetMgr.h"
-#include "CAsset.h"
+
+#include "assets.h"
 
 CAssetMgr::CAssetMgr()
 	: m_Changed(false)
@@ -69,6 +70,30 @@ Ptr<CTexture> CAssetMgr::CreateTexutre(const wstring& _Key, ComPtr<ID3D11Texture
 	m_mapAsset[(UINT)ASSET_TYPE::TEXTURE].insert(make_pair(_Key, pTexture.Get()));
 	
 	return pTexture;
+}
+
+Ptr<CMeshData> CAssetMgr::LoadFBX(const wstring& _strPath)
+{
+	wstring strFileName = path(_strPath).stem();
+
+	wstring strName = L"meshdata\\";
+	strName += strFileName + L".mdat";
+	
+	Ptr<CMeshData> pMeshData = FindAsset<CMeshData>(strName);
+	
+	if (nullptr != pMeshData)
+		return pMeshData;
+
+	pMeshData = CMeshData::LoadFromFBX(_strPath);
+	pMeshData->SetKey(strName);
+	pMeshData->SetRelativePath(strName);
+
+	m_mapAsset[(UINT)ASSET_TYPE::MESH_DATA].insert(make_pair(strName, pMeshData.Get()));
+
+	// MeshData 를 실제 파일로 저장
+	pMeshData->Save(CPathMgr::GetInst()->GetContentPath() + strName);
+
+	return pMeshData;
 }
 
 void CAssetMgr::GetAssetNames(ASSET_TYPE _Type, vector<string>& _vecOut)

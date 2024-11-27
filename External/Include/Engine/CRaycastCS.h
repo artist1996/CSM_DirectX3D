@@ -12,7 +12,7 @@ private:
     tRay                m_Ray;
 
     Ptr<CTexture>       m_HeightMap;
-    CStructuredBuffer* m_OutBuffer;
+    CStructuredBuffer*  m_OutBuffer;
 
 
 

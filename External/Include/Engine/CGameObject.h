@@ -99,6 +99,7 @@ public:
     GET_COMPONENT(Decal, DECAL);
     GET_COMPONENT(BoundingBox, BOUNDINGBOX);
     GET_COMPONENT(LandScape, LANDSCAPE);
+    GET_COMPONENT(Animator3D, ANIMATOR3D);
 
 public:
     void Begin();

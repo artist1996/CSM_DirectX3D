@@ -21,7 +21,7 @@ CParticleSystem::CParticleSystem()
 {
 	// Mesh Material
 	SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"PointMesh"));
-	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"ParticleRenderMtrl"));
+	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"ParticleRenderMtrl"), 0);
 	
 	// ParticleTick ComputeShader
 	m_TickCS = (CParticleTickCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"ParticleTickCS").Get();
@@ -150,10 +150,10 @@ void CParticleSystem::Render()
 	m_ModuleBuffer->Binding(21);	 // t21
 	// Material Binding
 
-	GetMaterial()->SetTexParam(TEX_0, m_ParticleTex);
-	GetMaterial()->SetTexParam(TEX_1, m_EndTex);
+	GetMaterial(0)->SetTexParam(TEX_0, m_ParticleTex);
+	GetMaterial(0)->SetTexParam(TEX_1, m_EndTex);
 
-	GetMaterial()->Binding();
+	GetMaterial(0)->Binding();
 
 	// Rendering
 	GetMesh()->Render_Particle(m_MaxParticleCount);

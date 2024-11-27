@@ -35,14 +35,14 @@ float4 PS_ShadowBlur(VS_OUT _in) : SV_Target
     float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
         
     float2 vUVStep = 1.f / g_Resolution;
-    vUVStep *= 5.4f;
+    vUVStep *= 3.4f;
     
     for (int i = 0; i < 13; ++i)
     {
         float2 vUV = _in.vUV + float2(vUVStep.x * (-6 + i), 0.f);
-        vColor += g_tex_0.Sample(g_sam_3, vUV) * CrossFilter[i];
+        vColor += SHADOW_TARGET.Sample(g_sam_3, vUV) * CrossFilter[i];
         vUV = _in.vUV + float2(0.f, vUVStep.y * (-6 + i));
-        vColor += g_tex_0.Sample(g_sam_3, vUV) * CrossFilter[i];
+        vColor += SHADOW_TARGET.Sample(g_sam_3, vUV) * CrossFilter[i];
     }
        
     //for (int j = 0; j < 13; ++j)

@@ -73,13 +73,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_D</TargetName>
     <OutDir>$(SolutionDir)External\Library\Engine\</OutDir>
-    <IncludePath>$(SolutionDir)External\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)External\Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)External\Include\;$(SolutionDir)External\Include\FBXLoader\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)External\Library\;$(SolutionDir)External\Library\FBXLoader\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)External\Library\Engine\</OutDir>
-    <IncludePath>$(SolutionDir)External\Include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)External\Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)External\Include\;$(SolutionDir)External\Include\FBXLoader\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)External\Library\;$(SolutionDir)External\Library\FBXLoader\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -161,7 +161,9 @@ call EngineHeaderCopy.bat</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="assets.h" />
+    <ClInclude Include="CAnimation3DShader.h" />
     <ClInclude Include="CAnimator2D.h" />
+    <ClInclude Include="CAnimator3D.h" />
     <ClInclude Include="CAsset.h" />
     <ClInclude Include="CAssetMgr.h" />
     <ClInclude Include="CBoundingBox.h" />
@@ -176,6 +178,7 @@ call EngineHeaderCopy.bat</Command>
     <ClInclude Include="CEngine.h" />
     <ClInclude Include="CEntity.h" />
     <ClInclude Include="CAnimation.h" />
+    <ClInclude Include="CFBXLoader.h" />
     <ClInclude Include="CFontMgr.h" />
     <ClInclude Include="CFrustum.h" />
     <ClInclude Include="CFSM.h" />
@@ -191,6 +194,7 @@ call EngineHeaderCopy.bat</Command>
     <ClInclude Include="CLight3D.h" />
     <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CMesh.h" />
+    <ClInclude Include="CMeshData.h" />
     <ClInclude Include="CMeshRender.h" />
     <ClInclude Include="CMRT.h" />
     <ClInclude Include="components.h" />
@@ -219,6 +223,7 @@ call EngineHeaderCopy.bat</Command>
     <ClInclude Include="CTileMap.h" />
     <ClInclude Include="CTimeMgr.h" />
     <ClInclude Include="CTransform.h" />
+    <ClInclude Include="CWeightMapCS.h" />
     <ClInclude Include="define.h" />
     <ClInclude Include="enum.h" />
     <ClInclude Include="framework.h" />
@@ -231,7 +236,9 @@ call EngineHeaderCopy.bat</Command>
     <ClInclude Include="struct.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CAnimation3DShader.cpp" />
     <ClCompile Include="CAnimator2D.cpp" />
+    <ClCompile Include="CAnimator3D.cpp" />
     <ClCompile Include="CAsset.cpp" />
     <ClCompile Include="CAssetInit.cpp" />
     <ClCompile Include="CAssetMgr.cpp" />
@@ -247,6 +254,7 @@ call EngineHeaderCopy.bat</Command>
     <ClCompile Include="CEngine.cpp" />
     <ClCompile Include="CEntity.cpp" />
     <ClCompile Include="CAnimation.cpp" />
+    <ClCompile Include="CFBXLoader.cpp" />
     <ClCompile Include="CFontMgr.cpp" />
     <ClCompile Include="CFrustum.cpp" />
     <ClCompile Include="CFSM.cpp" />
@@ -263,6 +271,7 @@ call EngineHeaderCopy.bat</Command>
     <ClCompile Include="CLight3D.cpp" />
     <ClCompile Include="CMaterial.cpp" />
     <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="CMeshData.cpp" />
     <ClCompile Include="CMeshRender.cpp" />
     <ClCompile Include="CMRT.cpp" />
     <ClCompile Include="CParticleSystem.cpp" />
@@ -291,6 +300,7 @@ call EngineHeaderCopy.bat</Command>
     <ClCompile Include="CTileMap.cpp" />
     <ClCompile Include="CTimeMgr.cpp" />
     <ClCompile Include="CTransform.cpp" />
+    <ClCompile Include="CWeightMapCS.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="extern.cpp" />
     <ClCompile Include="func.cpp" />
@@ -305,6 +315,12 @@ call EngineHeaderCopy.bat</Command>
     <None Include="SimpleMath.inl" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="animation.fx">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="debug.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
@@ -439,6 +455,12 @@ call EngineHeaderCopy.bat</Command>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="value.fx">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="weightmap.fx">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>

@@ -22,47 +22,42 @@ CGraphicShader::~CGraphicShader()
 int CGraphicShader::CreateVertexShader(const wstring& _RelativePath, const string& _FuncName)
 {
 	wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
-
 	strFilePath += _RelativePath;
-	
 
-	HRESULT hr = D3DCompileFromFile(strFilePath.c_str()
-		, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
-		, _FuncName.c_str(), "vs_5_0", D3DCOMPILE_DEBUG, 0, m_VSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
+	HRESULT hr = D3DCompileFromFile(strFilePath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE
+		, _FuncName.c_str(), "vs_5_0", D3DCOMPILE_DEBUG, 0
+		, m_VSBlob.GetAddressOf(), m_ErrBlob.GetAddressOf());
 
 	if (FAILED(hr))
 	{
 		if (nullptr != m_ErrBlob)
 		{
-			MessageBoxA(nullptr, (char*)m_ErrBlob->GetBufferPointer(), "Shader Compile Failed", MB_OK);
+			MessageBoxA(nullptr, (char*)m_ErrBlob->GetBufferPointer(), "쉐이더 컴파일 실패", MB_OK);
 		}
-
 		else
 		{
-			errno_t err = GetLastError();	// Error Number
+			errno_t err = GetLastError();
 			wchar_t szErrMsg[255] = {};
 			swprintf_s(szErrMsg, 255, L"Error Code : %d", err);
-
-			MessageBox(nullptr, szErrMsg, L"Vertex Shader Compile Failed", MB_OK);
+			MessageBox(nullptr, szErrMsg, L"쉐이더 컴파일 실패", MB_OK);
 		}
 
 		return E_FAIL;
 	}
 
-	// Blob으로 컴파일된 Shader Code의 Pointer와 Size를 넘겨주고 VertexShader 생성
 	DEVICE->CreateVertexShader(m_VSBlob->GetBufferPointer()
 		, m_VSBlob->GetBufferSize(), nullptr, m_VS.GetAddressOf());
 
 	// Layout 생성
-	D3D11_INPUT_ELEMENT_DESC Element[6] = {};
+	D3D11_INPUT_ELEMENT_DESC Element[8] = {};
 
-	Element[0].AlignedByteOffset = 0;					      // 정점 데이터의 시작 위치
-	Element[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;	      // Data 크기
-	Element[0].InputSlot = 0;							      // Buffer가 여러 개 있을 경우 Index 지정
-	Element[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;  // Vertex Data (Instance 아직 안함)
+	Element[0].AlignedByteOffset = 0;
+	Element[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	Element[0].InputSlot = 0;
+	Element[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	Element[0].InstanceDataStepRate = 0;
-	Element[0].SemanticName = "POSITION";					  // Semantic Name 요소의 의미를 나타내는 이름, Shader Code의 입력 Semantic과 일치 해야 함
-	Element[0].SemanticIndex = 0;							  // Semantic Name 중복 시 증가
+	Element[0].SemanticName = "POSITION";
+	Element[0].SemanticIndex = 0;
 
 	Element[1].AlignedByteOffset = 12;
 	Element[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -104,10 +99,26 @@ int CGraphicShader::CreateVertexShader(const wstring& _RelativePath, const strin
 	Element[5].SemanticName = "BINORMAL";
 	Element[5].SemanticIndex = 0;
 
-	DEVICE->CreateInputLayout(Element, 6
-							, m_VSBlob->GetBufferPointer()
-							, m_VSBlob->GetBufferSize()
-							, m_Layout.GetAddressOf());
+	Element[6].SemanticName = "BLENDWEIGHT";
+	Element[6].SemanticIndex = 0;
+	Element[6].AlignedByteOffset = 72;
+	Element[6].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	Element[6].InputSlot = 0;
+	Element[6].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	Element[6].InstanceDataStepRate = 0;
+
+	Element[7].SemanticName = "BLENDINDICES";
+	Element[7].SemanticIndex = 0;
+	Element[7].AlignedByteOffset = 88;
+	Element[7].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	Element[7].InputSlot = 0;
+	Element[7].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	Element[7].InstanceDataStepRate = 0;
+
+	DEVICE->CreateInputLayout(Element, 8
+		, m_VSBlob->GetBufferPointer()
+		, m_VSBlob->GetBufferSize()
+		, m_Layout.GetAddressOf());
 
 	return S_OK;
 }
@@ -168,7 +179,7 @@ int CGraphicShader::CreateDomainShader(const wstring& _RelativePath, const strin
 			wchar_t szErrMsg[255] = {};
 
 			swprintf_s(szErrMsg, 255, L"Error Code : %d", err);
-			MessageBox(nullptr, szErrMsg, L"Pixel Shader Compile Failed", MB_OK);
+			MessageBox(nullptr, szErrMsg, L"Domain Shader Compile Failed", MB_OK);
 		}
 
 		return E_FAIL;

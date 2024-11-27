@@ -126,10 +126,10 @@ void Content::Reload()
 			if (pair.second->IsEngineAsset())
 				continue;
 	
-			wstring strRelativePath = pair.second->GetKey();
+			wstring strRelativePath = pair.second->GetRelativePath();
 	
 			// 절대경로로 Asset File이 존재 하는지 확인한다.
-			if (!std::filesystem::exists(strContentPath + strRelativePath))
+			if (false == std::filesystem::exists(strContentPath + strRelativePath))
 			{
 				// Asset 들은 스마트포인터로 관리하고 있기 때문에 RefCount 를 확인 후 1보다 크다면 다른 곳에서도 참조중이므로
 				// 바로 삭제하지 않는다.
@@ -138,11 +138,11 @@ void Content::Reload()
 					CTaskMgr::GetInst()->AddTask(tTask{ TASK_TYPE::DELETE_ASSET, (DWORD_PTR)pair.second.Get() });
 				}
 				else
-				{
+				{					
 					int ret = MessageBox(nullptr, L"다른 곳에서 참조되고 있을 수 있습니다.\n 그래도 삭제 하시겠습니까?", L"Error", MB_YESNO);
 					if (ret == IDYES)
 					{
-						CTaskMgr::GetInst()->AddTask(tTask{ TASK_TYPE::DELETE_ASSET, (DWORD_PTR)pair.second.Get() });
+						CTaskMgr::GetInst()->AddTask(tTask{ TASK_TYPE::DELETE_ASSET, (DWORD_PTR)pair.second.Get(), });
 					}
 				}
 			}
@@ -193,8 +193,8 @@ void Content::LoadAsset(const path& _Path)
 
 	if (ext == L".mesh")
 		CAssetMgr::GetInst()->Load<CMesh>(_Path, _Path);
-	//else if (ext == L".mdat")
-		//CAssetMgr::GetInst()->Load<CMeshData>(_Path, _Path);
+	else if (ext == L".mdat")
+		CAssetMgr::GetInst()->Load<CMeshData>(_Path, _Path);
 	else if (ext == L".mtrl")
 		CAssetMgr::GetInst()->Load<CMaterial>(_Path, _Path);
 	else if (ext == L".pref")

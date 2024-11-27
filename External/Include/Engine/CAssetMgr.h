@@ -4,7 +4,6 @@
 #include "CTaskMgr.h"
 
 class CAsset;
-class CTexture;
 
 class CAssetMgr
 	: public CSingleton<CAssetMgr>
@@ -36,6 +35,7 @@ public:
 							  , D3D11_USAGE _Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT);
 
 	Ptr<CTexture> CreateTexutre(const wstring& _Key, ComPtr<ID3D11Texture2D> _Tex2D);
+	Ptr<CMeshData> LoadFBX(const wstring& _strPath);
 
 	void GetAssetNames(ASSET_TYPE _Type, vector<string>& _vecOut);
 	const map<wstring, Ptr<CAsset>>& GetAssets(ASSET_TYPE _Type) { return m_mapAsset[(UINT)_Type]; }

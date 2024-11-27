@@ -74,7 +74,7 @@ void CLight3D::Render()
 	m_LightMtrl->SetTexParam(TEX_2, m_ShadowMapMRT->GetRT(0));
 	m_LightMtrl->Binding();
 
-	m_VolumeMesh->Render();
+	m_VolumeMesh->Render(0);
 
 	//m_Cam->Camera()->render_shadowblur();
 }

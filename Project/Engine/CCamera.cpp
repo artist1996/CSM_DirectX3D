@@ -171,21 +171,18 @@ void CCamera::SortGameObject()
 	for (UINT i = 0; i < MAX_LAYER; ++i)
 	{
 		if (false == (m_LayerCheck & (1 << i)))
-		{
 			continue;
-		}
 
 		CLayer* pLayer = pLevel->GetLayer(i);
 
 		const vector<CGameObject*>& vecObjects = pLayer->GetObjects();
-
-				
+						
 		for (size_t j = 0; j < vecObjects.size(); ++j)
 		{
 			if (nullptr == vecObjects[j]->GetRenderComponent()
 			 || nullptr == vecObjects[j]->GetRenderComponent()->GetMesh()
-			 || nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial()
-			 || nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial()->GetShader())
+			 || nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial(0)
+			 || nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial(0)->GetShader())
 			{
 				continue;
 			}
@@ -198,7 +195,7 @@ void CCamera::SortGameObject()
 					continue;
 			}
 			
-			Ptr<CGraphicShader> pShader = vecObjects[j]->GetRenderComponent()->GetMaterial()->GetShader();
+			Ptr<CGraphicShader> pShader = vecObjects[j]->GetRenderComponent()->GetMaterial(0)->GetShader();
 			SHADER_DOMAIN Domain = pShader->GetDomain();
 			
 			switch (Domain)
@@ -255,8 +252,8 @@ void CCamera::SortGameObject_ShadowMap()
 		{
 			if (nullptr == vecObjects[j]->GetRenderComponent()
 				|| nullptr == vecObjects[j]->GetRenderComponent()->GetMesh()
-				|| nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial()
-				|| nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial()->GetShader())
+				|| nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial(0)
+				|| nullptr == vecObjects[j]->GetRenderComponent()->GetMaterial(0)->GetShader())
 			{
 				continue;
 			}
@@ -269,7 +266,7 @@ void CCamera::SortGameObject_ShadowMap()
 					continue;
 			}
 
-			Ptr<CGraphicShader> pShader = vecObjects[j]->GetRenderComponent()->GetMaterial()->GetShader();
+			Ptr<CGraphicShader> pShader = vecObjects[j]->GetRenderComponent()->GetMaterial(0)->GetShader();
 			
 			m_vecShadowMap.push_back(vecObjects[j]);
 		}
@@ -341,7 +338,7 @@ void CCamera::render_effect()
 	pEffectMergeMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT)->GetRT(0));
 	pEffectMergeMtrl->SetTexParam(TEX_1, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::EFFECT_BLUR)->GetRT(0));
 	pEffectMergeMtrl->Binding();
-	pRectMesh->Render();
+	pRectMesh->Render(0);
 }
 
 void CCamera::render_transparent()
@@ -400,7 +397,7 @@ void CCamera::render_shadowblur()
 
 	pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->GetRT(2));
 	pBlurMtrl->Binding();
-	pRectMesh->Render();
+	pRectMesh->Render(0);
 }
 
 void CCamera::clear()

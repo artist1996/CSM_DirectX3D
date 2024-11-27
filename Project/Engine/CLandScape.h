@@ -1,8 +1,9 @@
 #pragma once
 #include "CRenderComponent.h"
 
-#include "CHeightMapCS.h"
 #include "CRaycastCS.h"
+#include "CHeightMapCS.h"
+#include "CWeightMapCS.h"
 
 struct tRaycastOut
 {
@@ -11,6 +12,19 @@ struct tRaycastOut
     int     Success;
 };
 
+enum LANDSCAPE_MODE
+{
+    NONE,
+    HEIGHTMAP,
+    SPLATING,
+};
+
+struct tWeight8
+{
+    float arrWeight[8];
+};
+
+
 class CLandScape :
     public CRenderComponent
 {
@@ -18,6 +32,17 @@ private:
     int                     m_FaceX;
     int                     m_FaceZ;
     float                   m_TessLevel;
+
+    // Tessellation 
+    float                   m_MinLevel;
+    float                   m_MaxLevel;
+    float                   m_MaxLevelRange;
+    float                   m_MinLevelRange;
+
+    // Raycasting
+    Ptr<CRaycastCS>         m_RaycastCS;
+    CStructuredBuffer*      m_RaycastOut;
+    tRaycastOut             m_Out;
 
     // Brush
     Vec2                    m_BrushScale;
@@ -29,10 +54,17 @@ private:
     bool                    m_IsHeightMapCreated;
     Ptr<CHeightMapCS>       m_HeightMapCS;
 
-    // Raycasting
-    Ptr<CRaycastCS>         m_RaycastCS;
-    CStructuredBuffer*      m_RaycastOut;
-    tRaycastOut             m_Out;
+    // WeightMap
+    Ptr<CTexture>           m_ColorTex;
+    Ptr<CTexture>           m_NormalTex;
+    CStructuredBuffer*      m_WeightMap;
+    UINT                    m_WeightWidth;
+    UINT                    m_WeightHeight;
+    Ptr<CWeightMapCS>       m_WeightMapCS;
+    int                     m_WeightIdx;
+
+    // LandScape ¸ðµå
+    LANDSCAPE_MODE          m_Mode;
 
 
 public:
@@ -42,6 +74,7 @@ public:
     void CreateHeightMap(UINT _Width, UINT _Height);
     float GetTessLevel() { return m_TessLevel; }
     void SetTessLevel(float _TessLevel) { m_TessLevel = _TessLevel; }
+    void SetMode(LANDSCAPE_MODE _Mode) { m_Mode = _Mode; };
 
     int GetFaceX() { return m_FaceX; }
     int GetFaceZ() { return m_FaceZ; }
@@ -59,6 +92,7 @@ private:
     void CreateComputeShader();
     void CreateTextureAndStructuredBuffer();
     int Raycasting();
+
 public:
     CLONE(CLandScape);
     CLandScape();

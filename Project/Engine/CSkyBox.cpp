@@ -10,9 +10,7 @@ CSkyBox::CSkyBox()
 	: CRenderComponent(COMPONENT_TYPE::SKYBOX)
 	, m_Type(SKYBOX_TYPE::SPHERE)
 {
-	SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"SphereMesh"));
-	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"SkyBoxMtrl"));
-
+	SetSkyBoxType(m_Type);
 	SetFrustumCheck(false);
 }
 
@@ -27,26 +25,26 @@ void CSkyBox::FinalTick()
 void CSkyBox::Render()
 {
 	Transform()->Binding();
-	GetMaterial()->SetScalarParam(INT_0, (int)m_Type);
+	GetMaterial(0)->SetScalarParam(INT_0, (int)m_Type);
 
 	if (SKYBOX_TYPE::SPHERE == m_Type)
 	{
 		if(!m_SkyBoxTex->IsCubeMap())
-			GetMaterial()->SetTexParam(TEX_0, m_SkyBoxTex);
+			GetMaterial(0)->SetTexParam(TEX_0, m_SkyBoxTex);
 		else
-			GetMaterial()->SetTexParam(TEX_0, nullptr);
+			GetMaterial(0)->SetTexParam(TEX_0, nullptr);
 	}
 	else if(SKYBOX_TYPE::CUBE == m_Type)
 	{
 		if (m_SkyBoxTex->IsCubeMap())
-			GetMaterial()->SetTexParam(TEXCUBE_0, m_SkyBoxTex);
+			GetMaterial(0)->SetTexParam(TEXCUBE_0, m_SkyBoxTex);
 		else
-			GetMaterial()->SetTexParam(TEXCUBE_0, nullptr);
+			GetMaterial(0)->SetTexParam(TEXCUBE_0, nullptr);
 	}
 
-	GetMaterial()->Binding();
+	GetMaterial(0)->Binding();
 
-	GetMesh()->Render();
+	GetMesh()->Render(0);
 }
 
 void CSkyBox::SetSkyBoxType(SKYBOX_TYPE _Type)
@@ -59,7 +57,7 @@ void CSkyBox::SetSkyBoxType(SKYBOX_TYPE _Type)
 		SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
 	
 	// Mesh 가 변경되면 Material 을 다시 설정해준다.
-	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"SkyBoxMtrl"));
+	SetMaterial(CAssetMgr::GetInst()->FindAsset<CMaterial>(L"SkyBoxMtrl"), 0);
 }
 
 void CSkyBox::SaveToFile(FILE* _pFile)

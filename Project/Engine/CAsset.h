@@ -20,10 +20,10 @@ public:
     bool IsEngineAsset()             { return m_Engine; }
 
 protected:
-    void SetKey(const wstring& _Key)          { m_Key = _Key; }
-    void SetRelativePath(const wstring _Path) { m_RelativePath = _Path; }
+    void SetKey(const wstring& _Key)           { m_Key = _Key; }
+    void SetRelativePath(const wstring& _Path) { m_RelativePath = _Path; }
 
-    void SetEngineAsset()                     { m_Engine = true; }
+    void SetEngineAsset()                      { m_Engine = true; }
 
 private:
     void AddRef() { ++m_RefCount; }
@@ -51,4 +51,5 @@ public:
     friend class Ptr;
 
     friend class CAssetMgr;
+    friend class CFBXLoader;
 };

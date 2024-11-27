@@ -1025,10 +1025,14 @@ void CAssetMgr::CreateEngineGraphicShader()
 }
 
 #include "CParticleTickCS.h"
+#include "CAnimation3DShader.h"
 
 void CAssetMgr::CreateEngineComputeShader()
 {
 	Ptr<CComputeShader> pCS = nullptr;
 	pCS = new CParticleTickCS;
-	AddAsset(L"ParticleTickCS", pCS);
+	AddAsset<CComputeShader>(L"ParticleTickCS", pCS);
+
+	pCS = new CAnimation3DShader;
+	AddAsset<CComputeShader>(L"Animation3DUpdateCS", pCS);
 }
