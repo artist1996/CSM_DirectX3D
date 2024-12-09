@@ -34,15 +34,17 @@ private:
     Matrix               m_matProj;
     Matrix               m_matProjInv;
 
-    vector<CGameObject*> m_vecDeferred;     // Deferred
-    vector<CGameObject*> m_vecDecal;        // Decal
-    vector<CGameObject*> m_vecOpaque;       // 불투명
-    vector<CGameObject*> m_vecMasked;       // 투명, 불투명
-    vector<CGameObject*> m_vecTransparent;  // 투명, 반투명
-    vector<CGameObject*> m_vecParticles;    // 투명, 반투명, 입자
-    vector<CGameObject*> m_vecEffect;       // 2D Effect
-    vector<CGameObject*> m_vecPostProcess;  // 후처리
-    vector<CGameObject*> m_vecUI;           // UI
+    // 물체 분류
+    map<ULONG64, vector<tInstObj>>		m_mapInstGroup_D;	// Deferred
+    map<ULONG64, vector<tInstObj>>		m_mapInstGroup_F;	// Foward ( Opaque, Mask )	
+    map<INT_PTR, vector<tInstObj>>		m_mapSingleObj;		// Single Object
+
+    vector<CGameObject*>                m_vecDecal;         // Decal
+    vector<CGameObject*>                m_vecTransparent;   // 투명, 반투명
+    vector<CGameObject*>                m_vecEffect;
+    vector<CGameObject*>                m_vecParticles;     // 투명, 반투명, 입자 타입
+    vector<CGameObject*>                m_vecPostProcess;   // 후처리 오브젝트
+    vector<CGameObject*>                m_vecUI;            // 후처리 오브젝트
 
     vector<CGameObject*> m_vecShadowMap;    // ShadowMap
 
@@ -102,13 +104,11 @@ public:
 public:
     void SortGameObject();
     void SortGameObject_ShadowMap();
-    void SortGameObject_ShadowBlur();
 
     void render_deferred();
+    void render_forward();
     void render_decal();
 
-    void render_opaque();
-    void render_masked();
     void render_effect();
     void render_transparent();
     void render_particle();

@@ -33,9 +33,12 @@ public:
 
     UINT GetMaterialCount()           { return (UINT)m_vecMtrls.size(); }
 
+    ULONG64 GetInstID(UINT _iMtrlIdx);
+
 public:
     virtual void FinalTick() PURE;
     virtual void Render() PURE;
+    virtual void Render(UINT _Subset);
     virtual CRenderComponent* Clone() PURE;
 
     virtual void render_shadowmap();

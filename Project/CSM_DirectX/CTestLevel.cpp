@@ -172,14 +172,36 @@ void CTestLevel::CreateTestLevel()
 	// FBX Loading
 	// ============
 	{
-		Ptr<CMeshData> pMeshData = nullptr;
-		CGameObject*   pObj	     = nullptr;
-		
+		//Ptr<CMeshData> pMeshData = nullptr;
+		//CGameObject*   pObj	     = nullptr;
+		//
+		////wstring strFilePath = CPathMgr::GetInst()->GetContentPath();
 		//pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\Monster.fbx");
-		pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\Monster.mdat");
-		
+		////pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\Monster.mdat");
+		//pObj = pMeshData->Instantiate();
+		//
+		//pLevel->AddObject(0, pObj, false);
+		////for (int i = 0; i < 10; ++i)
+		////{
+		////	pObj = pMeshData->Instantiate();
+		////	pObj->SetName(L"Monster");
+		////	pObj->Transform()->SetRelativePos((i + 1) * 50.f, 200.f, 500.f);
+		////	pObj->Transform()->SetRelativeScale(1.f, 1.f, 1.f);
+		////	pObj->GetRenderComponent()->SetFrustumCheck(false);
+		////	pLevel->AddObject(0, pObj, false);
+		////}
+		Ptr<CMeshData> pMeshData = nullptr;
+		CGameObject* pObj = nullptr;
+
+		//pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\mn_vorc_00_ani.fbx");
+		pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\mn_vorc_00_ani.mdat");
+
+		//pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\Monster.fbx");
+		//pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\Monster.mdat");
+
 		pObj = pMeshData->Instantiate();
 		pObj->SetName(L"Monster");
+		pObj->GetRenderComponent()->SetFrustumCheck(false);
 
 		pObj->Transform()->SetRelativePos(Vec3(200.f, 0.f, 200.f));
 		pObj->Transform()->SetRelativeScale(Vec3(5.f, 5.f, 5.f));

@@ -10,6 +10,7 @@
 #include "CCollisionMgr.h"
 #include "CTaskMgr.h"
 #include "CFontMgr.h"
+#include "CInstancingBuffer.h"
 #include "CPrefab.h"
 
 CEngine::CEngine()
@@ -57,6 +58,7 @@ int CEngine::Init(HWND _hWnd, POINT _ptResolution, OBJECT_SAVE _SaveFunc, OBJECT
 	CLevelMgr::GetInst()->Init();
 	CRenderMgr::GetInst()->Init();
 	CFontMgr::GetInst()->Init();
+	CInstancingBuffer::GetInst()->Init();
 
 	// Prefab Function µî·Ï
 	CPrefab::g_ObjectSaveFunc = _SaveFunc;

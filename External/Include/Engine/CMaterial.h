@@ -53,6 +53,7 @@ public:
 
 public:
     void Binding();
+    void Binding_Inst();
 
 public:
     virtual int Load(const wstring& _FilePath) override;

@@ -29,8 +29,10 @@ private:
     vector<tMTAnimClip>		m_vecAnimClip;
     vector<tMTBone>			m_vecBones;
 
-    CStructuredBuffer* m_pBoneFrameData;   // 전체 본 프레임 정보(크기, 이동, 회전) (프레임 개수만큼)
-    CStructuredBuffer* m_pBoneInverse;	    // 각 뼈의 offset 행렬(각 뼈의 위치를 되돌리는 행렬) (1행 짜리)
+    CStructuredBuffer*      m_pBoneFrameData;    // 전체 본 프레임 정보(크기, 이동, 회전) (프레임 개수만큼)
+    CStructuredBuffer*      m_pBoneInverse;	     // 각 뼈의 Inverse 행렬(각 뼈의 위치를 되돌리는 행렬) (1행 짜리)
+
+    vector<CStructuredBuffer*> m_pVecBoneFrameData;
 
 
 public:
@@ -46,13 +48,15 @@ public:
     UINT GetBoneCount() { return (UINT)m_vecBones.size(); }
     const vector<tMTAnimClip>* GetAnimClip() { return &m_vecAnimClip; }
     bool IsAnimMesh() { return !m_vecAnimClip.empty(); }
-    CStructuredBuffer* GetBoneFrameDataBuffer() { return m_pBoneFrameData; } // 전체 본 프레임 정보
-    CStructuredBuffer* GetBoneInverseBuffer() { return  m_pBoneInverse; }	   // 각 Bone 의 Inverse 행렬
-
+    CStructuredBuffer* GetBoneFrameDataBuffer() { return m_pBoneFrameData; }    // 전체 본 프레임 정보
+    CStructuredBuffer* GetBoneInverseBuffer() { return  m_pBoneInverse; }	    // 각 Bone 의 Inverse 행렬
+    CStructuredBuffer* GetBoneFrameDataBufferByIndex(int _Idx) { return m_pVecBoneFrameData[_Idx]; }
 
     void Binding(UINT _Subset);
+    void Binding_Inst(UINT _iSubset);
     void Render(UINT _Subset);
     void Render_Particle(UINT _Count);
+    void Render_Instancing(UINT _iSubset);
 
 
     virtual int Load(const wstring& _FilePath) override;

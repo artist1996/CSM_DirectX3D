@@ -151,6 +151,7 @@
     <ClInclude Include="AE_SpriteView.h" />
     <ClInclude Include="AE_Sub.h" />
     <ClInclude Include="AnimationEditor.h" />
+    <ClInclude Include="Animator3DUI.h" />
     <ClInclude Include="AssetUI.h" />
     <ClInclude Include="BoundingBoxUI.h" />
     <ClInclude Include="CameraUI.h" />
@@ -228,6 +229,7 @@
     <ClCompile Include="AE_SpriteView.cpp" />
     <ClCompile Include="AE_Sub.cpp" />
     <ClCompile Include="AnimationEditor.cpp" />
+    <ClCompile Include="Animator3DUI.cpp" />
     <ClCompile Include="AssetUI.cpp" />
     <ClCompile Include="BoundingBoxUI.cpp" />
     <ClCompile Include="CameraUI.cpp" />

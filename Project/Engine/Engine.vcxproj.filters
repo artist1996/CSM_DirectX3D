@@ -211,8 +211,14 @@
     <ClInclude Include="CAnimator3D.h">
       <Filter>08. Component\05. Animator3D</Filter>
     </ClInclude>
+    <ClInclude Include="CInstancingBuffer.h">
+      <Filter>04. Manager\11. Instancing</Filter>
+    </ClInclude>
     <ClInclude Include="CAnimation3DShader.h">
-      <Filter>HLSL\03. Compute Shader\04. Animation3D</Filter>
+      <Filter>HLSL\03. Compute Shader\04. Animation3D\Animation3D</Filter>
+    </ClInclude>
+    <ClInclude Include="CCopyBoneCS.h">
+      <Filter>HLSL\03. Compute Shader\04. Animation3D\CopyBone</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -411,8 +417,14 @@
     <ClCompile Include="CAnimator3D.cpp">
       <Filter>08. Component\05. Animator3D</Filter>
     </ClCompile>
+    <ClCompile Include="CInstancingBuffer.cpp">
+      <Filter>04. Manager\11. Instancing</Filter>
+    </ClCompile>
     <ClCompile Include="CAnimation3DShader.cpp">
-      <Filter>HLSL\03. Compute Shader\04. Animation3D</Filter>
+      <Filter>HLSL\03. Compute Shader\04. Animation3D\Animation3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CCopyBoneCS.cpp">
+      <Filter>HLSL\03. Compute Shader\04. Animation3D\CopyBone</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -620,6 +632,15 @@
     <Filter Include="HLSL\03. Compute Shader\04. Animation3D">
       <UniqueIdentifier>{3695b424-b8a0-4e9f-ad75-308df855972f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Manager\11. Instancing">
+      <UniqueIdentifier>{a6447cca-2a2a-414d-8cf6-3c3a6cf6a207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\04. Animation3D\Animation3D">
+      <UniqueIdentifier>{755fc8fb-1ca4-44ef-a282-c4f310024a2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\04. Animation3D\CopyBone">
+      <UniqueIdentifier>{8bd73434-2379-4385-bdcb-8211b9e64a28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -700,7 +721,10 @@
       <Filter>HLSL\03. Compute Shader\03. LandScape\03. WeightMap</Filter>
     </FxCompile>
     <FxCompile Include="animation.fx">
-      <Filter>HLSL\03. Compute Shader\04. Animation3D</Filter>
+      <Filter>HLSL\03. Compute Shader\04. Animation3D\Animation3D</Filter>
+    </FxCompile>
+    <FxCompile Include="copybone.fx">
+      <Filter>HLSL\03. Compute Shader\04. Animation3D\CopyBone</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

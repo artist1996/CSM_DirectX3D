@@ -12,7 +12,7 @@ CAnimator3D::CAnimator3D()
 	: CComponent(COMPONENT_TYPE::ANIMATOR3D)
 	, m_pVecBones(nullptr)
 	, m_pVecClip(nullptr)
-	, m_iCurClip(0)
+	, m_iCurClip(107)
 	, m_dCurTime(0.)
 	, m_iFrameCount(30)
 	, m_pBoneFinalMatBuffer(nullptr)
@@ -48,8 +48,6 @@ CAnimator3D::~CAnimator3D()
 
 void CAnimator3D::FinalTick()
 {
-	ClearData();
-
 	m_dCurTime = 0.f;
 	// 현재 재생중인 Clip 의 시간을 진행한다.
 	m_vecClipUpdateTime[m_iCurClip] += EngineDT;
@@ -57,6 +55,7 @@ void CAnimator3D::FinalTick()
 	if (m_vecClipUpdateTime[m_iCurClip] >= m_pVecClip->at(m_iCurClip).dTimeLength)
 	{
 		m_vecClipUpdateTime[m_iCurClip] = 0.f;
+		//++m_iCurClip;
 	}
 
 	m_dCurTime = m_pVecClip->at(m_iCurClip).dStartTime + m_vecClipUpdateTime[m_iCurClip];
@@ -66,10 +65,14 @@ void CAnimator3D::FinalTick()
 	m_iFrameIdx = (int)(dFrameIdx);
 
 	// 다음 프레임 인덱스
-	if (m_iFrameIdx >= m_pVecClip->at(0).iFrameLength - 1)
-		m_iNextFrameIdx = m_iFrameIdx;	// 끝이면 현재 인덱스를 유지
+	if (m_iFrameIdx >= m_pVecClip->at(m_iCurClip).iStartFrame + m_pVecClip->at(m_iCurClip).iFrameLength - 1)
+	{
+		m_iNextFrameIdx = m_iFrameIdx;	// 끝이면 현재 인덱스를 유지		
+	}
 	else
+	{
 		m_iNextFrameIdx = m_iFrameIdx + 1;
+	}
 
 	// 프레임간의 시간에 따른 비율을 구해준다.
 	m_fRatio = (float)(dFrameIdx - (double)m_iFrameIdx);
@@ -84,11 +87,10 @@ void CAnimator3D::SetAnimClip(const vector<tMTAnimClip>* _vecAnimClip)
 	m_vecClipUpdateTime.resize(m_pVecClip->size());
 
 	// 테스트 코드
-	/*static float fTime = 0.f;
-	fTime += 1.f;
-	m_vecClipUpdateTime[0] = fTime;*/
+	//static float fTime = 0.f;
+	//fTime += 1.f;
+	//m_vecClipUpdateTime[0] = fTime;
 }
-
 
 void CAnimator3D::Binding()
 {
@@ -101,12 +103,13 @@ void CAnimator3D::Binding()
 		Ptr<CMesh> pMesh = MeshRender()->GetMesh();
 		check_mesh(pMesh);
 
-		pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBuffer());
+		//pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBuffer());
+		pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBufferByIndex(m_iCurClip));
 		pUpdateShader->SetOffsetMatBuffer(pMesh->GetBoneInverseBuffer());
 		pUpdateShader->SetOutputBuffer(m_pBoneFinalMatBuffer);
 
 		UINT iBoneCount = (UINT)m_pVecBones->size();
-		pUpdateShader->SetBoneCount(iBoneCount);
+		pUpdateShader->SetBoneCount((int)iBoneCount);
 		pUpdateShader->SetFrameIndex(m_iFrameIdx);
 		pUpdateShader->SetNextFrameIdx(m_iNextFrameIdx);
 		pUpdateShader->SetFrameRatio(m_fRatio);

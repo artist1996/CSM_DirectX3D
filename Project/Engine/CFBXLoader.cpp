@@ -139,7 +139,7 @@ void CFBXLoader::LoadMesh(FbxMesh* _pFbxMesh)
 
 	string strName = _pFbxMesh->GetName();
 	Container.strName = wstring(strName.begin(), strName.end());
-
+	
 	int iVtxCnt = _pFbxMesh->GetControlPointsCount();
 	Container.Resize(iVtxCnt);
 
@@ -545,10 +545,8 @@ void CFBXLoader::LoadAnimationClip()
 	{
 		FbxAnimStack* pAnimStack = m_pScene->FindMember<FbxAnimStack>(m_arrAnimName[i]->Buffer());
 
-
 		//FbxAnimEvaluator* pevaluator = m_pScene->GetAnimationEvaluator();
-		//m_pScene->SetCurrentAnimationStack();
-
+		m_pScene->SetCurrentAnimationStack(pAnimStack);
 
 		if (!pAnimStack)
 			continue;
@@ -564,8 +562,6 @@ void CFBXLoader::LoadAnimationClip()
 
 		pAnimClip->eMode = m_pScene->GetGlobalSettings().GetTimeMode();
 		pAnimClip->llTimeLength = pAnimClip->tEndTime.GetFrameCount(pAnimClip->eMode) - pAnimClip->tStartTime.GetFrameCount(pAnimClip->eMode);
-
-
 
 		m_vecAnimClip.push_back(pAnimClip);
 	}
@@ -644,7 +640,6 @@ void CFBXLoader::LoadAnimationData(FbxMesh* _pMesh, tContainer* _pContainer)
 	CheckWeightAndIndices(_pMesh, _pContainer);
 }
 
-
 void CFBXLoader::CheckWeightAndIndices(FbxMesh* _pMesh, tContainer* _pContainer)
 {
 	vector<vector<tWeightsAndIndices>>::iterator iter = _pContainer->vecWI.begin();
@@ -698,7 +693,7 @@ void CFBXLoader::CheckWeightAndIndices(FbxMesh* _pMesh, tContainer* _pContainer)
 }
 
 void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
-	, const FbxAMatrix& _matNodeTransform, int _iBoneIdx, tContainer* _pContainer)
+	, const FbxAMatrix& _matNodeTransform, int _iBoneIdx, tContainer* _pContainer, int _idx)
 {
 	if (m_vecAnimClip.empty())
 		return;
@@ -717,8 +712,8 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 
 	FbxTime::EMode eTimeMode = m_pScene->GetGlobalSettings().GetTimeMode();
 
-	FbxLongLong llStartFrame = m_vecAnimClip[0]->tStartTime.GetFrameCount(eTimeMode);
-	FbxLongLong llEndFrame = m_vecAnimClip[0]->tEndTime.GetFrameCount(eTimeMode);
+	FbxLongLong llStartFrame = m_vecAnimClip[_idx]->tStartTime.GetFrameCount(eTimeMode);
+	FbxLongLong llEndFrame = m_vecAnimClip[_idx]->tEndTime.GetFrameCount(eTimeMode);
 
 	for (FbxLongLong i = llStartFrame; i < llEndFrame; ++i)
 	{
@@ -735,6 +730,53 @@ void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster
 		tFrame.matTransform = matCurTrans;
 
 		m_vecBone[_iBoneIdx]->vecKeyFrame.push_back(tFrame);
+	}
+}
+
+void CFBXLoader::LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster, const FbxAMatrix& _matNodeTransform, int _iBoneIdx, tContainer* _pContainer)
+{
+	if (m_vecAnimClip.empty())
+		return;
+
+	FbxVector4	v1 = { 1, 0, 0, 0 };
+	FbxVector4	v2 = { 0, 0, 1, 0 };
+	FbxVector4	v3 = { 0, 1, 0, 0 };
+	FbxVector4	v4 = { 0, 0, 0, 1 };
+	FbxAMatrix	matReflect;
+	matReflect.mData[0] = v1;
+	matReflect.mData[1] = v2;
+	matReflect.mData[2] = v3;
+	matReflect.mData[3] = v4;
+
+	m_vecBone[_iBoneIdx]->matBone = _matNodeTransform;
+
+	FbxTime::EMode eTimeMode = m_pScene->GetGlobalSettings().GetTimeMode();
+
+	for (size_t i = 0; i < m_vecAnimClip.size(); ++i)
+	{
+		// ¾Ö´Ï¸ÞÀÌ¼Ç °ñ¶óÁÜ
+		FbxAnimStack* pAnimStack = m_pScene->FindMember<FbxAnimStack>(m_arrAnimName[i]->Buffer());
+		m_pScene->SetCurrentAnimationStack(OUT pAnimStack);
+
+		FbxLongLong llStartFrame = m_vecAnimClip[i]->tStartTime.GetFrameCount(eTimeMode);
+		FbxLongLong llEndFrame = m_vecAnimClip[i]->tEndTime.GetFrameCount(eTimeMode);
+
+		for (FbxLongLong j = llStartFrame; j < llEndFrame; ++j)
+		{
+			tKeyFrame tFrame = {};
+			FbxTime   tTime = 0;
+
+			tTime.SetFrame(j, eTimeMode);
+
+			FbxAMatrix matFromNode = _pNode->EvaluateGlobalTransform(tTime) * _matNodeTransform;
+			FbxAMatrix matCurTrans = matFromNode.Inverse() * _pCluster->GetLink()->EvaluateGlobalTransform(tTime);
+			matCurTrans = matReflect * matCurTrans * matReflect;
+
+			tFrame.dTime = tTime.GetSecondDouble();
+			tFrame.matTransform = matCurTrans;
+
+			m_vecBone[_iBoneIdx]->vecKeyFrame.push_back(tFrame);
+		}
 	}
 }
 

@@ -30,6 +30,7 @@
 #include "DecalUI.h"
 #include "BoundingBoxUI.h"
 #include "LandScapeUI.h"
+#include "Animator3DUI.h"
 
 #include "ScriptUI.h"
 
@@ -126,6 +127,11 @@ void Inspector::CreateComponentUI()
 	m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE]->SetName("LandScapeUI");
 	m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE]->SetChildBorder(true);
 	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::LANDSCAPE]);
+
+	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D] = new Animator3DUI;
+	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]->SetName("Animator3DUI");
+	m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]->SetChildBorder(true);
+	AddChild(m_arrComUI[(UINT)COMPONENT_TYPE::ANIMATOR3D]);
 }
 
 void Inspector::CreateAssetUI()

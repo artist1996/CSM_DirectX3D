@@ -131,6 +131,9 @@ private:
 	void LoadWeightsAndIndices(FbxCluster* _pCluster, int _iBoneIdx, tContainer* _pContainer);
 	void LoadOffsetMatrix(FbxCluster* _pCluster, const FbxAMatrix& _matNodeTransform, int _iBoneIdx, tContainer* _pContainer);
 	void LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster, const FbxAMatrix& _matNodeTransform
+		, int _iBoneIdx, tContainer* _pContainer, int _idx);
+
+	void LoadKeyframeTransform(FbxNode* _pNode, FbxCluster* _pCluster, const FbxAMatrix& _matNodeTransform
 		, int _iBoneIdx, tContainer* _pContainer);
 
 	int FindBoneIndex(string _strBoneName);

@@ -5,6 +5,7 @@
 #include "CPathMgr.h"
 
 #include "CStructuredBuffer.h"
+#include "CInstancingBuffer.h"
 
 CMesh::CMesh(bool _IsEngine)
 	: CAsset(ASSET_TYPE::MESH)
@@ -27,8 +28,10 @@ CMesh::~CMesh()
 			delete m_vecIdxInfo[i].pIdxSysMem;
 	}
 
-	if (nullptr != m_pBoneFrameData)
-		delete m_pBoneFrameData;
+	//if (nullptr != m_pBoneFrameData)
+	//	delete m_pBoneFrameData;
+
+	Delete_Vec(m_pVecBoneFrameData);
 
 	if (nullptr != m_pBoneInverse)
 		delete m_pBoneInverse;
@@ -113,6 +116,7 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 
 	vector<tBone*>& vecBone = _loader.GetBones();
 	UINT iFrameCount = 0;
+
 	for (UINT i = 0; i < vecBone.size(); ++i)
 	{
 		tMTBone bone = {};
@@ -170,30 +174,60 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 	// Animation 이 있는 Mesh 경우 structuredbuffer 만들어두기
 	if (pMesh->IsAnimMesh())
 	{
-		// BoneOffet 행렬
+		// Bone Offset 행렬
 		vector<Matrix> vecOffset;
-		vector<tFrameTrans> vecFrameTrans;
-		vecFrameTrans.resize((UINT)pMesh->m_vecBones.size() * iFrameCount);
-
 		for (size_t i = 0; i < pMesh->m_vecBones.size(); ++i)
 		{
 			vecOffset.push_back(pMesh->m_vecBones[i].matOffset);
-
-			for (size_t j = 0; j < pMesh->m_vecBones[i].vecKeyFrame.size(); ++j)
-			{
-				vecFrameTrans[(UINT)pMesh->m_vecBones.size() * j + i]
-					= tFrameTrans{ Vec4(pMesh->m_vecBones[i].vecKeyFrame[j].vTranslate, 0.f)
-					, Vec4(pMesh->m_vecBones[i].vecKeyFrame[j].vScale, 0.f)
-					, pMesh->m_vecBones[i].vecKeyFrame[j].qRot };
-			}
 		}
 
-		pMesh->m_pBoneInverse = new CStructuredBuffer;
-		pMesh->m_pBoneInverse->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, false, vecOffset.data());
+		// 클립별로 Frame Data 저장
+		size_t clipsize = pMesh->m_vecAnimClip.size();
 
-		pMesh->m_pBoneFrameData = new CStructuredBuffer;
-		pMesh->m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * iFrameCount
-			, SB_TYPE::SRV_ONLY, false, vecFrameTrans.data());
+		for (size_t clipIdx = 0; clipIdx < clipsize; ++clipIdx)
+		{
+			const tMTAnimClip& clip = pMesh->m_vecAnimClip[clipIdx];
+			vector<tFrameTrans> vecFrameTrans;
+			vecFrameTrans.resize((UINT)pMesh->m_vecBones.size() * iFrameCount);
+
+			size_t bonesize = pMesh->m_vecBones.size();
+
+			for (size_t i = 0; i < pMesh->m_vecBones.size(); ++i)
+			{
+				size_t keyframesize = pMesh->m_vecBones[i].vecKeyFrame.size();
+
+				for (size_t j = 0; j < keyframesize; ++j)
+				{
+					size_t index = pMesh->m_vecBones.size() * j + i;
+
+					if (index >= vecFrameTrans.size())
+						continue;
+
+					vecFrameTrans[index] = tFrameTrans{	Vec4(pMesh->m_vecBones[i].vecKeyFrame[j].vTranslate, 0.f),
+														Vec4(pMesh->m_vecBones[i].vecKeyFrame[j].vScale, 0.f),
+															 pMesh->m_vecBones[i].vecKeyFrame[j].qRot };
+				}
+			}
+
+			// 클립별 구조화 버퍼 생성
+			CStructuredBuffer* pBoneFrameData = new CStructuredBuffer;
+			pBoneFrameData->Create(sizeof(tFrameTrans)
+								, (UINT)vecFrameTrans.size()
+								, SB_TYPE::SRV_ONLY
+								, false
+								, vecFrameTrans.data());
+
+			// 벡터에 구조화 버퍼 추가
+			pMesh->m_pVecBoneFrameData.push_back(pBoneFrameData);
+		}
+
+		// Inverse Offset 데이터 생성
+		pMesh->m_pBoneInverse = new CStructuredBuffer;
+		pMesh->m_pBoneInverse->Create(sizeof(Matrix)
+									, (UINT)vecOffset.size()
+									, SB_TYPE::SRV_ONLY
+									, false
+									, vecOffset.data());
 	}
 
 	return pMesh;
@@ -268,6 +302,19 @@ void CMesh::Binding(UINT _iSubset)
 	CONTEXT->IASetIndexBuffer(m_vecIdxInfo[_iSubset].pIB.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
+void CMesh::Binding_Inst(UINT _iSubset)
+{
+	if (_iSubset >= m_vecIdxInfo.size())
+		assert(nullptr);
+
+	ID3D11Buffer* arrBuffer[2] = { m_VB.Get(), CInstancingBuffer::GetInst()->GetBuffer().Get() };
+	UINT		  iStride[2] = { sizeof(Vtx), sizeof(tInstancingData) };
+	UINT		  iOffset[2] = { 0, 0 };
+
+	CONTEXT->IASetVertexBuffers(0, 2, arrBuffer, iStride, iOffset);
+	CONTEXT->IASetIndexBuffer(m_vecIdxInfo[_iSubset].pIB.Get(), DXGI_FORMAT_R32_UINT, 0);
+}
+
 void CMesh::Render(UINT _Subset)
 {
 	Binding(_Subset);
@@ -280,6 +327,14 @@ void CMesh::Render_Particle(UINT _Count)
 	Binding(0);
 
 	CONTEXT->DrawIndexedInstanced(m_vecIdxInfo[0].iIdxCount, _Count, 0, 0, 0);
+}
+
+void CMesh::Render_Instancing(UINT _Subset)
+{
+	Binding_Inst(_Subset);
+
+	CONTEXT->DrawIndexedInstanced(m_vecIdxInfo[_Subset].iIdxCount
+		, CInstancingBuffer::GetInst()->GetInstanceCount(), 0, 0, 0);
 }
 
 int CMesh::Save(const wstring& _FilePath)
@@ -351,7 +406,6 @@ int CMesh::Save(const wstring& _FilePath)
 			fwrite(&m_vecBones[i].vecKeyFrame[j], sizeof(tMTKeyFrame), 1, pFile);
 		}
 	}
-
 
 	fclose(pFile);
 
@@ -468,30 +522,85 @@ int CMesh::Load(const wstring& _FilePath)
 	{
 		wstring strBone = GetName();
 
-		// BoneOffet 행렬
-		vector<Matrix> vecOffset;
-		vector<tFrameTrans> vecFrameTrans;
-		vecFrameTrans.resize((UINT)m_vecBones.size() * _iFrameCount);
+		//// BoneOffet 행렬
+		//vector<Matrix> vecOffset;
+		//vector<tFrameTrans> vecFrameTrans;
+		//vecFrameTrans.resize((UINT)m_vecBones.size() * _iFrameCount);
+		//
+		//for (size_t i = 0; i < m_vecBones.size(); ++i)
+		//{
+		//	vecOffset.push_back(m_vecBones[i].matOffset);
+		//
+		//	for (size_t j = 0; j < m_vecBones[i].vecKeyFrame.size(); ++j)
+		//	{
+		//		vecFrameTrans[(UINT)m_vecBones.size() * j + i]
+		//			= tFrameTrans{ Vec4(m_vecBones[i].vecKeyFrame[j].vTranslate, 0.f)
+		//			, Vec4(m_vecBones[i].vecKeyFrame[j].vScale, 0.f)
+		//			, Vec4(m_vecBones[i].vecKeyFrame[j].qRot) };
+		//	}
+		//}
 
+		//m_pBoneInverse = new CStructuredBuffer;
+		//m_pBoneInverse->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, false, vecOffset.data());
+		//
+		//m_pBoneFrameData = new CStructuredBuffer;
+		//m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * (UINT)_iFrameCount
+		//	, SB_TYPE::SRV_ONLY, false, vecFrameTrans.data());
+
+		// Bone Offset 행렬
+		vector<Matrix> vecOffset;
 		for (size_t i = 0; i < m_vecBones.size(); ++i)
 		{
 			vecOffset.push_back(m_vecBones[i].matOffset);
-
-			for (size_t j = 0; j < m_vecBones[i].vecKeyFrame.size(); ++j)
-			{
-				vecFrameTrans[(UINT)m_vecBones.size() * j + i]
-					= tFrameTrans{ Vec4(m_vecBones[i].vecKeyFrame[j].vTranslate, 0.f)
-					, Vec4(m_vecBones[i].vecKeyFrame[j].vScale, 0.f)
-					, Vec4(m_vecBones[i].vecKeyFrame[j].qRot) };
-			}
 		}
 
-		m_pBoneInverse = new CStructuredBuffer;
-		m_pBoneInverse->Create(sizeof(Matrix), (UINT)vecOffset.size(), SB_TYPE::SRV_ONLY, false, vecOffset.data());
+		// 클립별로 Frame Data 저장
+		size_t clipsize = m_vecAnimClip.size();
 
-		m_pBoneFrameData = new CStructuredBuffer;
-		m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * (UINT)_iFrameCount
-			, SB_TYPE::SRV_ONLY, false, vecFrameTrans.data());
+		for (size_t clipIdx = 0; clipIdx < clipsize; ++clipIdx)
+		{
+			const tMTAnimClip& clip = m_vecAnimClip[clipIdx];
+			vector<tFrameTrans> vecFrameTrans;
+			vecFrameTrans.resize((UINT)m_vecBones.size() * _iFrameCount);
+
+			size_t bonesize = m_vecBones.size();
+
+			for (size_t i = 0; i < m_vecBones.size(); ++i)
+			{
+				size_t keyframesize = m_vecBones[i].vecKeyFrame.size();
+
+				for (size_t j = 0; j < keyframesize; ++j)
+				{
+					size_t index = m_vecBones.size() * j + i;
+
+					if (index >= vecFrameTrans.size())
+						continue;
+
+					vecFrameTrans[index] = tFrameTrans{ Vec4(m_vecBones[i].vecKeyFrame[j].vTranslate, 0.f),
+														Vec4(m_vecBones[i].vecKeyFrame[j].vScale, 0.f),
+															 m_vecBones[i].vecKeyFrame[j].qRot };
+				}
+			}
+
+			// 클립별 구조화 버퍼 생성
+			CStructuredBuffer* pBoneFrameData = new CStructuredBuffer;
+			pBoneFrameData->Create(sizeof(tFrameTrans)
+				, (UINT)vecFrameTrans.size()
+				, SB_TYPE::SRV_ONLY
+				, false
+				, vecFrameTrans.data());
+
+			// 벡터에 구조화 버퍼 추가
+			m_pVecBoneFrameData.push_back(pBoneFrameData);
+		}
+
+		// Inverse Offset 데이터 생성
+		m_pBoneInverse = new CStructuredBuffer;
+		m_pBoneInverse->Create(sizeof(Matrix)
+			, (UINT)vecOffset.size()
+			, SB_TYPE::SRV_ONLY
+			, false
+			, vecOffset.data());
 	}
 
 	fclose(pFile);

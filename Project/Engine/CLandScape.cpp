@@ -61,7 +61,7 @@ void CLandScape::FinalTick()
 	if (KEY_TAP(KEY::NUM8))
 	{
 		++m_WeightIdx;
-		if ((int)m_ColorTex->GetArraySize() <= m_WeightIdx)
+		if (m_ColorTex->GetArraySize() <= (UINT)m_WeightIdx)
 			m_WeightIdx = 0;
 	}
 

@@ -50,6 +50,11 @@ CRenderComponent::~CRenderComponent()
 {
 }
 
+void CRenderComponent::Render(UINT _iSubset)
+{
+	Render();
+}
+
 void CRenderComponent::render_shadowmap()
 {
 	// 재질은 ShadowMapMtrl 로 이미 Binding 되어있는걸 사용 할 것
@@ -132,6 +137,15 @@ Ptr<CMaterial> CRenderComponent::GetDynamicMaterial(UINT _Idx)
 	}
 
 	return m_vecMtrls[_Idx].pCurMtrl;
+}
+
+ULONG64 CRenderComponent::GetInstID(UINT _iMtrlIdx)
+{
+	if (m_Mesh == nullptr || m_vecMtrls[_iMtrlIdx].pCurMtrl == nullptr)
+		return 0;
+
+	uInstID id{ (UINT)m_Mesh->GetID(), (WORD)m_vecMtrls[_iMtrlIdx].pCurMtrl->GetID(), (WORD)_iMtrlIdx };
+	return id.llID;
 }
 
 void CRenderComponent::SaveDataToFile(FILE* _pFile)

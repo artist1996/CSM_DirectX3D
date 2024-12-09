@@ -199,6 +199,9 @@
     <Filter Include="02. EditorUI\01. Inspector\ComponentUI\15. LandScapeUI">
       <UniqueIdentifier>{703c1209-b091-43e3-b87b-afbe56c48bef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. EditorUI\01. Inspector\ComponentUI\16. Animator3DUI">
+      <UniqueIdentifier>{8b427126-fde1-4f85-a20c-f02b5ae35d48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CGameObjectEx.h">
@@ -426,6 +429,9 @@
     <ClInclude Include="LandScapeUI.h">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\15. LandScapeUI</Filter>
     </ClInclude>
+    <ClInclude Include="Animator3DUI.h">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\16. Animator3DUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -647,6 +653,9 @@
     </ClCompile>
     <ClCompile Include="LandScapeUI.cpp">
       <Filter>02. EditorUI\01. Inspector\ComponentUI\15. LandScapeUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator3DUI.cpp">
+      <Filter>02. EditorUI\01. Inspector\ComponentUI\16. Animator3DUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
