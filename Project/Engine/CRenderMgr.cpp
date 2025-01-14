@@ -149,6 +149,10 @@ void CRenderMgr::RenderDebugShape()
 			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"ConeMesh"));
 			m_DebugObject->MeshRender()->SetMaterial(pMtrl, 0);
 			break;
+		case DEBUG_SHAPE::TRIANGLE:
+			m_DebugObject->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"TriangleMesh_Debug"));
+			m_DebugObject->MeshRender()->SetMaterial(pMtrl, 0);
+			break;
 		}
 
 		// 위치 세팅

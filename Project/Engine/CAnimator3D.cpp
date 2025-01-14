@@ -12,7 +12,7 @@ CAnimator3D::CAnimator3D()
 	: CComponent(COMPONENT_TYPE::ANIMATOR3D)
 	, m_pVecBones(nullptr)
 	, m_pVecClip(nullptr)
-	, m_iCurClip(107)
+	, m_iCurClip(0)
 	, m_dCurTime(0.)
 	, m_iFrameCount(30)
 	, m_pBoneFinalMatBuffer(nullptr)
@@ -102,9 +102,8 @@ void CAnimator3D::Binding()
 		// Bone Data
 		Ptr<CMesh> pMesh = MeshRender()->GetMesh();
 		check_mesh(pMesh);
-
-		//pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBuffer());
-		pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBufferByIndex(m_iCurClip));
+		pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBuffer());
+		//pUpdateShader->SetFrameDataBuffer(pMesh->GetBoneFrameDataBufferByIndex(m_iCurClip));
 		pUpdateShader->SetOffsetMatBuffer(pMesh->GetBoneInverseBuffer());
 		pUpdateShader->SetOutputBuffer(m_pBoneFinalMatBuffer);
 

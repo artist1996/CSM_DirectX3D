@@ -112,8 +112,7 @@ TessFactor PatchConstantFunc(InputPatch<VS_OUT, 3> _in, uint _PatchIdx : SV_Prim
     // 삼각형 중심
     output.Inside = GetTessFactor(MIN_LEVEL, MAX_LEVEL
                                 , MIN_RANGE, MAX_RANGE, CAM_POS
-                                , (_in[0].vWorldPos + _in[1].vWorldPos + _in[2].vWorldPos) / 3.f);
-      
+                                , (_in[0].vWorldPos + _in[1].vWorldPos + _in[2].vWorldPos) / 3.f);      
     
     
     return output;
@@ -194,7 +193,7 @@ DS_OUT DS_LandScape(OutputPatch<HS_OUT, 3> _in, float3 _Weight : SV_DomainLocati
         
         // 패치 분할레벨을 정점 간격으로 잡는다.
         float fLocalStep = 1.f / _PatchTessFactor.Inside;
-                
+        
         float3 arrUDLR[4] =
         {
             float3(input.vLocalPos.x, 0.f, input.vLocalPos.z + fLocalStep),

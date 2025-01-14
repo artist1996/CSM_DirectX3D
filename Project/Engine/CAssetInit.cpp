@@ -500,6 +500,15 @@ void CAssetMgr::CreateEngineMesh()
 	AddAsset(L"ConeMesh", pMesh);
 	vecVtx.clear();
 	vecIdx.clear();
+
+	//vecVtx;
+	//
+	//
+	//pMesh = new CMesh(true);
+	//pMesh->Create(vecVtx.data(), (UINT)vecVtx.size(), vecIdx.data(), (UINT)vecIdx.size());
+	//AddAsset(L"TriangleMesh_Debug", pMesh);
+	//vecVtx.clear();
+	//vecIdx.clear();
 }
 
 void CAssetMgr::CreateEngineMaterial()

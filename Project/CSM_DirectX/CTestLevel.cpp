@@ -130,14 +130,34 @@ void CTestLevel::CreateTestLevel()
 	pPlayer->AddComponent(new CTransform);
 	pPlayer->AddComponent(new CMeshRender);
 	pPlayer->AddComponent(new CBoundingBox);
+	pPlayer->AddComponent(new CCollider3D);
+	pPlayer->AddComponent(new CBoundingSphere);
 
 	pPlayer->Transform()->SetRelativePos(0.f, 0.f, 0.f);
 	pPlayer->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
+	pPlayer->Collider3D()->SetScale(Vec3(1.f, 1.f, 1.f));
 
 	pPlayer->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
 	pPlayer->MeshRender()->SetMaterial(pStd3D_DefferedMtrl,0);
 
 	pLevel->AddObject(3, pPlayer);
+
+	CGameObject* pCube = new CGameObject;
+	pCube->SetName(L"Cube");
+	pCube->AddComponent(new CTransform);
+	pCube->AddComponent(new CMeshRender);
+	pCube->AddComponent(new CBoundingBox);
+	pCube->AddComponent(new CCollider3D);
+	pCube->AddComponent(new CBoundingSphere);
+
+	pCube->Transform()->SetRelativePos(0.f, 0.f, 0.f);
+	pCube->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
+	pCube->Collider3D()->SetScale(Vec3(1.f, 1.f, 1.f));
+
+	pCube->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
+	pCube->MeshRender()->SetMaterial(pStd3D_DefferedMtrl, 0);
+
+	pLevel->AddObject(4, pCube);
 
 	// Decal Object 추가
 	CGameObject* pDecal = new CGameObject;
@@ -163,7 +183,7 @@ void CTestLevel::CreateTestLevel()
 	pLandScape->Transform()->SetRelativePos(0.f, 0.f, 0.f);
 	pLandScape->Transform()->SetRelativeScale(1000.f, 3000.f, 1000.f);
 
-	pLandScape->LandScape()->SetFace(16, 16);
+	pLandScape->LandScape()->SetFace(10, 10);
 	//pLandScape->LandScape()->SetHeightMap(CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\HeightMap_01.jpg"));
 	pLandScape->LandScape()->CreateHeightMap(1024, 1024);
 
@@ -193,7 +213,7 @@ void CTestLevel::CreateTestLevel()
 		Ptr<CMeshData> pMeshData = nullptr;
 		CGameObject* pObj = nullptr;
 
-		//pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\mn_vorc_00_ani.fbx");
+		pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\mn_vorc_00_ani.fbx");
 		pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\mn_vorc_00_ani.mdat");
 
 		//pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\Monster.fbx");
@@ -209,6 +229,38 @@ void CTestLevel::CreateTestLevel()
 
 		pLevel->AddObject(0, pObj);
 	}
+
+	//CGameObject* pNavField = new CGameObject;
+	//pNavField->AddComponent(new CTransform);
+	//pNavField->AddComponent(new CMeshRender);
+	//pNavField->AddComponent(new CNavField);
+	//size_t vertexcount = pLandScape->GetRenderComponent()->GetMesh()->GetVertexCount();
+	//const vector<tIndexInfo> vecIndexInfo = pLandScape->GetRenderComponent()->GetMesh()->GetIndexInfo();
+	//Vtx* pVtx = (Vtx*)pLandScape->GetRenderComponent()->GetMesh()->GetVtxSysMem();
+	//
+	//vector<float> vertices;
+	//
+	//for (size_t i = 0; i < vertexcount; ++i)
+	//{
+	//	vertices.push_back(pVtx[i].vPos.x);
+	//	vertices.push_back(pVtx[i].vPos.y);
+	//	vertices.push_back(pVtx[i].vPos.z);
+	//}
+
+	//vector<int> indices;
+	//
+	//for (size_t i = 0; i < vecIndexInfo.size(); ++i)
+	//{
+	//	int* pIndices = reinterpret_cast<int*>(vecIndexInfo[i].pIdxSysMem);
+	//	for (UINT j = 0; j < vecIndexInfo[i].iIdxCount; ++j)
+	//	{
+	//		indices.push_back(pIndices[j]);
+	//	}
+	//}
+	//
+	//pNavField->NavField()->BuildField(vertices.data(), vertices.size() / 3, indices.data(), indices.size() / 3);
+	//pNavField->SetName(L"NavField");
+	//pLevel->AddObject(0, pNavField);
 
 	// 충돌 지정
 	CCollisionMgr::GetInst()->CollisionCheck(3, 4); // Player vs Monster

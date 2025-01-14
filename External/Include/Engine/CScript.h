@@ -59,6 +59,10 @@ public:
     virtual void Overlap(CCollider2D* _OwnCollider, CGameObject* _OtherObj, CCollider2D* _OtherCollider)      {}
     virtual void EndOverlap(CCollider2D* _OwnCollider, CGameObject* _OtherObj, CCollider2D* _OtherCollider)   {}
 
+    virtual void BeginOverlap3D(CCollider3D* _OwnCollider, CGameObject* _OtherObj, CCollider3D* _OtherCollider) {}
+    virtual void Overlap3D(CCollider3D* _OwnCollider, CGameObject* _OtherObj, CCollider3D* _OtherCollider) {}
+    virtual void EndOverlap3D(CCollider3D* _OwnCollider, CGameObject* _OtherObj, CCollider3D* _OtherCollider) {}
+
 public:
     CScript(UINT _m_ScriptType);
     virtual ~CScript();

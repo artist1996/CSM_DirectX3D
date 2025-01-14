@@ -98,4 +98,14 @@ void Animator3DUI::Update()
 	ImGui::Text("Next Frame");
 	ImGui::SameLine(120);
 	ImGui::DragInt("##NextFrameIndex", &nextframeidx, 0, 0, 0);
+
+	float starttime = (float)pVecClip->at(curclip).dStartTime;
+	ImGui::Text("Start Time");
+	ImGui::SameLine(120);
+	ImGui::DragFloat("##Start Time", &starttime, 0.f, 0.f, 0.f);
+
+	float endtime = (float)pVecClip->at(curclip).dEndTime;
+	ImGui::Text("End Time");
+	ImGui::SameLine(120);
+	ImGui::DragFloat("##End Time", &endtime, 0.f, 0.f, 0.f);	
 }

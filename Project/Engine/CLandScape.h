@@ -70,15 +70,25 @@ private:
 public:
     void SetFace(int _X, int _Z);
     void AddBrushTexture(Ptr<CTexture> _BrushTex) { m_vecBrush.push_back(_BrushTex); }
+    Ptr<CTexture> GetBrushTex() { return m_vecBrush[m_BrushIdx]; }
+    void SetBurshIndex(Ptr<CTexture> _BrushTex);
     void SetHeightMap(Ptr<CTexture> _HeightMap) { m_HeightMap = _HeightMap;  m_IsHeightMapCreated = false; }
     void CreateHeightMap(UINT _Width, UINT _Height);
     float GetTessLevel() { return m_TessLevel; }
     void SetTessLevel(float _TessLevel) { m_TessLevel = _TessLevel; }
+
     void SetMode(LANDSCAPE_MODE _Mode) { m_Mode = _Mode; };
+    LANDSCAPE_MODE GetMode() { return m_Mode; }
 
     int GetFaceX() { return m_FaceX; }
     int GetFaceZ() { return m_FaceZ; }
     Ptr<CTexture> GetHeightMap() { return m_HeightMap; }
+
+    void SetBrushScale(Vec2 _Scale) { m_BrushScale = _Scale; }
+    Vec2 GetBrushScale()            { return m_BrushScale; }
+    
+    int  GetWeightIndex() { return m_WeightIdx; }
+    void SetWeightIndex(int _Idx);
 
 public:
     virtual void Init() override;

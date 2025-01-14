@@ -164,7 +164,7 @@
       <Filter>04. Manager\09. FontMgr</Filter>
     </ClInclude>
     <ClInclude Include="CFSM.h">
-      <Filter>08. Component\11. BoundingBox\10. FSM</Filter>
+      <Filter>08. Component\10. FSM</Filter>
     </ClInclude>
     <ClInclude Include="CState.h">
       <Filter>Module</Filter>
@@ -186,9 +186,6 @@
     </ClInclude>
     <ClInclude Include="CFrustum.h">
       <Filter>08. Component\07. Camera\Frustum</Filter>
-    </ClInclude>
-    <ClInclude Include="CBoundingBox.h">
-      <Filter>08. Component\11. BoundingBox</Filter>
     </ClInclude>
     <ClInclude Include="CLandScape.h">
       <Filter>08. Component\RenderComponent\06. LandScape</Filter>
@@ -219,6 +216,15 @@
     </ClInclude>
     <ClInclude Include="CCopyBoneCS.h">
       <Filter>HLSL\03. Compute Shader\04. Animation3D\CopyBone</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollider3D.h">
+      <Filter>08. Component\03. Collider3D</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoundingBox.h">
+      <Filter>08. Component\11. BoundingBox\01. Frustum</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoundingSphere.h">
+      <Filter>08. Component\11. BoundingBox\02. BoudningSphere</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -364,7 +370,7 @@
       <Filter>04. Manager\09. FontMgr</Filter>
     </ClCompile>
     <ClCompile Include="CFSM.cpp">
-      <Filter>08. Component\11. BoundingBox\10. FSM</Filter>
+      <Filter>08. Component\10. FSM</Filter>
     </ClCompile>
     <ClCompile Include="CState.cpp">
       <Filter>Module</Filter>
@@ -389,9 +395,6 @@
     </ClCompile>
     <ClCompile Include="CFrustum.cpp">
       <Filter>08. Component\07. Camera\Frustum</Filter>
-    </ClCompile>
-    <ClCompile Include="CBoundingBox.cpp">
-      <Filter>08. Component\11. BoundingBox</Filter>
     </ClCompile>
     <ClCompile Include="CLandScape.cpp">
       <Filter>08. Component\RenderComponent\06. LandScape</Filter>
@@ -425,6 +428,15 @@
     </ClCompile>
     <ClCompile Include="CCopyBoneCS.cpp">
       <Filter>HLSL\03. Compute Shader\04. Animation3D\CopyBone</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollider3D.cpp">
+      <Filter>08. Component\03. Collider3D</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoundingBox.cpp">
+      <Filter>08. Component\11. BoundingBox\01. Frustum</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoundingSphere.cpp">
+      <Filter>08. Component\11. BoundingBox\02. BoudningSphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -611,9 +623,6 @@
     <Filter Include="HLSL\02. Render\01. 2D">
       <UniqueIdentifier>{65008b77-2500-4bc7-a78c-64efb871fe0c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="08. Component\11. BoundingBox\10. FSM">
-      <UniqueIdentifier>{893487aa-3f50-4161-8c5f-38cb55d44684}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HLSL\03. Compute Shader\03. LandScape">
       <UniqueIdentifier>{cd65e030-7f78-4590-bed1-4ee1d5862773}</UniqueIdentifier>
     </Filter>
@@ -640,6 +649,15 @@
     </Filter>
     <Filter Include="HLSL\03. Compute Shader\04. Animation3D\CopyBone">
       <UniqueIdentifier>{8bd73434-2379-4385-bdcb-8211b9e64a28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\10. FSM">
+      <UniqueIdentifier>{893487aa-3f50-4161-8c5f-38cb55d44684}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\11. BoundingBox\01. Frustum">
+      <UniqueIdentifier>{d84bd8f7-2ddd-484a-9c93-d99304b05aea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Component\11. BoundingBox\02. BoudningSphere">
+      <UniqueIdentifier>{4636ffb9-08e8-4763-aa53-639d7167fba1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

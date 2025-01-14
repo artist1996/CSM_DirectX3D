@@ -19,7 +19,7 @@ void SkyBoxUI::Update()
 
 	CSkyBox* pSkyBox = GetTargetObject()->SkyBox();
 
-	// ±¤¿ø Á¾·ù
+	// SkyBox Type
 	SKYBOX_TYPE Type = pSkyBox->GetSkyBoxType();
 
 	const char* szItems[] = { "Sphere", "Cube" };

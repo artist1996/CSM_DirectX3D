@@ -52,8 +52,7 @@ void CCollider2D::FinalTick()
 	}
 
 	m_matColWorld = matScale * matTranslation * matObjectScaleInv * GetOwner()->Transform()->GetWorldMat();
-
-	
+		
 	if (m_bRender)
 	{
 		if (m_OverlapCount)

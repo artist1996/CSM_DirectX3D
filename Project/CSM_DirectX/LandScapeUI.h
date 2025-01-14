@@ -10,7 +10,9 @@ public:
     virtual void Update() override;
 
 public:
-    LandScapeUI();
-    ~LandScapeUI();
-};
+    void ChangeBrushIndex(DWORD_PTR _Param);
 
+public:
+    LandScapeUI();
+    virtual ~LandScapeUI();
+};

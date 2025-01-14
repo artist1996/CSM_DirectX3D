@@ -28,10 +28,7 @@ CMesh::~CMesh()
 			delete m_vecIdxInfo[i].pIdxSysMem;
 	}
 
-	//if (nullptr != m_pBoneFrameData)
-	//	delete m_pBoneFrameData;
-
-	Delete_Vec(m_pVecBoneFrameData);
+	SAFE_DELETE(m_pBoneFrameData);
 
 	if (nullptr != m_pBoneInverse)
 		delete m_pBoneInverse;
@@ -183,11 +180,10 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 
 		// 클립별로 Frame Data 저장
 		size_t clipsize = pMesh->m_vecAnimClip.size();
-
+		vector<tFrameTrans> vecFrameTrans;
 		for (size_t clipIdx = 0; clipIdx < clipsize; ++clipIdx)
 		{
-			const tMTAnimClip& clip = pMesh->m_vecAnimClip[clipIdx];
-			vector<tFrameTrans> vecFrameTrans;
+			//const tMTAnimClip& clip = pMesh->m_vecAnimClip[clipIdx];
 			vecFrameTrans.resize((UINT)pMesh->m_vecBones.size() * iFrameCount);
 
 			size_t bonesize = pMesh->m_vecBones.size();
@@ -210,15 +206,15 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 			}
 
 			// 클립별 구조화 버퍼 생성
-			CStructuredBuffer* pBoneFrameData = new CStructuredBuffer;
-			pBoneFrameData->Create(sizeof(tFrameTrans)
-								, (UINT)vecFrameTrans.size()
-								, SB_TYPE::SRV_ONLY
-								, false
-								, vecFrameTrans.data());
-
-			// 벡터에 구조화 버퍼 추가
-			pMesh->m_pVecBoneFrameData.push_back(pBoneFrameData);
+			//CStructuredBuffer* pBoneFrameData = new CStructuredBuffer;
+			//pBoneFrameData->Create(sizeof(tFrameTrans)
+			//					, (UINT)vecFrameTrans.size()
+			//					, SB_TYPE::SRV_ONLY
+			//					, false
+			//					, vecFrameTrans.data());
+			//
+			//// 벡터에 구조화 버퍼 추가
+			//pMesh->m_pVecBoneFrameData.push_back(pBoneFrameData);
 		}
 
 		// Inverse Offset 데이터 생성
@@ -228,6 +224,10 @@ CMesh* CMesh::CreateFromContainer(CFBXLoader& _loader)
 									, SB_TYPE::SRV_ONLY
 									, false
 									, vecOffset.data());
+
+		pMesh->m_pBoneFrameData = new CStructuredBuffer;
+		pMesh->m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size()* iFrameCount
+			, SB_TYPE::SRV_ONLY, false, vecFrameTrans.data());
 	}
 
 	return pMesh;
@@ -556,11 +556,11 @@ int CMesh::Load(const wstring& _FilePath)
 
 		// 클립별로 Frame Data 저장
 		size_t clipsize = m_vecAnimClip.size();
-
+		vector<tFrameTrans> vecFrameTrans;
 		for (size_t clipIdx = 0; clipIdx < clipsize; ++clipIdx)
 		{
 			const tMTAnimClip& clip = m_vecAnimClip[clipIdx];
-			vector<tFrameTrans> vecFrameTrans;
+			
 			vecFrameTrans.resize((UINT)m_vecBones.size() * _iFrameCount);
 
 			size_t bonesize = m_vecBones.size();
@@ -582,17 +582,19 @@ int CMesh::Load(const wstring& _FilePath)
 				}
 			}
 
-			// 클립별 구조화 버퍼 생성
-			CStructuredBuffer* pBoneFrameData = new CStructuredBuffer;
-			pBoneFrameData->Create(sizeof(tFrameTrans)
-				, (UINT)vecFrameTrans.size()
-				, SB_TYPE::SRV_ONLY
-				, false
-				, vecFrameTrans.data());
+		
 
 			// 벡터에 구조화 버퍼 추가
-			m_pVecBoneFrameData.push_back(pBoneFrameData);
+			//m_pVecBoneFrameData.push_back(pBoneFrameData);
 		}
+
+		// 클립별 구조화 버퍼 생성
+		//CStructuredBuffer* pBoneFrameData = new CStructuredBuffer;
+		//pBoneFrameData->Create(sizeof(tFrameTrans)
+		//	, (UINT)vecFrameTrans.size()
+		//	, SB_TYPE::SRV_ONLY
+		//	, false
+		//	, vecFrameTrans.data());
 
 		// Inverse Offset 데이터 생성
 		m_pBoneInverse = new CStructuredBuffer;
@@ -601,6 +603,10 @@ int CMesh::Load(const wstring& _FilePath)
 			, SB_TYPE::SRV_ONLY
 			, false
 			, vecOffset.data());
+
+		m_pBoneFrameData = new CStructuredBuffer;
+		m_pBoneFrameData->Create(sizeof(tFrameTrans), (UINT)vecOffset.size() * (UINT)_iFrameCount
+			, SB_TYPE::SRV_ONLY, false, vecFrameTrans.data());
 	}
 
 	fclose(pFile);

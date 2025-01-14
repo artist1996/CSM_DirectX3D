@@ -21,7 +21,6 @@ void CBoundingBox::FinalTick()
 
 	m_Radius = WorldScale.x * m_Offset;
 
-
 #ifdef _DEBUG
 	if(m_DebugRender)
 		DrawDebugSphere(Transform()->GetWorldPos(), m_Radius, Vec4(0.f, 1.f, 0.f, 1.f), 0.f, false);

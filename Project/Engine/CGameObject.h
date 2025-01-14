@@ -100,6 +100,8 @@ public:
     GET_COMPONENT(BoundingBox, BOUNDINGBOX);
     GET_COMPONENT(LandScape, LANDSCAPE);
     GET_COMPONENT(Animator3D, ANIMATOR3D);
+    GET_COMPONENT(Collider3D, COLLIDER3D);
+    GET_COMPONENT(BoundingSphere, BOUNDINGSPHERE);
 
 public:
     void Begin();

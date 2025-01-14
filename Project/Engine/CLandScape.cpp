@@ -204,6 +204,26 @@ int CLandScape::Raycasting()
 	return m_Out.Success;
 }
 
+void CLandScape::SetBurshIndex(Ptr<CTexture> _BrushTex)
+{
+	for (size_t i = 0; i < m_vecBrush.size(); ++i)
+	{
+		if (_BrushTex == m_vecBrush[i])
+		{
+			m_BrushIdx = (UINT)i;
+			break;
+		}
+	}
+}
+
+void CLandScape::SetWeightIndex(int _Idx)
+{
+	m_WeightIdx = _Idx;
+
+	if (m_ColorTex->GetArraySize() <= (UINT)m_WeightIdx || 0 > m_WeightIdx)
+		m_WeightIdx = 0;
+}
+
 void CLandScape::SaveToFile(FILE* _File)
 {
 }
@@ -211,3 +231,4 @@ void CLandScape::SaveToFile(FILE* _File)
 void CLandScape::LoadFromFile(FILE* _File)
 {
 }
+

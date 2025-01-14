@@ -63,6 +63,33 @@ using namespace std::filesystem;
 #pragma comment(lib, "FBXLoader/x64/release/libfbxsdk-md.lib")
 #endif
 
+// Recast
+#include <Recast/Recast.h>
+#include <Recast/RecastAlloc.h>
+#include <Recast/RecastAssert.h>
+#pragma comment(lib, "Recast/x64/Recast.lib")
+
+// Detour
+#include <Detour/DetourAlloc.h>
+#include <Detour/DetourAssert.h>
+#include <Detour/DetourCommon.h>
+#include <Detour/DetourMath.h>
+#include <Detour/DetourNavMesh.h>
+#include <Detour/DetourNavMeshBuilder.h>
+#include <Detour/DetourNavMeshQuery.h>
+#include <Detour/DetourNode.h>
+#include <Detour/DetourStatus.h>
+#include <Detour/DetourCrowd.h>
+#include <Detour/DetourLocalBoundary.h>
+#include <Detour/DetourObstacleAvoidance.h>
+#include <Detour/DetourPathCorridor.h>
+#include <Detour/DetourPathQueue.h>
+#include <Detour/DetourProximityGrid.h>
+
+#pragma comment(lib, "Detour/x64/Detour.lib")
+#pragma comment(lib, "DetourCrowd/x64/DetourCrowd.lib");
+
+
 #include <random>
 
 #include "singleton.h"

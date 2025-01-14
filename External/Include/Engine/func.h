@@ -12,6 +12,7 @@ bool IsValid(CGameObject*& _Object);
 void DrawDebugRect(Vec3 _Pos, Vec3 _Scale, Vec3 _Rot, Vec4 _Color, float _Life, bool _DepthTest);
 void DrawDebugRect(Matrix _matWorld, Vec4 _Color,float _Life, bool _DepthTest);
 void DrawDebugCircle(Vec3 _Pos, float _Radius, Vec4 _Color, float _Life, bool _DepthTest);
+void DrawDebugTriangle(Vec3 _Pos, Vec3 _Scale, Vec3 _Rot, Vec4 _Color, float _Life, bool _DepthTest);
 
 void DrawDebugCube(Vec3 _Pos, Vec3 _Scale, Vec3 _Rot, Vec4 _Color, float _Life, bool _DepthTest);
 void DrawDebugCube(const Matrix& _matWorld, Vec4 _Color, float _Life, bool _DepthTest);

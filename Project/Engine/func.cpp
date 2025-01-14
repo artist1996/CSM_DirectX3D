@@ -119,6 +119,28 @@ void DrawDebugCircle(Vec3 _Pos, float _Radius, Vec4 _Color, float _Life, bool _D
 	CRenderMgr::GetInst()->AddDebugShapeInfo(Info);
 }
 
+void DrawDebugTriangle(Vec3 _Pos, Vec3 _Scale, Vec3 _Rot, Vec4 _Color, float _Life, bool _DepthTest)
+{
+	tDebugShapeInfo Info = {};
+
+	Info.Shape		= DEBUG_SHAPE::TRIANGLE;
+	Info.vPos		= _Pos;
+	Info.vScale		= _Scale;
+	Info.vRot		= _Rot;
+	Info.vColor		= _Color;
+	Info.LifeTime	= _Life;
+	Info.DepthTest	= _DepthTest;
+
+	// World Space 행렬 계산
+	Info.matWorld = XMMatrixScaling(_Scale.x, _Scale.y, _Scale.z)
+		* XMMatrixRotationX(_Rot.x)
+		* XMMatrixRotationY(_Rot.y)
+		* XMMatrixRotationZ(_Rot.z)
+		* XMMatrixTranslation(_Pos.x, _Pos.y, _Pos.z);
+
+	CRenderMgr::GetInst()->AddDebugShapeInfo(Info);
+}
+
 void DrawDebugCube(Vec3 _Pos, Vec3 _Scale, Vec3 _Rot, Vec4 _Color, float _Life, bool _DepthTest)
 {
 	tDebugShapeInfo Info = {};

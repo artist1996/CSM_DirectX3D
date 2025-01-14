@@ -96,10 +96,10 @@ void CLight3D::CreateShadowMap()
 	// MRT OMSet
 	m_ShadowMapMRT->Clear();
 	m_ShadowMapMRT->OMSet();
-
+		
 	m_ShadowMapMtrl->Binding();
-	
 	m_Cam->Camera()->SortGameObject_ShadowMap();
+	
 	m_Cam->Camera()->render_shadowmap();
 }
 
