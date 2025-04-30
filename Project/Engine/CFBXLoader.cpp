@@ -237,6 +237,14 @@ void CFBXLoader::GetTangent(FbxMesh* _pMesh
 	, int _iVtxOrder /*폴리곤 단위로 접근하는 순서*/)
 {
 	int iTangentCnt = _pMesh->GetElementTangentCount();
+
+	if (iTangentCnt == 0) 
+	{
+		_pMesh->InitTangents();
+		_pMesh->GenerateTangentsData(0, false);
+		iTangentCnt = _pMesh->GetElementTangentCount();
+	}
+
 	if (1 != iTangentCnt)
 		assert(NULL); // 정점 1개가 포함하는 탄젠트 정보가 2개 이상이다.
 
@@ -269,6 +277,12 @@ void CFBXLoader::GetTangent(FbxMesh* _pMesh
 void CFBXLoader::GetBinormal(FbxMesh* _pMesh, tContainer* _pContainer, int _iIdx, int _iVtxOrder)
 {
 	int iBinormalCnt = _pMesh->GetElementBinormalCount();
+	if (iBinormalCnt == 0)
+	{
+		_pMesh->InitBinormals();
+		
+		iBinormalCnt = _pMesh->GetElementBinormalCount();
+	}
 	if (1 != iBinormalCnt)
 		assert(NULL); // 정점 1개가 포함하는 종법선 정보가 2개 이상이다.
 
@@ -333,6 +347,31 @@ void CFBXLoader::GetNormal(FbxMesh* _pMesh, tContainer* _pContainer, int _iIdx, 
 void CFBXLoader::GetUV(FbxMesh* _pMesh, tContainer* _pContainer, int _iIdx, int _iUVIndex)
 {
 	FbxGeometryElementUV* pUV = _pMesh->GetElementUV();
+
+	//if (pUV == nullptr)
+	//{
+	//	FbxGeometryElementUV* pNewUV = _pMesh->CreateElementUV("UVMap_0");
+	//	pNewUV->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
+	//	pNewUV->SetReferenceMode(FbxGeometryElement::eDirect);
+	//
+	//	int polygonCount = _pMesh->GetPolygonCount();
+	//	for (int i = 0; i < polygonCount; ++i)
+	//	{
+	//		int vertexCount = _pMesh->GetPolygonSize(i);
+	//		for (int j = 0; j < vertexCount; ++j)
+	//		{
+	//			// 적당한 UV 임시로 채우기 (예: 삼각형 기준 U=(0,0.5,1), V=(0,1,0))
+	//			float u = (float)j / (vertexCount - 1);
+	//			float v = (float)i / (polygonCount - 1);
+	//
+	//			FbxVector2 uv(u, v);
+	//			pNewUV->GetDirectArray().Add(uv);
+	//			pNewUV->GetIndexArray().Add(pNewUV->GetDirectArray().GetCount() - 1);
+	//		}
+	//	}
+	//
+	//	pUV = pNewUV;
+	//}
 
 	UINT iUVIdx = 0;
 	if (pUV->GetReferenceMode() == FbxGeometryElement::eDirect)
@@ -423,6 +462,7 @@ void CFBXLoader::LoadTexture()
 				{
 					copy(path_origin, path_dest);
 				}
+
 
 				path_dest = CPathMgr::GetInst()->GetRelativePath(path_dest);
 				CAssetMgr::GetInst()->Load<CTexture>(path_dest, path_dest);

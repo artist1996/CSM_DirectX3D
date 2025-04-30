@@ -117,7 +117,7 @@ PS_OUT PS_Std3D_Deferred(VS_OUT _in)
     if (g_btex_0)
     {
         output.vAlbedo = g_tex_0.Sample(g_sam_0, _in.vUV);
-        
+        output.vEmissive = output.vAlbedo;
         if(0.f == output.vAlbedo.a)
             discard;
     }

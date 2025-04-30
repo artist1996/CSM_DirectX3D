@@ -129,9 +129,8 @@ void CTestLevel::CreateTestLevel()
 	pPlayer->SetName(L"Player");
 	pPlayer->AddComponent(new CTransform);
 	pPlayer->AddComponent(new CMeshRender);
-	pPlayer->AddComponent(new CBoundingBox);
 	pPlayer->AddComponent(new CCollider3D);
-	pPlayer->AddComponent(new CBoundingSphere);
+	pPlayer->AddComponent(new CBoundingBox);
 
 	pPlayer->Transform()->SetRelativePos(0.f, 0.f, 0.f);
 	pPlayer->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
@@ -142,22 +141,19 @@ void CTestLevel::CreateTestLevel()
 
 	pLevel->AddObject(3, pPlayer);
 
-	CGameObject* pCube = new CGameObject;
-	pCube->SetName(L"Cube");
-	pCube->AddComponent(new CTransform);
-	pCube->AddComponent(new CMeshRender);
-	pCube->AddComponent(new CBoundingBox);
-	pCube->AddComponent(new CCollider3D);
-	pCube->AddComponent(new CBoundingSphere);
-
-	pCube->Transform()->SetRelativePos(0.f, 0.f, 0.f);
-	pCube->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
-	pCube->Collider3D()->SetScale(Vec3(1.f, 1.f, 1.f));
-
-	pCube->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
-	pCube->MeshRender()->SetMaterial(pStd3D_DefferedMtrl, 0);
-
-	pLevel->AddObject(4, pCube);
+	//CGameObject* pCube = new CGameObject;
+	//pCube->SetName(L"Cube");
+	//pCube->AddComponent(new CTransform);
+	//pCube->AddComponent(new CMeshRender);
+	//
+	//pCube->Transform()->SetRelativePos(0.f, 0.f, 0.f);
+	//pCube->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
+	//
+	//pCube->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
+	//pCube->MeshRender()->SetMaterial(pStd3D_DefferedMtrl, 0);
+	//pCube->MeshRender()->GetMaterial(0)->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\bloomtest.jpg"));
+	//
+	//pLevel->AddObject(4, pCube);
 
 	// Decal Object 추가
 	CGameObject* pDecal = new CGameObject;
@@ -169,7 +165,7 @@ void CTestLevel::CreateTestLevel()
 	pDecal->Transform()->SetRelativeScale(100.f, 100.f, 100.f);
 
 	pDecal->Decal()->SetDecalTexture(CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\MagicCircle.png"));
-
+	pDecal->Decal()->SetEmissiveTexture(CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\MagicCircle.png"));
 	pLevel->AddObject(3, pDecal);
 
 	ChangeLevel(pLevel, LEVEL_STATE::STOP);
@@ -213,54 +209,37 @@ void CTestLevel::CreateTestLevel()
 		Ptr<CMeshData> pMeshData = nullptr;
 		CGameObject* pObj = nullptr;
 
-		pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\mn_vorc_00_ani.fbx");
-		pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\mn_vorc_00_ani.mdat");
+		pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\Feather.fbx");
+		//pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\uploads_files_2898304_ev.mdat");
 
 		//pMeshData = CAssetMgr::GetInst()->LoadFBX(L"fbx\\Monster.fbx");
-		//pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\Monster.mdat");
+		pMeshData = CAssetMgr::GetInst()->FindAsset<CMeshData>(L"meshdata\\Feather.mdat");
 
 		pObj = pMeshData->Instantiate();
 		pObj->SetName(L"Monster");
 		pObj->GetRenderComponent()->SetFrustumCheck(false);
 
 		pObj->Transform()->SetRelativePos(Vec3(200.f, 0.f, 200.f));
-		pObj->Transform()->SetRelativeScale(Vec3(5.f, 5.f, 5.f));
+		pObj->Transform()->SetRelativeScale(Vec3(2.f, 2.f, 2.f));
 		pObj->Transform()->SetRelativeRotation(0.f, XM_PI / 2.f, 0.f);
 
 		pLevel->AddObject(0, pObj);
 	}
 
-	//CGameObject* pNavField = new CGameObject;
-	//pNavField->AddComponent(new CTransform);
-	//pNavField->AddComponent(new CMeshRender);
-	//pNavField->AddComponent(new CNavField);
-	//size_t vertexcount = pLandScape->GetRenderComponent()->GetMesh()->GetVertexCount();
-	//const vector<tIndexInfo> vecIndexInfo = pLandScape->GetRenderComponent()->GetMesh()->GetIndexInfo();
-	//Vtx* pVtx = (Vtx*)pLandScape->GetRenderComponent()->GetMesh()->GetVtxSysMem();
-	//
-	//vector<float> vertices;
-	//
-	//for (size_t i = 0; i < vertexcount; ++i)
-	//{
-	//	vertices.push_back(pVtx[i].vPos.x);
-	//	vertices.push_back(pVtx[i].vPos.y);
-	//	vertices.push_back(pVtx[i].vPos.z);
-	//}
+	CGameObject* Rect = new CGameObject;
+	Rect->SetName(L"Rect");
+	Rect->AddComponent(new CTransform);
+	Rect->AddComponent(new CMeshRender);
 
-	//vector<int> indices;
-	//
-	//for (size_t i = 0; i < vecIndexInfo.size(); ++i)
-	//{
-	//	int* pIndices = reinterpret_cast<int*>(vecIndexInfo[i].pIdxSysMem);
-	//	for (UINT j = 0; j < vecIndexInfo[i].iIdxCount; ++j)
-	//	{
-	//		indices.push_back(pIndices[j]);
-	//	}
-	//}
-	//
-	//pNavField->NavField()->BuildField(vertices.data(), vertices.size() / 3, indices.data(), indices.size() / 3);
-	//pNavField->SetName(L"NavField");
-	//pLevel->AddObject(0, pNavField);
+
+	Rect->Transform()->SetRelativePos(100.f, 0.f, 0.f);
+	Rect->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
+
+	Rect->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
+	Rect->MeshRender()->SetMaterial(pStd3D_DefferedMtrl, 0);
+	Rect->MeshRender()->GetMaterial(0)->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\MagicCircle.png"));
+	pLevel->AddObject(3, Rect);
+
 
 	// 충돌 지정
 	CCollisionMgr::GetInst()->CollisionCheck(3, 4); // Player vs Monster

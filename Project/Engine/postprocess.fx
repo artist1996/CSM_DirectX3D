@@ -239,26 +239,47 @@ float4 PS_Blur(VS_OUT_BLUR _in) : SV_Target
 {
     float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
         
-    float2 vUVStep = 1.f / g_Resolution;
-    vUVStep *= 3.4f;
+    //float2 vUVStep = 1.f / g_Resolution;
+    //vUVStep *= 3.4f;
+    //
+    //if (_in.InstID == 0)
+    //{
+    //    for (int i = 0; i < 13; ++i)
+    //    {
+    //        float2 vUV = _in.vUV + float2(vUVStep.x * (-6 + i), 0.f);
+    //        vColor += g_tex_0.Sample(g_sam_2, vUV) * CrossFilter[i];
+    //    }
+    //}
+    //else if (_in.InstID == 1)
+    //{
+    //    for (int j = 0; j < 13; ++j)
+    //    {
+    //        float2 vUV = _in.vUV + float2(0.f, vUVStep.y * (-6 + j));
+    //        vColor += g_tex_0.Sample(g_sam_2, vUV) * CrossFilter[j];
+    //    }
+    //}
+    //vColor /= Total;
     
-    if (_in.InstID == 0)
+     // UV 스텝 크기 설정
+    float2 vUVStep = 1.f / g_Resolution;
+    vUVStep *= 1.f; // Gaussian 필터에서는 3배 확대 대신 1배로 설정
+    
+    float4 holdcolor = g_tex_0.Sample(g_sam_0, _in.vUV);
+    
+    // Gaussian 필터 적용 (5x5 필터)
+    for (int i = -2; i <= 2; ++i)
     {
-        for (int i = 0; i < 13; ++i)
+        for (int j = -2; j <= 2; ++j)
         {
-            float2 vUV = _in.vUV + float2(vUVStep.x * (-6 + i), 0.f);
-            vColor += g_tex_0.Sample(g_sam_2, vUV) * CrossFilter[i];
+        // 필터의 현재 위치에 따른 UV 좌표 계산
+            float2 vUV = _in.vUV + float2(vUVStep.x * i, vUVStep.y * j);
+        
+        // 텍스처 샘플링 및 Gaussian 필터 값 적용
+            vColor += g_tex_0.Sample(g_sam_2, vUV) * GaussianFilter[i + 2][j + 2];
         }
     }
-    else if (_in.InstID == 1)
-    {
-        for (int j = 0; j < 13; ++j)
-        {
-            float2 vUV = _in.vUV + float2(0.f, vUVStep.y * (-6 + j));
-            vColor += g_tex_0.Sample(g_sam_2, vUV) * CrossFilter[j];
-        }
-    }
-    vColor /= Total;
+    
+    //vColor *= float4(2, 0, 0, 1.f);
     
     return vColor;
 }
@@ -282,6 +303,137 @@ float4 PS_EffectMerge(VS_OUT _in) : SV_Target
     float4 vEffectBlur = g_tex_1.Sample(g_sam_0, _in.vUV);
     
     float4 vBloom = pow(abs(pow(vEffect, 2.2f)) + abs(pow(vEffectBlur, 2.2f)), 1.f / 2.2f);
+    vBloom = saturate(vBloom);
+    return vBloom;
+}
+
+VS_OUT VS_Threshold(VS_IN _in)
+{
+    VS_OUT output = (VS_OUT) 0.f;
+    
+    output.vPosition = float4(_in.vPos * 2.f, 1.f);
+    //output.vPosition = mul(float4(_in.vPos, 1.f), matWVP);
+    output.vUV = _in.vUV;
+    
+    return output;
+}
+
+
+float4 PS_Threshold(VS_OUT _in) : SV_Target
+{
+    float3 color = pow(g_tex_0.Sample(g_sam_0, _in.vUV).rgb, 2.2f); // 감마 제거
+
+    float luminance = dot(color, float3(0.2126, 0.7152, 0.0722)); // 밝기 추출
+
+    float threshold = 0.9f;
+    float3 bright = (luminance > threshold) ? color : float3(0.f, 0.f, 0.f);
+
+    return float4(bright, 1.0);
+}
+
+VS_OUT VS_DownScale(VS_IN _in)
+{
+    VS_OUT output = (VS_OUT) 0.f;
+    
+    output.vPosition = float4(_in.vPos * 2.f, 1.f);
+    output.vUV = _in.vUV;
+    
+    return output;
+}
+
+float4 PS_DownScale(VS_OUT _in) : SV_Target
+{
+    float4 vOutColor = float4(0.f, 0.f, 0.f, 1.f);
+
+    float2 texelSize = 1.0f / g_Resolution;
+
+    vOutColor += g_tex_0.Sample(g_sam_0, _in.vUV + float2(-texelSize.x, -texelSize.y)); // Top-left
+    vOutColor += g_tex_0.Sample(g_sam_0, _in.vUV + float2(texelSize.x, -texelSize.y)); // Top-right
+    vOutColor += g_tex_0.Sample(g_sam_0, _in.vUV + float2(-texelSize.x, texelSize.y)); // Bottom-left
+    vOutColor += g_tex_0.Sample(g_sam_0, _in.vUV + float2(texelSize.x, texelSize.y)); // Bottom-right
+
+    vOutColor *= 0.25f;
+
+    return vOutColor;
+}
+
+VS_OUT VS_BloomBlur(VS_IN _in)
+{
+    VS_OUT output = (VS_OUT) 0.f;
+    
+    output.vPosition = float4(_in.vPos * 2.f, 1.f);
+    output.vUV       = _in.vUV;
+    
+    return output;
+}
+
+float4 PS_BloomBlur(VS_OUT _in) : SV_Target
+{
+   float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
+
+    // UV 스텝 크기 설정
+    float2 vUVStep = 1.f / g_Resolution * 3.f;
+    vUVStep *= 3.f;
+
+    // Gaussian 필터 적용 (5x5 필터)
+    for (int i = -2; i <= 2; ++i)
+    {
+        for (int j = -2; j <= 2; ++j)
+        {
+        // 필터의 현재 위치에 따른 UV 좌표 계산
+            float2 vUV = _in.vUV + float2(vUVStep.x * i, vUVStep.y * j);
+        
+        // 텍스처 샘플링 및 Gaussian 필터 값 적용
+            vColor += g_tex_0.Sample(g_sam_2, vUV) * GaussianFilter[i + 2][j + 2];
+        }
+    }
+    
+    return vColor;
+}
+
+VS_OUT VS_Bloom(VS_IN _in)
+{
+    VS_OUT output = (VS_OUT) 0.f;
+    
+    output.vPosition = float4(_in.vPos * 2.f, 1.f);
+    output.vUV = _in.vUV;
+    
+    return output;
+}
+
+float4 PS_Bloom(VS_OUT _in) : SV_Target
+{
+    float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
+    
+    float4 vEffect = g_tex_0.Sample(g_sam_0, _in.vUV);
+    float4 vEffectBlur = g_tex_1.Sample(g_sam_0, _in.vUV);
+    
+    float bloomIntensity = 0.3f; // 강도를 낮춰 부드럽게
+    float4 finalColor = vEffect + vEffectBlur * bloomIntensity;
+    return finalColor;
+    
+    float4 vBloom = pow(abs(pow(vEffect, 2.2f)) + abs(pow(vEffectBlur, 2.2f)), 1.f / 2.2f);
+    vBloom = saturate(vBloom);
+    return vBloom;
+}
+
+VS_OUT VS_FinalBloom(VS_IN _in)
+{
+    VS_OUT output = (VS_OUT) 0.f;
+    output.vPosition = float4(_in.vPos * 2.f, 1.f);
+    output.vUV = _in.vUV;
+    
+    return output;
+}
+
+float4 PS_FinalBloom(VS_OUT _in) : SV_Target
+{
+    float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
+    
+    float4 BlurTex = g_tex_0.Sample(g_sam_0, _in.vUV);
+    float4 TargetTex = g_tex_1.Sample(g_sam_0, _in.vUV);
+    
+    float4 vBloom = pow(abs(pow(BlurTex, 2.2f)) + abs(pow(TargetTex, 2.2f)), 1.f / 2.2f);
     vBloom = saturate(vBloom);
     return vBloom;
 }

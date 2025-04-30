@@ -6,6 +6,11 @@
 
 #include "CDevice.h"
 #include "CMRT.h"
+#include "CDownScaleCS.h"
+#include "CThresholdCS.h"
+#include "CVerticalBlurCS.h"
+#include "CHorizontalBlurCS.h"
+#include "CUpScaleCS.h"
 
 void CRenderMgr::Init()
 {
@@ -19,6 +24,8 @@ void CRenderMgr::Init()
 	CreateMRT();
 
 	CreateMaterial();
+
+	CreateComputeShader();
 }
 
 void CRenderMgr::CreateMRT()
@@ -27,13 +34,13 @@ void CRenderMgr::CreateMRT()
 	// SwapChain MRT
 	// =============
 	{
-		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->FindAsset<CTexture>(L"RenderTargetTex"), };
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->FindAsset<CTexture>(L"RenderTargetTex"), CAssetMgr::GetInst()->FindAsset<CTexture>(L"ThresholdTex") };
 		Ptr<CTexture> pDSTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"DepthStencilTex");
 		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
 
 		m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN] = new CMRT;
 		m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->SetName(L"SwapChain");
-		m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->Create(1, arrRT, pDSTex);
+		m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->Create(2, arrRT, pDSTex);
 		m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->SetClearColor(arrClearColor, false);
 	}
 
@@ -124,13 +131,17 @@ void CRenderMgr::CreateMRT()
 											, (UINT)vResolution.x, (UINT)vResolution.y
 											, DXGI_FORMAT_R32G32B32A32_FLOAT
 											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
+			CAssetMgr::GetInst()->CreateTexture(L"LightResultTex"
+											, (UINT)vResolution.x, (UINT)vResolution.y
+											, DXGI_FORMAT_R32G32B32A32_FLOAT
+											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE),
 		};
 		Ptr<CTexture> pDSTex = nullptr;
 		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
 
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT] = new CMRT;
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetName(L"Light");
-		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(3, arrRT, pDSTex);
+		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->Create(4, arrRT, pDSTex);
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetClearColor(arrClearColor, false);
 	}
 
@@ -153,6 +164,97 @@ void CRenderMgr::CreateMRT()
 		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR]->SetClearColor(arrClearColor, false);
 	}
 
+
+	// =========
+	// Threshold
+	// =========
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+	
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"BloomThresholdTex"
+											, (UINT)vResolution.x, (UINT)vResolution.y
+											, DXGI_FORMAT_R32G32B32A32_FLOAT
+											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS) };
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+	
+		m_arrMRT[(UINT)MRT_TYPE::THRESHOLD] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::THRESHOLD]->SetName(L"Threshold");
+		m_arrMRT[(UINT)MRT_TYPE::THRESHOLD]->Create(1, arrRT, nullptr);
+		m_arrMRT[(UINT)MRT_TYPE::THRESHOLD]->SetClearColor(arrClearColor, false);
+	}
+
+	// ==========
+	// DownScale
+	// ==========
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"DownScaleTex"
+																	 , (UINT)vResolution.x * 0.25f, (UINT)vResolution.y * 0.25f
+																	 , DXGI_FORMAT_R32G32B32A32_FLOAT
+																	 , D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS), };
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+
+		m_arrMRT[(UINT)MRT_TYPE::DOWNSCALE] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::DOWNSCALE]->SetName(L"DownScale");
+		m_arrMRT[(UINT)MRT_TYPE::DOWNSCALE]->Create(1, arrRT, nullptr);
+		m_arrMRT[(UINT)MRT_TYPE::DOWNSCALE]->SetClearColor(arrClearColor, false);
+
+	}
+
+	// VerticalBlur
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+		
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"VerticalBlurTex"
+																	 , (UINT)vResolution.x * 0.25f, (UINT)vResolution.y * 0.25f
+																	 , DXGI_FORMAT_R32G32B32A32_FLOAT
+																	 , D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS), };
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+
+		m_arrMRT[(UINT)MRT_TYPE::VERTICAL_BLUR] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::VERTICAL_BLUR]->SetName(L"VerticalBlur");
+		m_arrMRT[(UINT)MRT_TYPE::VERTICAL_BLUR]->Create(1, arrRT, nullptr);
+		m_arrMRT[(UINT)MRT_TYPE::VERTICAL_BLUR]->SetClearColor(arrClearColor, false);
+	}
+
+	// HorizontalBlur
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"HorizontalBlurTex"
+																	 , (UINT)vResolution.x * 0.25f, (UINT)vResolution.y * 0.25f
+																	 , DXGI_FORMAT_R32G32B32A32_FLOAT
+																	 , D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS), };
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+
+		m_arrMRT[(UINT)MRT_TYPE::HORIZONTAL_BLUR] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::HORIZONTAL_BLUR]->SetName(L"HorizontalBlur");
+		m_arrMRT[(UINT)MRT_TYPE::HORIZONTAL_BLUR]->Create(1, arrRT, nullptr);
+		m_arrMRT[(UINT)MRT_TYPE::HORIZONTAL_BLUR]->SetClearColor(arrClearColor, false);
+	}
+
+	// UpScale
+	{
+		Vec2 vResolution = CDevice::GetInst()->GetResolution();
+
+		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"UpScaleTex"
+																	 , (UINT)vResolution.x, (UINT)vResolution.y
+																	 , DXGI_FORMAT_R32G32B32A32_FLOAT
+																	 , D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS), };
+		Ptr<CTexture> pDSTex = nullptr;
+		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
+
+		m_arrMRT[(UINT)MRT_TYPE::UPSCALE] = new CMRT;
+		m_arrMRT[(UINT)MRT_TYPE::UPSCALE]->SetName(L"UpScale");
+		m_arrMRT[(UINT)MRT_TYPE::UPSCALE]->Create(1, arrRT, nullptr);
+		m_arrMRT[(UINT)MRT_TYPE::UPSCALE]->SetClearColor(arrClearColor, false);
+	}
+
 	// =====
 	// DECAL
 	// =====
@@ -173,6 +275,7 @@ void CRenderMgr::CreateMRT()
 		m_arrMRT[(UINT)MRT_TYPE::DECAL]->Create(2, arrRT, pDSTex);
 		m_arrMRT[(UINT)MRT_TYPE::DECAL]->SetClearColor(arrClearColor, false);
 	}
+	int a = 0;
 }
 
 void CRenderMgr::CreateMaterial()
@@ -245,6 +348,7 @@ void CRenderMgr::CreateMaterial()
 	m_MergeMtrl->SetTexParam(TEX_2, CAssetMgr::GetInst()->FindAsset<CTexture>(L"SpecularTargetTex"));
 	m_MergeMtrl->SetTexParam(TEX_3, CAssetMgr::GetInst()->FindAsset<CTexture>(L"EmissiveTargetTex"));
 	m_MergeMtrl->SetTexParam(TEX_4, CAssetMgr::GetInst()->FindAsset<CTexture>(L"ShadowBlurTex"));
+	m_MergeMtrl->SetTexParam(TEX_5, CAssetMgr::GetInst()->FindAsset<CTexture>(L"UpScaleTex"));
 
 	// RectMesh
 	m_RectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
@@ -252,4 +356,108 @@ void CRenderMgr::CreateMaterial()
 	// DecalMtrl
 	Ptr<CMaterial> pDeaclMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"DecalMtrl");
 	pDeaclMtrl->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"PositionTargetTex"));
+
+	// Threshold Shader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\postprocess.fx", "VS_Threshold");
+	pShader->CreatePixelShader(L"shader\\postprocess.fx", "PS_Threshold");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_NONE);
+	CAssetMgr::GetInst()->AddAsset(L"ThresholdShader", pMtrl);
+
+	// Threshold Mtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(pShader);
+	CAssetMgr::GetInst()->AddAsset(L"ThresholdMtrl", pMtrl);
+
+	// Downscale Shader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\postprocess.fx", "VS_DownScale");
+	pShader->CreatePixelShader(L"shader\\postprocess.fx", "PS_DownScale");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_NONE);
+	CAssetMgr::GetInst()->AddAsset(L"DownScaleShader", pMtrl);
+
+	// DownScale Mtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(pShader);
+	CAssetMgr::GetInst()->AddAsset(L"DownScaleMtrl", pMtrl);
+
+	// Blur Shader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\postprocess.fx", "VS_BloomBlur");
+	pShader->CreatePixelShader(L"shader\\postprocess.fx", "PS_BloomBlur");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_NONE);
+	CAssetMgr::GetInst()->AddAsset(L"BloomBlurShader", pMtrl);
+	
+	// Blur Mtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(pShader);
+	CAssetMgr::GetInst()->AddAsset(L"BloomBlurMtrl", pMtrl);
+	
+	// Bloom Shader
+	pShader = new CGraphicShader;
+	pShader->CreateVertexShader(L"shader\\postprocess.fx", "VS_Bloom");
+	pShader->CreatePixelShader(L"shader\\postprocess.fx", "PS_Bloom");
+	pShader->SetRSType(RS_TYPE::CULL_BACK);
+	pShader->SetBSType(BS_TYPE::DEFAULT);
+	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
+	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_NONE);
+	CAssetMgr::GetInst()->AddAsset(L"BloomShader", pMtrl);
+	
+	// Bloom Mtrl
+	pMtrl = new CMaterial(true);
+	pMtrl->SetShader(pShader);
+	CAssetMgr::GetInst()->AddAsset(L"BloomMtrl", pMtrl);
+}
+
+void CRenderMgr::CreateComputeShader()
+{
+	m_DownScaleCS = (CDownScaleCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"DownScaleCS").Get();
+
+	if (nullptr == m_DownScaleCS)
+	{
+		m_DownScaleCS = new CDownScaleCS;
+		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"DownScaleCS", m_DownScaleCS.Get());
+	}
+	
+	m_ThresholdCS = (CThresholdCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"ThresholdCS").Get();
+
+	if (nullptr == m_ThresholdCS)
+	{
+		m_ThresholdCS = new CThresholdCS;
+		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"ThresholdCS", m_ThresholdCS.Get());
+	}
+
+	m_VerticalBlurCS = (CVerticalBlurCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"VerticalBlurCS").Get();
+
+	if (nullptr == m_VerticalBlurCS)
+	{
+		m_VerticalBlurCS = new CVerticalBlurCS;
+		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"VerticalBlurCS", m_VerticalBlurCS.Get());
+	}
+
+
+	m_HorizontalBlurCS = (CHorizontalBlurCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"HorizontalBlurCS").Get();
+
+	if (nullptr == m_HorizontalBlurCS)
+	{
+		m_HorizontalBlurCS = new CHorizontalBlurCS;
+		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"HorizontalBlurCS", m_HorizontalBlurCS.Get());
+	}
+
+	m_UpScaleCS = (CUpScaleCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"UpScaleCS").Get();
+
+	if (nullptr == m_UpScaleCS)
+	{
+		m_UpScaleCS = new CUpScaleCS;
+		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"UpScaleCS", m_UpScaleCS.Get());
+	}
 }

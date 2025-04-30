@@ -27,6 +27,7 @@ struct VS_OUT
 #define POS_TARGET      g_tex_0
 #define NORMAL_TARGET   g_tex_1
 #define SHADOWMAP       g_tex_2
+#define EMISSIVE        g_tex_3
 
 #define LIGHT_VP        g_mat_0
 // ================================
@@ -53,6 +54,7 @@ struct PS_OUT
     float4 vDiffuse  : SV_Target;
     float4 vSpecular : SV_Target1;
     float4 vShadow   : SV_Target2;
+    float4 vResult   : SV_Target3;
 };
 
 PS_OUT PS_DirLight(VS_OUT _in)
@@ -117,6 +119,11 @@ PS_OUT PS_DirLight(VS_OUT _in)
     output.vDiffuse = light.Color + light.Ambient;
     output.vDiffuse.a  = 1.f;
     output.vSpecular.a = 1.f;
+    
+    float4 vEmissive = EMISSIVE.Sample(g_sam_0, _in.vUV);
+    
+    output.vResult = output.vDiffuse + output.vSpecular + vEmissive;
+    
         
     return output;
 }

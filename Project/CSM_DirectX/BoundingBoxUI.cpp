@@ -18,12 +18,13 @@ void BoundingBoxUI::Init()
 
 void BoundingBoxUI::Update()
 {
+	return;
 	Title();
 
-	CBoundingBox* pBoundingBox = GetTargetObject()->BoundingBox();
+	//CBoundingBox* pBoundingBox = GetTargetObject()->BoundingBox();
 
-	float fRadius = pBoundingBox->GetRadius();
-	float fOffset = pBoundingBox->GetOffset();
+	float fRadius = GetTargetObject()->BoundingBox()->GetRadius();
+	float fOffset = GetTargetObject()->BoundingBox()->GetOffset();
 
 	ImGui::Text("Radius");
 	ImGui::SameLine(100);
@@ -33,10 +34,10 @@ void BoundingBoxUI::Update()
 	ImGui::SameLine(100);
 	if (ImGui::DragFloat("##BoundingBoxOffset", &fOffset))
 	{
-		pBoundingBox->SetOffset(fOffset);
+		GetTargetObject()->BoundingBox()->SetOffset(fOffset);
 	}
 
-	bool& IsRender = pBoundingBox->IsDebugRender();
+	bool& IsRender = GetTargetObject()->BoundingBox()->IsDebugRender();
 	ImGui::Text("Debug Render");
 	ImGui::SameLine(100);
 	ImGui::Checkbox("##BoundingBoxDebugRender", &IsRender);

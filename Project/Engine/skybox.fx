@@ -29,8 +29,6 @@ VS_OUT VS_SkyBox(VS_IN _in)
     output.vUV       = _in.vUV;
     output.vLocalDir = normalize(_in.vPos);
     
-    //output.vUV.x += 1.f - cos(g_EngineTime * 0.01f);
-    
     return output;
 }
 

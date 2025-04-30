@@ -72,6 +72,7 @@ void CLight3D::Render()
 
 	// ShadowMap Á¤º¸
 	m_LightMtrl->SetTexParam(TEX_2, m_ShadowMapMRT->GetRT(0));
+	m_LightMtrl->SetTexParam(TEX_3, CAssetMgr::GetInst()->FindAsset<CTexture>(L"EmissiveTargetTex"));
 	m_LightMtrl->Binding();
 
 	m_VolumeMesh->Render(0);

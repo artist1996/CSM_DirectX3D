@@ -10,7 +10,7 @@ FileBrowser::FileBrowser()
 	: m_CurrentDirectory{}
 	, m_strContentPath{}
 {
-	SetMove(false);
+	SetMove(true);
 }
 
 FileBrowser::~FileBrowser()

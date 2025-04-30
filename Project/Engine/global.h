@@ -87,7 +87,7 @@ using namespace std::filesystem;
 #include <Detour/DetourProximityGrid.h>
 
 #pragma comment(lib, "Detour/x64/Detour.lib")
-#pragma comment(lib, "DetourCrowd/x64/DetourCrowd.lib");
+#pragma comment(lib, "DetourCrowd/x64/DetourCrowd.lib")
 
 
 #include <random>

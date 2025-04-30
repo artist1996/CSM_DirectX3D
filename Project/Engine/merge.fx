@@ -16,6 +16,8 @@
 #define SPECULAR_TARGET g_tex_2
 #define EMISSIVE_TARGET g_tex_3
 #define SHADOW_TARGET   g_tex_4
+#define BLOOM_TARGET    g_tex_5
+
 // ================================
 // 기존 색상과 광원을 합쳐줘야한다.
 
@@ -29,6 +31,12 @@ struct VS_OUT
 {
     float4 vPosition : SV_Position;
     float2 vUV       : TEXCOORD;
+};
+
+struct PS_OUT
+{
+    float4 vMerge  : SV_Target;
+    float4 vBloom  : SV_Target1;
 };
 
 VS_OUT VS_Merge(VS_IN _in)
@@ -57,25 +65,32 @@ void BlurShadow(inout float4 vColor, float2 UV)
     vColor = Sum / 5.f;
 }
 
-float4 PS_Merge(VS_OUT _in) : SV_Target
+PS_OUT PS_Merge(VS_OUT _in)
 {
-    float4 vOutColor = (float4) 0.f;
+    PS_OUT output = (PS_OUT)0.f;
+  
 
     float4 vColor    = ALBEDO_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vDiffuse  = DIFFUSE_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vSpecular = SPECULAR_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vEmissive = EMISSIVE_TARGET.Sample(g_sam_0, _in.vUV);
     float4 vShadow   = SHADOW_TARGET.Sample(g_sam_3, _in.vUV);
+    float4 vBloom    = BLOOM_TARGET.Sample(g_sam_1, _in.vUV);
+
     
     //float4 vLighting = vDiffuse + vSpecular;
     //vLighting *= saturate(vShadow).r;
     //float4 vLighting = vDiffuse + vSpecular * saturate(vShadow).r;
-    vDiffuse *= saturate(vShadow).r;
+    //vDiffuse *= saturate(vShadow).r;
    
     //vOutColor = vColor * vLighting + vEmissive;
-    vOutColor = vColor * vDiffuse + vSpecular + vEmissive;
-    
-    return vOutColor;
+    output.vMerge = vColor * vDiffuse + vSpecular + vEmissive;
+    //float bloomIntensity = 1.2f;
+    output.vMerge += vBloom * 1.2f;
+    //output.vBloom = output.vMerge;
+    //output.vMerge *= vBloom;
+
+    return output;
 };
 
 #endif

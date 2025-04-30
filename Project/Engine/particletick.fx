@@ -5,7 +5,6 @@
 #include "struct.fx"
 #include "func.fx"
 
-
 RWStructuredBuffer<tParticle>     ParticleBuffer   : register(u0);
 RWStructuredBuffer<tSpawnCount>   SpawnCountBuffer : register(u1);
 Texture2D                         NoiseTex         : register(t20);

@@ -226,6 +226,21 @@
     <ClInclude Include="CBoundingSphere.h">
       <Filter>08. Component\11. BoundingBox\02. BoudningSphere</Filter>
     </ClInclude>
+    <ClInclude Include="CDownScaleCS.h">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\02. DownScale</Filter>
+    </ClInclude>
+    <ClInclude Include="CThresholdCS.h">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\01. Threshold</Filter>
+    </ClInclude>
+    <ClInclude Include="CVerticalBlurCS.h">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\03. Blur\01. Vertical Blur</Filter>
+    </ClInclude>
+    <ClInclude Include="CHorizontalBlurCS.h">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\03. Blur\02. Horizontal Blur</Filter>
+    </ClInclude>
+    <ClInclude Include="CUpScaleCS.h">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\04. UpScale</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CEngine.cpp">
@@ -299,9 +314,6 @@
     </ClCompile>
     <ClCompile Include="CMeshRender.cpp">
       <Filter>08. Component\RenderComponent\01. MeshRender</Filter>
-    </ClCompile>
-    <ClCompile Include="CCamera.cpp">
-      <Filter>08. Component\07. Camera</Filter>
     </ClCompile>
     <ClCompile Include="extern.cpp">
       <Filter>01. Header</Filter>
@@ -437,6 +449,24 @@
     </ClCompile>
     <ClCompile Include="CBoundingSphere.cpp">
       <Filter>08. Component\11. BoundingBox\02. BoudningSphere</Filter>
+    </ClCompile>
+    <ClCompile Include="CCamera.cpp">
+      <Filter>08. Component\07. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="CDownScaleCS.cpp">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\02. DownScale</Filter>
+    </ClCompile>
+    <ClCompile Include="CThresholdCS.cpp">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\01. Threshold</Filter>
+    </ClCompile>
+    <ClCompile Include="CVerticalBlurCS.cpp">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\03. Blur\01. Vertical Blur</Filter>
+    </ClCompile>
+    <ClCompile Include="CHorizontalBlurCS.cpp">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\03. Blur\02. Horizontal Blur</Filter>
+    </ClCompile>
+    <ClCompile Include="CUpScaleCS.cpp">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\04. UpScale</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -659,6 +689,27 @@
     <Filter Include="08. Component\11. BoundingBox\02. BoudningSphere">
       <UniqueIdentifier>{4636ffb9-08e8-4763-aa53-639d7167fba1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom">
+      <UniqueIdentifier>{347e47ee-2148-49d0-bc6b-ff7eaf4f8749}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom\02. DownScale">
+      <UniqueIdentifier>{fa941c7f-137a-4915-a8c9-708289190ab3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom\03. Blur">
+      <UniqueIdentifier>{68c245a7-0242-4455-ad8f-72bd42e67087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom\04. UpScale">
+      <UniqueIdentifier>{87fbdc4a-c688-4816-a646-208f37080c49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom\01. Threshold">
+      <UniqueIdentifier>{864b5f3b-cc52-4109-a669-3adcf4de2486}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom\03. Blur\02. Horizontal Blur">
+      <UniqueIdentifier>{026b6fd3-47b1-4f62-b62a-021b3e1c67f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL\03. Compute Shader\05. Bloom\03. Blur\01. Vertical Blur">
+      <UniqueIdentifier>{3a19e3ef-eb59-4d8b-8b87-819dc52420a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -743,6 +794,21 @@
     </FxCompile>
     <FxCompile Include="copybone.fx">
       <Filter>HLSL\03. Compute Shader\04. Animation3D\CopyBone</Filter>
+    </FxCompile>
+    <FxCompile Include="downscale.fx">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\02. DownScale</Filter>
+    </FxCompile>
+    <FxCompile Include="threshold.fx">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\01. Threshold</Filter>
+    </FxCompile>
+    <FxCompile Include="horizontal.fx">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\03. Blur\02. Horizontal Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="gaussianblur.fx">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\03. Blur\01. Vertical Blur</Filter>
+    </FxCompile>
+    <FxCompile Include="upscale.fx">
+      <Filter>HLSL\03. Compute Shader\05. Bloom\04. UpScale</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

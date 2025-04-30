@@ -114,9 +114,13 @@ public:
     void render_particle();
     void render_postprocess();
     void render_ui();
+   
 
     void render_shadowmap();
     void render_shadowblur();
+    void render_threshold();
+    void render_downscale();
+    void render_bloomblur();
 
     void clear();
 

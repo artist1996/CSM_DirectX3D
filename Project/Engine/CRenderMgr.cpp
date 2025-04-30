@@ -12,6 +12,12 @@
 #include "CMeshRender.h"
 #include "CGameObject.h"
 
+#include "CThresholdCS.h"
+#include "CDownScaleCS.h"
+#include "CVerticalBlurCS.h"
+#include "CHorizontalBlurCS.h"
+#include "CUpScaleCS.h"
+
 #include "CLevelMgr.h"
 #include "CLevel.h"
 
@@ -95,8 +101,7 @@ void CRenderMgr::RegisterCamera(CCamera* _Cam, int _CamPriority)
 
 void CRenderMgr::PostProcessCopy()
 {
-	Ptr<CTexture> pRTTex = CAssetMgr::GetInst()->FindAsset<CTexture>(L"RenderTargetTex");
-	CONTEXT->CopyResource(m_PostProcessTex->GetTex2D().Get(), pRTTex->GetTex2D().Get());
+	CONTEXT->CopyResource(m_PostProcessTex->GetTex2D().Get(), m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->GetRT(0)->GetTex2D().Get());
 }
 
 void CRenderMgr::CopyTexture()
@@ -325,14 +330,22 @@ void CRenderMgr::Render(CCamera* _Cam)
 	// Shadow Blur
 	_Cam->render_shadowblur();
 
+	// Bloom
+	//_Cam->render_threshold();
+	Render_Threshold();
+	Render_DownScale();
+	Render_Blur();
+	Render_UpScale();
+	//_Cam->render_downscale();
+	//_Cam->render_bloomblur();
+
 	// ===================================
 	// MERGE ALBEDO + LIGHTS ==> SwapChain
 	// ===================================
 	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->OMSet();
 	m_MergeMtrl->Binding();
 	m_RectMesh->Render(0);
-
-
+	
 	// =================
 	// FORWARD RENDERING
 	// =================
@@ -342,10 +355,12 @@ void CRenderMgr::Render(CCamera* _Cam)
 	//_Cam->render_effect();
 	//_Cam->render_transparent();
 	//_Cam->render_particle();
-	//_Cam->render_postprocess();
+	
 	//_Cam->render_ui();
 
 	_Cam->render_forward();
+	//_Cam->render_postprocess();
+	//_Cam->render_bloom();
 
 	// Á¤¸®
 	_Cam->clear();
@@ -353,7 +368,87 @@ void CRenderMgr::Render(CCamera* _Cam)
 
 void CRenderMgr::Render_Sub(CCamera* _Cam)
 {
+	
+}
 
+void CRenderMgr::Render_Threshold()
+{
+	m_ThresholdCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->GetRT(3));
+	m_ThresholdCS->SetOutputTex(GetMRT(MRT_TYPE::THRESHOLD)->GetRT(0));
+	m_ThresholdCS->Execute();
+}
+
+void CRenderMgr::Render_DownScale()
+{	
+	m_DownScaleCS->SetTargetTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::THRESHOLD)->GetRT(0));
+	m_DownScaleCS->SetDownScaleTex(GetMRT(MRT_TYPE::DOWNSCALE)->GetRT(0));
+	m_DownScaleCS->Execute();
+}
+
+void CRenderMgr::Render_Blur()
+{
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DOWNSCALE)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+
+	m_VerticalBlurCS->SetInputTex(CRenderMgr::GetInst()->GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_VerticalBlurCS->Execute();
+
+	m_HorizontalBlurCS->SetInputTex(GetMRT(MRT_TYPE::VERTICAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->SetOutputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_HorizontalBlurCS->Execute();
+}
+
+void CRenderMgr::Render_UpScale()
+{
+	m_UpScaleCS->SetInputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
+	m_UpScaleCS->SetOutputTex(GetMRT(MRT_TYPE::UPSCALE)->GetRT(0));
+	m_UpScaleCS->Execute();
 }
 
 void CRenderMgr::Clear()

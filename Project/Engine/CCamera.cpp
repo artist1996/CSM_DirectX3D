@@ -646,7 +646,7 @@ void CCamera::render_shadowmap()
 
 void CCamera::render_shadowblur()
 {
-	// EffectMRT 로 변경
+	// ShadowMRT 로 변경
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SHADOWBLUR)->Clear();
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SHADOWBLUR)->OMSet();
 
@@ -654,6 +654,46 @@ void CCamera::render_shadowblur()
 	Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
 
 	pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->GetRT(2));
+	pBlurMtrl->Binding();
+	pRectMesh->Render(0);
+}
+
+void CCamera::render_threshold()
+{
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::THRESHOLD)->Clear();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::THRESHOLD)->OMSet();
+
+	Ptr<CMaterial> pBlurMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"ThreshholdMtrl");
+	Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
+
+	pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->GetRT(3));
+	pBlurMtrl->Binding();
+	pRectMesh->Render(0);
+}
+
+void CCamera::render_downscale()
+{
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DOWNSCALE)->Clear();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DOWNSCALE)->OMSet();
+
+	Ptr<CMaterial> pDownScaleMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"DownScaleMtrl");
+	Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
+
+	pDownScaleMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::THRESHOLD)->GetRT(0));
+	pDownScaleMtrl->Binding();
+	pRectMesh->Render(0);
+}
+
+void CCamera::render_bloomblur()
+{
+	// ShadowMRT 로 변경
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::VERTICAL_BLUR)->Clear();
+	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::VERTICAL_BLUR)->OMSet();
+
+	Ptr<CMaterial> pBlurMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"BloomBlurMtrl");
+	Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
+
+	pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::DOWNSCALE)->GetRT(0));
 	pBlurMtrl->Binding();
 	pRectMesh->Render(0);
 }
