@@ -4,6 +4,7 @@
 #include <Engine/CLevelMgr.h>
 #include <Engine/CLevel.h>
 #include <Engine/CAssetMgr.h>
+#include <Engine/CRenderMgr.h>
 #include <Engine/assets.h>
 #include <Engine/CGameObject.h>
 #include <Engine/components.h>
@@ -47,6 +48,8 @@ void MenuUI::Update()
 	Assets();
 
 	Editor();
+
+	HDR();
 }
 
 void MenuUI::File()
@@ -132,10 +135,24 @@ void MenuUI::Level()
 	ImGui::EndDisabled();
 }
 
+void MenuUI::HDR()
+{
+	if (ImGui::BeginMenu("HDR"))
+	{
+		bool IsActiveBloom = (bool)CRenderMgr::GetInst()->GetUseBloom();
+
+		if (ImGui::MenuItem("Use Bloom", nullptr, &IsActiveBloom))
+		{
+			CRenderMgr::GetInst()->SetUseBloom(IsActiveBloom);
+		}
+		ImGui::EndMenu();
+	}
+}
+
 void MenuUI::GameObject()
 {
 	if (ImGui::BeginMenu("GameObject"))
-	{
+	{		
 		if (ImGui::MenuItem("Create Empty Object"))
 		{
 			CreateGameObject* pUI = (CreateGameObject*)CEditorMgr::GetInst()->FindEditorUI("Create GameObject");

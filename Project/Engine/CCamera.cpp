@@ -649,13 +649,13 @@ void CCamera::render_shadowblur()
 	// ShadowMRT ·Î º¯°æ
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SHADOWBLUR)->Clear();
 	CRenderMgr::GetInst()->GetMRT(MRT_TYPE::SHADOWBLUR)->OMSet();
-
-	Ptr<CMaterial> pBlurMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"ShadowBlurMtrl");
-	Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
-
-	pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->GetRT(2));
-	pBlurMtrl->Binding();
-	pRectMesh->Render(0);
+	
+	//Ptr<CMaterial> pBlurMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"ShadowBlurMtrl");
+	//Ptr<CMesh> pRectMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh");
+	//
+	//pBlurMtrl->SetTexParam(TEX_0, CRenderMgr::GetInst()->GetMRT(MRT_TYPE::LIGHT)->GetRT(2));
+	//pBlurMtrl->Binding();
+	//pRectMesh->Render(0);
 }
 
 void CCamera::render_threshold()

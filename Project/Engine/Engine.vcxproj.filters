@@ -241,6 +241,9 @@
     <ClInclude Include="CUpScaleCS.h">
       <Filter>HLSL\03. Compute Shader\05. Bloom\04. UpScale</Filter>
     </ClInclude>
+    <ClInclude Include="CVolumetricLightCS.h">
+      <Filter>HLSL\03. Compute Shader\06. Volumetric Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CEngine.cpp">
@@ -467,6 +470,9 @@
     </ClCompile>
     <ClCompile Include="CUpScaleCS.cpp">
       <Filter>HLSL\03. Compute Shader\05. Bloom\04. UpScale</Filter>
+    </ClCompile>
+    <ClCompile Include="CVolumetricLightCS.cpp">
+      <Filter>HLSL\03. Compute Shader\06. Volumetric Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -710,6 +716,9 @@
     <Filter Include="HLSL\03. Compute Shader\05. Bloom\03. Blur\01. Vertical Blur">
       <UniqueIdentifier>{3a19e3ef-eb59-4d8b-8b87-819dc52420a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL\03. Compute Shader\06. Volumetric Light">
+      <UniqueIdentifier>{51fdf5ec-46bc-45af-a079-99c7e3661230}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -777,9 +786,6 @@
     <FxCompile Include="landscape.fx">
       <Filter>HLSL\02. Render\02. 3D</Filter>
     </FxCompile>
-    <FxCompile Include="shadowblur.fx">
-      <Filter>HLSL\02. Render\02. 3D</Filter>
-    </FxCompile>
     <FxCompile Include="heightmap.fx">
       <Filter>HLSL\03. Compute Shader\03. LandScape\02. HeightMap</Filter>
     </FxCompile>
@@ -809,6 +815,9 @@
     </FxCompile>
     <FxCompile Include="upscale.fx">
       <Filter>HLSL\03. Compute Shader\05. Bloom\04. UpScale</Filter>
+    </FxCompile>
+    <FxCompile Include="volumetric.fx">
+      <Filter>HLSL\03. Compute Shader\06. Volumetric Light</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -24,6 +24,7 @@ struct VS_OUT
 // BlendState   : ONE_ONE
 // Parameter
 #define LIGHT_IDX       g_int_0
+#define USE_PCF         g_int_1
 #define POS_TARGET      g_tex_0
 #define NORMAL_TARGET   g_tex_1
 #define SHADOWMAP       g_tex_2
@@ -85,15 +86,48 @@ PS_OUT PS_DirLight(VS_OUT _in)
         float fDist = g_tex_2.Sample(g_sam_3, vShadowMapUV).x;
         
         // 광원 시점에서 물체가 기록된 범위(시야 범위) 이내에서만 테스트를 진행한다.
-        if (0.f < vShadowMapUV.x && vShadowMapUV.x < 1.f
+        if(USE_PCF)
+        {
+            if (0.f < vShadowMapUV.x && vShadowMapUV.x < 1.f
             && 0.f < vShadowMapUV.y && vShadowMapUV.y < 1.f)
+            {  
+                float fShadow = 0.0f;
+                float2 vTexelSize = 1.f / float2(8192.f, 8192.f);
+
+                for (int y = -2; y <= 2; ++y)
+                {
+                    for (int x = -2; x <= 2; ++x)
+                    {
+                        float2 vOffset = float2(x, y) * vTexelSize;
+                        float fSampleDepth = g_tex_2.Sample(g_sam_2, vShadowMapUV + vOffset).r;
+
+                        if (fSampleDepth + 0.0001f < vProjPos.z)
+                            fShadow += 1.f;
+                    }
+                }
+
+                fShadow /= 25.f;     
+                output.vShadow = float4(1.f - fShadow, 1.0f - fShadow, 1.f - fShadow, 1.f);
+                bShadow = true;
+            }
+            else
+            {
+                // 유효 범위 밖이면 그림자 없음
+                output.vShadow = float4(1.f, 1.f, 1.f, 1.f);
+            }
+        }
+        else
         {
             // 광원시점에서 기록된 깊이값과, 투영된 깊이를 비교한다.
             // 기록된 깊이보다 현재 투영시킨 깊이가 더 길다면, 광원시점에서 가려진 지점이다 ==> 그림자가 생겨야 한다.
-            if (fDist + 0.0001f < vProjPos.z)
+            if (0.f < vShadowMapUV.x && vShadowMapUV.x < 1.f
+            && 0.f < vShadowMapUV.y && vShadowMapUV.y < 1.f)
             {
-                bShadow = true;
-            }
+                if (fDist + 0.0001f < vProjPos.z)
+                {
+                    bShadow = true;
+                }
+            }          
         }
     }
     
@@ -102,23 +136,33 @@ PS_OUT PS_DirLight(VS_OUT _in)
     tLight light    = (tLight) 0.f;
     CalculateLight3D(LIGHT_IDX, vViewNormal, vViewPos.xyz, light);
     
-    if(bShadow)
+    if(USE_PCF)
     {
-        output.vShadow = float4(0.f, 0.f, 0.f, 1.f);
-        //output.vDiffuse = light.Color + light.Ambient * 0.1f;
+        if (bShadow)
+        {
+            output.vSpecular = light.SpecCoef;
+        }
+    
+        output.vDiffuse = (light.Color + light.Ambient) * output.vShadow;
+        output.vDiffuse.a = 1.f;
+        output.vSpecular.a = 1.f;
     }
+
     else
     {
-        output.vShadow = float4(1.f, 1.f, 1.f, 1.f);
-        output.vSpecular = light.SpecCoef;
-        //output.vDiffuse = light.Color + light.Ambient;
-    }
+        if (bShadow)
+        {
+            output.vDiffuse = (light.Color + light.Ambient) * 0.1f;
+        }
+        else
+        {
+            output.vDiffuse = light.Color + light.Ambient;
+            output.vSpecular = light.SpecCoef;
+        }
     
-    //output.vDiffuse = float4(ApplyFog(output.vDiffuse.rgb, length(vViewPos.xyz), float3(0.f, 1.f, 0.f), 0.f, 10000.f), output.vDiffuse.a);
-
-    output.vDiffuse = light.Color + light.Ambient;
-    output.vDiffuse.a  = 1.f;
-    output.vSpecular.a = 1.f;
+        output.vDiffuse.a = 1.f;
+        output.vSpecular.a = 1.f;
+    }
     
     float4 vEmissive = EMISSIVE.Sample(g_sam_0, _in.vUV);
     

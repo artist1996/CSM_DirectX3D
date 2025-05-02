@@ -72,6 +72,28 @@ Ptr<CTexture> CAssetMgr::CreateTexutre(const wstring& _Key, ComPtr<ID3D11Texture
 	return pTexture;
 }
 
+Ptr<CTexture> CAssetMgr::Create3DTexture(const wstring& _strKey, UINT _Width, UINT _Height, UINT _Depth, DXGI_FORMAT _Format, UINT _Flags, D3D11_USAGE _Usage)
+{
+	// 중복 키 검사
+	Ptr<CTexture> pTexture = FindAsset<CTexture>(_strKey);
+
+	assert(!pTexture.Get());
+
+	pTexture = new CTexture;
+	
+	if (FAILED(pTexture->CreateTexture3D(_Width, _Height, _Depth, _Format, _Flags, _Usage)))
+	{
+		MessageBox(nullptr, L"텍스쳐 생성 실패", L"텍스쳐 생성 실패", MB_OK);
+		return nullptr;
+	}
+
+	pTexture->m_Key = _strKey;
+	pTexture->SetEngineAsset();
+	m_mapAsset[(UINT)ASSET_TYPE::TEXTURE].insert(make_pair(_strKey, pTexture.Get()));
+
+	return pTexture;
+}
+
 Ptr<CMeshData> CAssetMgr::LoadFBX(const wstring& _strPath)
 {
 	wstring strFileName = path(_strPath).stem();

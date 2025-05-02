@@ -122,4 +122,28 @@ struct tSkinningInfo
     float3 vNormal;
 };
 
+struct tVolumetricModule
+{
+    uint    Width;
+    uint    Height;
+    uint    Depth;
+
+    float   fRadius;              // 최대 거리
+    float   fAngle;               // 앵글
+    float   fScatteringIntensity; // 산란 강도
+    
+    float3  vLightWorldPos;      // 라이트 월드 포지션
+    float3  vLightWorldDir;      // 라이트 월드 방향 벡터
+    float3  vLightCamWorldPos;   // 라이트 카메라 월드 포지션
+    float3  vAABBMin;            // AABB Min
+    float3  vAABBMax;            // AABB Max
+    
+    int     padding[3];
+};
+
+struct tTestOutput
+{
+    float4 vColor;
+};
+
 #endif

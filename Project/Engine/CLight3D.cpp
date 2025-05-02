@@ -11,6 +11,7 @@ CLight3D::CLight3D()
 	: CComponent(COMPONENT_TYPE::LIGHT3D)
 	, m_LightIdx(-1)
 	, m_ShadowMapMRT(nullptr)
+	, m_UsePCF(1)
 {
 	m_Cam = new CGameObject;
 	m_Cam->AddComponent(new CTransform);
@@ -66,6 +67,7 @@ void CLight3D::Render()
 
 	// 광원 인덱스
 	m_LightMtrl->SetScalarParam(INT_0, m_LightIdx);
+	m_LightMtrl->SetScalarParam(INT_1, m_UsePCF);
 
 	// 광원 카메라로 투영 시킬 때 사용할 ViewProj 행렬
 	m_LightMtrl->SetScalarParam(MAT_0, m_Cam->Camera()->GetViewMat() * m_Cam->Camera()->GetProjMat());
@@ -146,30 +148,6 @@ void CLight3D::SetLightType(LIGHT_TYPE _Type)
 	{
 		m_VolumeMesh = CAssetMgr::GetInst()->FindAsset<CMesh>(L"ConeMesh");
 		m_LightMtrl  = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"SpotLightMtrl");
-
-		m_ShadowMapMtrl = CAssetMgr::GetInst()->FindAsset<CMaterial>(L"SpotLightShadowMapMtrl");
-
-		// 광원 카메라 옵션 설정
-		m_Cam->Camera()->SetProjType(PROJ_TYPE::ORTHOGRAPHIC);
-		m_Cam->Camera()->SetWidth(4096);
-		m_Cam->Camera()->SetHeight(4096);
-		m_Cam->Camera()->SetLayerAll();
-		m_Cam->Camera()->SetLayer(31, false);
-		m_Cam->Camera()->SetProjScale(1.f);
-
-		Ptr<CTexture> pShadowMap = new CTexture;
-		pShadowMap->Create(8192, 8192, DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
-
-		Ptr<CTexture> pShadowMapDepth = new CTexture;
-		pShadowMapDepth->Create(8192, 8192, DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT, D3D11_BIND_DEPTH_STENCIL);
-
-		if (nullptr == m_ShadowMapMRT)
-			m_ShadowMapMRT = new CMRT;
-
-		m_ShadowMapMRT->Create(1, &pShadowMap, pShadowMapDepth);
-
-		Vec4 vClearColor = Vec4(-1.f, 0.f, 0.f, 0.f);
-		m_ShadowMapMRT->SetClearColor(&vClearColor, true);
 	}
 }
 

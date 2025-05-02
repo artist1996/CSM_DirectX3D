@@ -6,6 +6,7 @@ class CTexture :
 private:
     ScratchImage                      m_Image;
     ComPtr<ID3D11Texture2D>           m_Tex2D;
+    ComPtr<ID3D11Texture3D>           m_Tex3D;
                                      
     ComPtr<ID3D11RenderTargetView>    m_RTV;
     ComPtr<ID3D11DepthStencilView>    m_DSV;
@@ -13,11 +14,13 @@ private:
     ComPtr<ID3D11UnorderedAccessView> m_UAV;
 
     D3D11_TEXTURE2D_DESC              m_Desc;
+    D3D11_TEXTURE3D_DESC              m_Tex3DDesc;
 
     UINT                              m_RecentBindingRegisterNum;
     
 public:
     ComPtr<ID3D11Texture2D>             GetTex2D() { return m_Tex2D; }
+    ComPtr<ID3D11Texture3D>             GetTex3D() { return m_Tex3D; }
     ComPtr<ID3D11RenderTargetView>      GetRTV()   { return m_RTV; }
     ComPtr<ID3D11DepthStencilView>      GetDSV()   { return m_DSV; }
     ComPtr<ID3D11ShaderResourceView>    GetSRV()   { return m_SRV; }
@@ -31,7 +34,10 @@ public:
 
 
     UINT Width()        { return m_Desc.Width; }
+    UINT Width3D()      { return m_Tex3DDesc.Width; }
     UINT Height()       { return m_Desc.Height; }
+    UINT Height3D()     { return m_Tex3DDesc.Height; }
+    UINT Depth()        { return m_Tex3DDesc.Depth; }
     bool IsCubeMap()    { return m_Desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE; }
     UINT GetArraySize() { return m_Desc.ArraySize; }
 
@@ -41,6 +47,7 @@ public:
     // Flags = D3D11_BIND_FLAG
     int Create(UINT _Width, UINT _Height, DXGI_FORMAT _PixelFormat, UINT _Flags, D3D11_USAGE _Usage = D3D11_USAGE_DEFAULT);
     int Create(ComPtr<ID3D11Texture2D> _Tex2D);
+    int CreateTexture3D(UINT _Width, UINT _Height, UINT _Depth, DXGI_FORMAT _PixelFormat, UINT _Flags, D3D11_USAGE _Usage = D3D11_USAGE_DEFAULT);
     int CreateArrayTexture(const vector<Ptr<CTexture>>& _vecTex);
 
     int GenerateMip(UINT _Level);

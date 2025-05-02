@@ -6,6 +6,7 @@
 CTexture::CTexture()
 	: CAsset(ASSET_TYPE::TEXTURE)
 	, m_Desc{}
+	, m_Tex3DDesc{}
 	, m_RecentBindingRegisterNum(0)
 {
 }
@@ -154,6 +155,58 @@ int CTexture::Create(ComPtr<ID3D11Texture2D> _Tex2D)
 	if (m_Desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
 	{
 		DEVICE->CreateUnorderedAccessView(m_Tex2D.Get(), nullptr, m_UAV.GetAddressOf());
+	}
+
+	return S_OK;
+}
+
+int CTexture::CreateTexture3D(UINT _Width, UINT _Height, UINT _Depth, DXGI_FORMAT _PixelFormat, UINT _Flags, D3D11_USAGE _Usage)
+{
+	m_Tex3DDesc.Width		= _Width;			// DepthStencil 텍스쳐는 렌더타겟 해상도와 반드시 일치해야한다.
+	m_Tex3DDesc.Height		= _Height;
+	m_Tex3DDesc.Depth		= _Depth;
+	m_Tex3DDesc.Format		= _PixelFormat;		// Depth 24bit, Stencil 8bit
+	m_Tex3DDesc.BindFlags	= _Flags;
+
+	m_Tex3DDesc.Usage = _Usage;					// System Memory 와의 연계 설정
+
+	if (D3D11_USAGE::D3D11_USAGE_DYNAMIC == _Usage)
+	{
+		m_Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	}
+
+	else
+	{
+		m_Desc.CPUAccessFlags = 0;
+	}
+
+	m_Tex3DDesc.MiscFlags = 0;
+	m_Tex3DDesc.MipLevels = 1;			// 열화버전 해상도 이미지 추가 생성
+
+	if (FAILED(DEVICE->CreateTexture3D(&m_Tex3DDesc, nullptr, m_Tex3D.GetAddressOf())))
+	{
+		return E_FAIL;
+	}
+
+	// View 생성
+	if (m_Tex3DDesc.BindFlags & D3D11_BIND_RENDER_TARGET)
+	{
+		DEVICE->CreateRenderTargetView(m_Tex3D.Get(), nullptr, m_RTV.GetAddressOf());
+	}
+
+	if (m_Tex3DDesc.BindFlags & D3D11_BIND_DEPTH_STENCIL)
+	{
+		DEVICE->CreateDepthStencilView(m_Tex3D.Get(), nullptr, m_DSV.GetAddressOf());
+	}
+
+	if (m_Tex3DDesc.BindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		DEVICE->CreateShaderResourceView(m_Tex3D.Get(), nullptr, m_SRV.GetAddressOf());
+	}
+
+	if (m_Tex3DDesc.BindFlags & D3D11_BIND_UNORDERED_ACCESS)
+	{
+		DEVICE->CreateUnorderedAccessView(m_Tex3D.Get(), nullptr, m_UAV.GetAddressOf());
 	}
 
 	return S_OK;

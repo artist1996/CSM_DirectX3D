@@ -14,6 +14,7 @@ public:
 private:
     void File();
     void Level();
+    void HDR();
     void GameObject();
     void Assets();
     void Editor();

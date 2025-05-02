@@ -6,11 +6,14 @@
 
 #include "CDevice.h"
 #include "CMRT.h"
+
 #include "CDownScaleCS.h"
 #include "CThresholdCS.h"
 #include "CVerticalBlurCS.h"
 #include "CHorizontalBlurCS.h"
 #include "CUpScaleCS.h"
+
+#include "CVolumetricLightCS.h"
 
 void CRenderMgr::Init()
 {
@@ -145,19 +148,19 @@ void CRenderMgr::CreateMRT()
 		m_arrMRT[(UINT)MRT_TYPE::LIGHT]->SetClearColor(arrClearColor, false);
 	}
 
-	// ===============
-	// ShadowBlur MRT
-	// ===============
+	//===============
+	//ShadowBlur MRT
+	//===============
 	{
 		Vec2 vResolution = CDevice::GetInst()->GetResolution();
-
+	
 		Ptr<CTexture> arrRT[8] = { CAssetMgr::GetInst()->CreateTexture(L"ShadowBlurTex"
 											, (UINT)vResolution.x, (UINT)vResolution.y
 											, DXGI_FORMAT_R32G32B32A32_FLOAT
 											, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE), };
 		Ptr<CTexture> pDSTex = nullptr;
 		Vec4		  arrClearColor[8] = { Vec4(0.f, 0.f, 0.f, 0.f), };
-
+	
 		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR] = new CMRT;
 		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR]->SetName(L"ShadowBlur");
 		m_arrMRT[(UINT)MRT_TYPE::SHADOWBLUR]->Create(1, arrRT, nullptr);
@@ -275,7 +278,6 @@ void CRenderMgr::CreateMRT()
 		m_arrMRT[(UINT)MRT_TYPE::DECAL]->Create(2, arrRT, pDSTex);
 		m_arrMRT[(UINT)MRT_TYPE::DECAL]->SetClearColor(arrClearColor, false);
 	}
-	int a = 0;
 }
 
 void CRenderMgr::CreateMaterial()
@@ -418,6 +420,8 @@ void CRenderMgr::CreateMaterial()
 	CAssetMgr::GetInst()->AddAsset(L"BloomMtrl", pMtrl);
 }
 
+
+
 void CRenderMgr::CreateComputeShader()
 {
 	m_DownScaleCS = (CDownScaleCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"DownScaleCS").Get();
@@ -459,5 +463,13 @@ void CRenderMgr::CreateComputeShader()
 	{
 		m_UpScaleCS = new CUpScaleCS;
 		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"UpScaleCS", m_UpScaleCS.Get());
+	}
+
+	m_VolumetricCS = (CVolumetricLightCS*)CAssetMgr::GetInst()->FindAsset<CComputeShader>(L"VolumetricCS").Get();
+
+	if (nullptr == m_VolumetricCS)
+	{
+		m_VolumetricCS = new CVolumetricLightCS;
+		CAssetMgr::GetInst()->AddAsset<CComputeShader>(L"VolumetricCS", m_VolumetricCS.Get());
 	}
 }

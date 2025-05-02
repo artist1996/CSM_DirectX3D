@@ -21,6 +21,8 @@
 // ================================
 // 기존 색상과 광원을 합쳐줘야한다.
 
+#define USE_BLOOM       g_int_0
+
 struct VS_IN
 {
     float3 vPos : POSITION;
@@ -48,21 +50,9 @@ VS_OUT VS_Merge(VS_IN _in)
     return output;
 };
 
-static float CrossFilter[13] = { 0.0561f, 0.1353f, 0.278f, 0.4868f, 0.7261f, 0.9231f, 1.f, 0.9231f, 0.7261f, 0.4868f, 0.278f, 0.1353f, 0.0561f };
-static float Total = 6.2108f;
-
-void BlurShadow(inout float4 vColor, float2 UV)
+float3 ToneMapping_Reinhard(float3 _vColor)
 {
-    float4 Sum = float4(0.f, 0.f, 0.f, 0.f);
-    float Offset = 0.0003f; // 블러 정도 조절
-    
-    Sum += SHADOW_TARGET.Sample(g_sam_0, UV + float2(Offset, 0)); // 오른쪽
-    Sum += SHADOW_TARGET.Sample(g_sam_0, UV - float2(Offset, 0)); // 왼쪽
-    Sum += SHADOW_TARGET.Sample(g_sam_0, UV + float2(0, Offset)); // 위
-    Sum += SHADOW_TARGET.Sample(g_sam_0, UV - float2(0, Offset)); // 아래
-    Sum += SHADOW_TARGET.Sample(g_sam_0, UV); // 현재 픽셀
-    
-    vColor = Sum / 5.f;
+    return _vColor / (_vColor + 1.f);
 }
 
 PS_OUT PS_Merge(VS_OUT _in)
@@ -78,17 +68,30 @@ PS_OUT PS_Merge(VS_OUT _in)
     float4 vBloom    = BLOOM_TARGET.Sample(g_sam_1, _in.vUV);
 
     
-    //float4 vLighting = vDiffuse + vSpecular;
+    //float4 vLighting = (vDiffuse + vSpecular) * vShadow;
     //vLighting *= saturate(vShadow).r;
-    //float4 vLighting = vDiffuse + vSpecular * saturate(vShadow).r;
-    //vDiffuse *= saturate(vShadow).r;
    
-    //vOutColor = vColor * vLighting + vEmissive;
     output.vMerge = vColor * vDiffuse + vSpecular + vEmissive;
-    //float bloomIntensity = 1.2f;
-    output.vMerge += vBloom * 1.2f;
-    //output.vBloom = output.vMerge;
-    //output.vMerge *= vBloom;
+    float bloomIntensity = 1.2f;
+    
+    if (USE_BLOOM)
+        output.vMerge += vBloom * 1.2f;
+    
+    // Tone Mapping
+    //{
+    //    float3 mergedColor = (vColor.rgb * vDiffuse.rgb + vSpecular.rgb + vEmissive.rgb);
+    //
+    //    if (USE_BLOOM)
+    //        mergedColor += vBloom.rgb * 1.2f;
+    //
+    //    // Tone Mapping 적용
+    //    mergedColor = ToneMapping_Reinhard(mergedColor);
+    //
+    //    // 감마 보정 (옵션)
+    //    mergedColor = pow(mergedColor, 1.0f / 2.2f);
+    //
+    //    output.vMerge = float4(mergedColor, 1.0f);
+    //}    
 
     return output;
 };

@@ -35,6 +35,12 @@ public:
 							  , D3D11_USAGE _Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT);
 
 	Ptr<CTexture> CreateTexutre(const wstring& _Key, ComPtr<ID3D11Texture2D> _Tex2D);
+
+	Ptr<CTexture> Create3DTexture(const wstring& _strKey, UINT _Width, UINT _Height, UINT _Depth
+							  , DXGI_FORMAT _Format, UINT _Flags
+							  , D3D11_USAGE _Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT);
+
+
 	Ptr<CMeshData> LoadFBX(const wstring& _strPath);
 
 	void GetAssetNames(ASSET_TYPE _Type, vector<string>& _vecOut);

@@ -18,22 +18,22 @@ void CS_DownScale(uint3 _ID : SV_DispatchThreadID)
     if (_ID.x >= OUTPUT_TEX_WIDTH || _ID.y >= OUTPUT_TEX_HEIGHT)
         return;
 
-    float2 baseUV = float2(_ID.xy * 4);
-    float4 sum = float4(0.f, 0.f, 0.f, 0.f);
+    float2 vBaseUV = float2(_ID.xy * 4);
+    float4 vSum = float4(0.f, 0.f, 0.f, 0.f);
 
     for (int y = 0; y < 4; ++y)
     {
         for (int x = 0; x < 4; ++x)
         {
-            float2 uv = (baseUV + float2(x, y)) / float2(INPUT_TEX_WIDTH, INPUT_TEX_HEIGHT);
-            uv = clamp(uv, 0.0, 1.0);
-            sum += g_InputTex.SampleLevel(g_sam_0, uv, 0);
+            float2 vUV = (vBaseUV + float2(x, y)) / float2(INPUT_TEX_WIDTH, INPUT_TEX_HEIGHT);
+            vUV = clamp(vUV, 0.0, 1.0);
+            vSum += g_InputTex.SampleLevel(g_sam_0, vUV, 0);
         }
     }
 
-    sum /= 16.f;
-    sum.a = 1.f;
+    vSum /= 16.f;
+    vSum.a = 1.f;
 
-    g_OutputTex[_ID.xy] = sum;
+    g_OutputTex[_ID.xy] = vSum;
 }
 #endif

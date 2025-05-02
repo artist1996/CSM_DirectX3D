@@ -90,20 +90,20 @@ void CTestLevel::CreateTestLevel()
 	
 
 	// 3D 광원 추가
-	//pObject = new CGameObject;
-	//pObject->SetName(L"Spot Light");
-	//pObject->AddComponent(new CTransform);
-	//pObject->AddComponent(new CLight3D);
-	//
-	//pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
-	//
-	//pObject->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
-	//pObject->Light3D()->SetLightColor(Vec3(0.9f, 0.9f, 0.9f));
-	//pObject->Light3D()->SetSpecularCoefficient(0.3f);
-	//pObject->Light3D()->SetAngle(XM_PI / 2.f);
-	//pObject->Light3D()->SetRadius(500.f);
-	//
-	//pLevel->AddObject(0, pObject);
+	pObject = new CGameObject;
+	pObject->SetName(L"SpotLight");
+	pObject->AddComponent(new CTransform);
+	pObject->AddComponent(new CLight3D);
+	
+	pObject->Transform()->SetRelativePos(Vec3(0.f, 0.f, 0.f));
+	
+	pObject->Light3D()->SetLightType(LIGHT_TYPE::SPOT);
+	pObject->Light3D()->SetLightColor(Vec3(0.9f, 0.9f, 0.9f));
+	pObject->Light3D()->SetSpecularCoefficient(0.3f);
+	pObject->Light3D()->SetAngle(XM_PI / 2.f);
+	pObject->Light3D()->SetRadius(500.f);
+	
+	pLevel->AddObject(0, pObject);
 
 	// SkyBox 추가
 	CGameObject* pSkyBox = new CGameObject;
@@ -136,7 +136,7 @@ void CTestLevel::CreateTestLevel()
 	pPlayer->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
 	pPlayer->Collider3D()->SetScale(Vec3(1.f, 1.f, 1.f));
 
-	pPlayer->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"CubeMesh"));
+	pPlayer->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"SphereMesh"));
 	pPlayer->MeshRender()->SetMaterial(pStd3D_DefferedMtrl,0);
 
 	pLevel->AddObject(3, pPlayer);
@@ -225,20 +225,6 @@ void CTestLevel::CreateTestLevel()
 
 		pLevel->AddObject(0, pObj);
 	}
-
-	CGameObject* Rect = new CGameObject;
-	Rect->SetName(L"Rect");
-	Rect->AddComponent(new CTransform);
-	Rect->AddComponent(new CMeshRender);
-
-
-	Rect->Transform()->SetRelativePos(100.f, 0.f, 0.f);
-	Rect->Transform()->SetRelativeScale(500.f, 500.f, 500.f);
-
-	Rect->MeshRender()->SetMesh(CAssetMgr::GetInst()->FindAsset<CMesh>(L"RectMesh"));
-	Rect->MeshRender()->SetMaterial(pStd3D_DefferedMtrl, 0);
-	Rect->MeshRender()->GetMaterial(0)->SetTexParam(TEX_0, CAssetMgr::GetInst()->FindAsset<CTexture>(L"texture\\MagicCircle.png"));
-	pLevel->AddObject(3, Rect);
 
 
 	// 충돌 지정

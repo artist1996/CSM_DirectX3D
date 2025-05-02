@@ -37,16 +37,15 @@ void Light3DUI::Update()
 			if (ImGui::Selectable(szItems[i], is_selected))
 			{
 				Type = (LIGHT_TYPE)i;
+				pLight->SetLightType(Type);
 			}
 
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
-		}
+		}		
 		ImGui::EndCombo();
 	}
-
-	pLight->SetLightType(Type);
-
+	
 	// 광원 색상 정보
 	const tLightInfo& Info = pLight->GetLightInfo();
 
@@ -85,4 +84,16 @@ void Light3DUI::Update()
 	ImGui::Text("Spec Coef");
 	ImGui::SameLine(100);
 	ImGui::DragFloat("##DragSpecCoef", (float*)&Info.light.SpecCoef, 0.1f);
+
+	bool UsePCF = (bool)pLight->GetUsePCF();
+
+	ImGui::Text("Use PCF");
+	ImGui::SameLine(100);
+	if (ImGui::Checkbox("##Light3DUsePCF", &UsePCF))
+	{
+		if (UsePCF)
+			pLight->UsePCF();
+		else
+			pLight->UnUsePCF();
+	}
 }

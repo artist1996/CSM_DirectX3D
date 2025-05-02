@@ -628,12 +628,6 @@ void CAssetMgr::CreateEngineMaterial()
 	pMtrl->SetShader(FindAsset<CGraphicShader>(L"LandScapeShader"));
 	AddAsset(L"LandScapeMtrl", pMtrl);
 
-	// ShadowBlurMtrl
-
-	pMtrl = new CMaterial(true);
-	pMtrl->SetShader(FindAsset<CGraphicShader>(L"ShadowBlurShader"));
-	AddAsset(L"ShadowBlurMtrl", pMtrl);
-
 	// FinalBloomMtrl
 	pMtrl = new CMaterial(true);
 	pMtrl->SetShader(FindAsset<CGraphicShader>(L"FinalBloomShader"));
@@ -686,6 +680,11 @@ void CAssetMgr::CreateEngineTexture()
 	Ptr<CTexture> pFinalBloomTex = CreateTexture(L"FinalBloomTex"
 		, (UINT)vResolution.x, (UINT)vResolution.y
 		, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+
+	Ptr<CTexture> pVolumetricTex = Create3DTexture(L"VolumetricTex"
+		, (UINT)128, (UINT)128, (UINT)64
+		, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS);
+
 	
 	// Noise Texture
 	Load<CTexture>(L"texture\\noise\\noise_01.png", L"texture\\noise\\noise_01.png");
@@ -1045,16 +1044,6 @@ void CAssetMgr::CreateEngineGraphicShader()
 	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_DEFERRED);
 
 	AddAsset(L"LandScapeShader", pShader);
-
-	// ShadowBlurShader
-	pShader = new CGraphicShader;
-	pShader->CreateVertexShader(L"shader\\shadowblur.fx", "VS_ShadowBlur");
-	pShader->CreatePixelShader(L"shader\\shadowblur.fx", "PS_ShadowBlur");
-	pShader->SetRSType(RS_TYPE::CULL_NONE);
-	pShader->SetDSType(DS_TYPE::NO_TEST_NO_WRITE);
-	pShader->SetBSType(BS_TYPE::ALPHABLEND);
-	pShader->SetDomain(SHADER_DOMAIN::DOMAIN_SHADOWBLUR);
-	AddAsset(L"ShadowBlurShader", pShader);
 
 	// ThreshholdShader
 	pShader = new CGraphicShader;

@@ -19,7 +19,7 @@ void CS_Threshold(uint3 _ID : SV_DispatchThreadID)
 
     float4 color = g_InputTex[_ID.xy];
 
-    color.rgb = pow(color.rgb, 2.2f); // 감마 제거
+    color.rgb = pow(color.rgb, 2.2f);
     float luminance = dot(color.rgb, float3(0.2126f, 0.7152f, 0.0722f));
     g_OutputTex[_ID.xy] = (luminance > 1.f) ? color : float4(0.f, 0.f, 0.f, 0.f);
     

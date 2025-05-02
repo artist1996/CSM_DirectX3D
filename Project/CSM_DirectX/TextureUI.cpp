@@ -16,35 +16,79 @@ void TextureUI::Update()
 
 	Ptr<CTexture> pTexture = (CTexture*)GetAsset().Get();
 
-	// Texture Image
-	ImVec2 uv_min = ImVec2(0.0f, 0.0f);
-	ImVec2 uv_max = ImVec2(1.0f, 1.0f);
+	if (pTexture->GetTex2D())
+	{
+		// Texture Image
+		ImVec2 uv_min = ImVec2(0.0f, 0.0f);
+		ImVec2 uv_max = ImVec2(1.0f, 1.0f);
 
-	ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-	ImVec4 border_col = ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
+		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		ImVec4 border_col = ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
 
-	ImGui::Image(pTexture->GetSRV().Get(), ImVec2(300.f,300.f), uv_min, uv_max, tint_col, border_col);
+		ImGui::Image(pTexture->GetSRV().Get(), ImVec2(300.f, 300.f), uv_min, uv_max, tint_col, border_col);
 
-	// Texture Name
-	string strName = string(pTexture->GetKey().begin(), pTexture->GetKey().end());
+		// Texture Name
+		string strName = string(pTexture->GetKey().begin(), pTexture->GetKey().end());
 
-	ImGui::Text("Name");
-	ImGui::SameLine(100);
-	ImGui::InputText("##TextureName", (char*)strName.c_str(), strName.length(), ImGuiInputTextFlags_ReadOnly);
+		ImGui::Text("Name");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureName", (char*)strName.c_str(), strName.length(), ImGuiInputTextFlags_ReadOnly);
 
-	// Texture Width, Height
-	UINT Width = pTexture->Width();
-	UINT Height = pTexture->Height();
+		// Texture Width, Height
+		UINT Width = pTexture->Width();
+		UINT Height = pTexture->Height();
 
-	char szBuffer[50] = {};
-	sprintf_s(szBuffer, 50, "%d", Width);
+		char szBuffer[50] = {};
+		sprintf_s(szBuffer, 50, "%d", Width);
 
-	ImGui::Text("Width");
-	ImGui::SameLine(100);
-	ImGui::InputText("##TextureWidth", szBuffer,50, ImGuiInputTextFlags_ReadOnly);
+		ImGui::Text("Width");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureWidth", szBuffer, 50, ImGuiInputTextFlags_ReadOnly);
 
-	sprintf_s(szBuffer, 50, "%d", Height);
-	ImGui::Text("Height");
-	ImGui::SameLine(100);
-	ImGui::InputText("##TextureHeight", szBuffer, 50, ImGuiInputTextFlags_ReadOnly);
+		sprintf_s(szBuffer, 50, "%d", Height);
+		ImGui::Text("Height");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureHeight", szBuffer, 50, ImGuiInputTextFlags_ReadOnly);
+	}
+	
+	else
+	{
+		// Texture Image
+		ImVec2 uv_min = ImVec2(0.0f, 0.0f);
+		ImVec2 uv_max = ImVec2(1.0f, 1.0f);
+
+		ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		ImVec4 border_col = ImVec4(0.7f, 0.7f, 0.7f, 1.0f);
+
+		ImGui::Image(pTexture->GetSRV().Get(), ImVec2(300.f, 300.f), uv_min, uv_max, tint_col, border_col);
+
+		// Texture Name
+		string strName = string(pTexture->GetKey().begin(), pTexture->GetKey().end());
+
+		ImGui::Text("Name");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureName", (char*)strName.c_str(), strName.length(), ImGuiInputTextFlags_ReadOnly);
+
+		// Texture Width, Height
+		UINT Width = pTexture->Width3D();
+		UINT Height = pTexture->Height3D();
+		UINT Depth = pTexture->Depth();
+
+		char szBuffer[50] = {};
+		sprintf_s(szBuffer, 50, "%d", Width);
+
+		ImGui::Text("Width");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureWidth3D", szBuffer, 50, ImGuiInputTextFlags_ReadOnly);
+
+		sprintf_s(szBuffer, 50, "%d", Height);
+		ImGui::Text("Height");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureHeight3D", szBuffer, 50, ImGuiInputTextFlags_ReadOnly);
+
+		sprintf_s(szBuffer, 50, "%d", Depth);
+		ImGui::Text("Depth");
+		ImGui::SameLine(100);
+		ImGui::InputText("##TextureDepth3D", szBuffer, 50, ImGuiInputTextFlags_ReadOnly);
+	}
 }

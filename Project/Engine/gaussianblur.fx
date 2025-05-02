@@ -27,7 +27,7 @@ static const float SampleWeights[13] =
     0.002216,
 };
 
-#define kernelhalf 6
+#define KERNEL_HALF 6
 
 [numthreads(128, 1, 1)]
 void CS_VerticalFilter(uint3 _ID : SV_DispatchThreadID)
@@ -38,15 +38,15 @@ void CS_VerticalFilter(uint3 _ID : SV_DispatchThreadID)
     if (x >= TEX_WIDTH || y >= TEX_HEIGHT)
         return;
 
-    float4 result = 0;
+    float4 vResult = 0;
 
     [unroll]
-    for (int i = -kernelhalf; i <= kernelhalf; ++i)
+    for (int i = -KERNEL_HALF; i <= KERNEL_HALF; ++i)
     {
-        int offsetY = clamp(y + i, 0, TEX_HEIGHT - 1);
-        result += g_InputTex.Load(int3(x, offsetY, 0)) * SampleWeights[i + kernelhalf];
+        int OffsetY = clamp(y + i, 0, TEX_HEIGHT - 1);
+        vResult += g_InputTex.Load(int3(x, OffsetY, 0)) * SampleWeights[i + KERNEL_HALF];
     }
 
-    g_OutputTex[int2(x, y)] = float4(result.rgb, 1.0f);
+    g_OutputTex[int2(x, y)] = float4(vResult.rgb, 1.0f);
 }
 #endif

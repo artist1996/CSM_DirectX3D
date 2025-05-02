@@ -1,5 +1,8 @@
 #pragma once
 #include "CComponent.h"
+
+class CCamera;
+
 class CLight3D :
     public CComponent
 {
@@ -17,13 +20,20 @@ private:
 
     Vec3            m_TargetPos;
 
+    int             m_UsePCF;
+
 public:
+    int GetUsePCF() { return m_UsePCF; }
+    void UsePCF()   { m_UsePCF = 1; }
+    void UnUsePCF() { m_UsePCF = 0; }
+
     void SetLightType(LIGHT_TYPE _Type);
     void SetRadius(float _Radius)            { m_Info.Radius = _Radius; }
     void SetAngle(float _Angle)              { m_Info.Angle = _Angle; }
     void SetLightColor(Vec3 _Color)          { m_Info.light.Color = _Color; }
     void SetLightAmbient(Vec3 _Amb)          { m_Info.light.Ambient = _Amb; }
     void SetSpecularCoefficient(float _Coef) { m_Info.light.SpecCoef = _Coef; }
+
 
     LIGHT_TYPE GetLightType() { return m_Info.Type; }
     float GetRadius()         { return m_Info.Radius; }
@@ -34,7 +44,10 @@ public:
 
     void CreateShadowMap();
 
-    const tLightInfo& GetLightInfo() { return m_Info; }
+    const tLightInfo& GetLightInfo()  { return m_Info; }
+    tLightInfo& GetLightInformation() { return m_Info; }
+
+    CCamera* GetLightCam() { return m_Cam->Camera(); }
 
 public:
     virtual void FinalTick() override;

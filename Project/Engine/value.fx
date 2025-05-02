@@ -48,6 +48,7 @@ cbuffer MATERIAL : register(b1)
     float4 g_vec4_1;
     float4 g_vec4_2;
     float4 g_vec4_3;
+    //float4 g_vec4_4;
     
     row_major matrix g_mat_0;
     row_major matrix g_mat_1;

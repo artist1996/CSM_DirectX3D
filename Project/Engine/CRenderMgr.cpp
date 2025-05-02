@@ -18,6 +18,8 @@
 #include "CHorizontalBlurCS.h"
 #include "CUpScaleCS.h"
 
+#include "CVolumetricLightCS.h"
+
 #include "CLevelMgr.h"
 #include "CLevel.h"
 
@@ -35,6 +37,7 @@ CRenderMgr::CRenderMgr()
 	, m_Light2DBuffer(nullptr)
 	, m_Light3DBuffer(nullptr)
 	, m_arrMRT{}
+	, m_RenderBloom(1)
 {
 	m_Light2DBuffer = new CStructuredBuffer;
 	m_Light3DBuffer = new CStructuredBuffer;
@@ -323,26 +326,21 @@ void CRenderMgr::Render(CCamera* _Cam)
 	m_arrMRT[(UINT)MRT_TYPE::LIGHT]->OMSet();
 
 	for (size_t i = 0; i < m_vecLight3D.size(); ++i)
-	{
 		m_vecLight3D[i]->Render();
-	}
 
-	// Shadow Blur
-	_Cam->render_shadowblur();
+	ClearOMSet(_Cam);
 
 	// Bloom
-	//_Cam->render_threshold();
-	Render_Threshold();
-	Render_DownScale();
-	Render_Blur();
-	Render_UpScale();
-	//_Cam->render_downscale();
-	//_Cam->render_bloomblur();
+	if (m_RenderBloom)
+		Render_Bloom();
 
+	Render_VolumetricLighting();
+	
 	// ===================================
 	// MERGE ALBEDO + LIGHTS ==> SwapChain
 	// ===================================
 	m_arrMRT[(UINT)MRT_TYPE::SWAPCHAIN]->OMSet();
+	m_MergeMtrl->SetScalarParam(INT_0, m_RenderBloom);
 	m_MergeMtrl->Binding();
 	m_RectMesh->Render(0);
 	
@@ -367,8 +365,24 @@ void CRenderMgr::Render(CCamera* _Cam)
 }
 
 void CRenderMgr::Render_Sub(CCamera* _Cam)
+{	
+}
+
+void CRenderMgr::ClearOMSet(CCamera* _Cam)
 {
-	
+	ID3D11RenderTargetView* RTV = nullptr;
+	ComPtr<ID3D11DepthStencilView> pDSV = nullptr;
+
+	CONTEXT->OMSetRenderTargets((UINT)1, &RTV, pDSV.Get());
+}
+
+
+void CRenderMgr::Render_Bloom()
+{
+	Render_Threshold();
+	Render_DownScale();
+	Render_Blur();
+	Render_UpScale();
 }
 
 void CRenderMgr::Render_Threshold()
@@ -449,6 +463,12 @@ void CRenderMgr::Render_UpScale()
 	m_UpScaleCS->SetInputTex(GetMRT(MRT_TYPE::HORIZONTAL_BLUR)->GetRT(0));
 	m_UpScaleCS->SetOutputTex(GetMRT(MRT_TYPE::UPSCALE)->GetRT(0));
 	m_UpScaleCS->Execute();
+}
+
+void CRenderMgr::Render_VolumetricLighting()
+{
+	m_VolumetricCS->SetOutputTex(CAssetMgr::GetInst()->FindAsset<CTexture>(L"VolumetricTex"));
+	m_VolumetricCS->Execute();
 }
 
 void CRenderMgr::Clear()

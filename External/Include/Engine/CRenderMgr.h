@@ -11,6 +11,7 @@ class CThresholdCS;
 class CVerticalBlurCS;
 class CHorizontalBlurCS;
 class CUpScaleCS;
+class CVolumetricLightCS;
 
 class CRenderMgr
 	: public CSingleton<CRenderMgr>
@@ -38,11 +39,16 @@ private:
 	Ptr<CMesh>			    m_RectMesh;
 	Ptr<CMaterial>			m_MergeMtrl;
 
+	// Bloom
 	Ptr<CDownScaleCS>		m_DownScaleCS;
 	Ptr<CThresholdCS>		m_ThresholdCS;
 	Ptr<CVerticalBlurCS>	m_VerticalBlurCS;
 	Ptr<CHorizontalBlurCS>  m_HorizontalBlurCS;
 	Ptr<CUpScaleCS>			m_UpScaleCS;
+
+	Ptr<CVolumetricLightCS> m_VolumetricCS;
+	
+	int						m_RenderBloom;
 
 public:
 	void AddDebugShapeInfo(tDebugShapeInfo _Info) { m_DebugShapeList.push_back(_Info); }
@@ -53,6 +59,9 @@ public:
  
 	void PostProcessCopy();
 	void CopyTexture();
+
+	int GetUseBloom() { return m_RenderBloom; }
+	void SetUseBloom(int _use) { m_RenderBloom = _use; }
 
 	Ptr<CTexture> GetCopyTex()	 { return m_CopyTex; }
 
@@ -69,11 +78,18 @@ private:
 	void CreateMRT();
 	void ClearMRT();
 	void CreateMaterial();
+	
+	void ClearOMSet(CCamera* _Cam);
 
+	// Bloom
+	void Render_Bloom();
 	void Render_Threshold();
 	void Render_DownScale();
 	void Render_Blur();
 	void Render_UpScale();
+
+	// Volumetric
+	void Render_VolumetricLighting();
 
 	void CreateComputeShader();
 
